@@ -156,20 +156,20 @@ impl Grana {
             return self.sam_izracunaj_svoju_vrednost();
         }
 
-        let mut moja_vrednost: Option<i16> = None;
+        let mut vrednost_mog_najboljeg_poteza: Option<i16> = None;
         for dete in &mut self.deca {
-            let odgovor_deteta = dete.izracunaj_rekursivno(&moja_vrednost, !ja_volim_vise);
-            if Grana::ovaj_drugi_se_zajebo(vrednost_koju_on_ima_u_dzepu, odgovor_deteta, ja_volim_vise){
-                return odgovor_deteta;
+            let vrednost_mog_poteza = dete.izracunaj_rekursivno(&vrednost_mog_najboljeg_poteza, !ja_volim_vise);
+            if Grana::protivnik_se_zajebo(vrednost_koju_on_ima_u_dzepu, vrednost_mog_poteza, ja_volim_vise){
+                return vrednost_mog_poteza;
             } 
-            Grana::updejtuj_vrednost_koju_imam_u_dzepu(& mut moja_vrednost, odgovor_deteta, ja_volim_vise);
+            Grana::updejtuj_najbolji_potez(& mut vrednost_mog_najboljeg_poteza, vrednost_mog_poteza, ja_volim_vise);
         }
 
-        moja_vrednost.unwrap()
+        vrednost_mog_najboljeg_poteza.unwrap()
     }
 
 
-    fn updejtuj_vrednost_koju_imam_u_dzepu(stari: & mut Option<i16>, novi: i16, ja_volim_vise: bool){
+    fn updejtuj_najbolji_potez(stari: & mut Option<i16>, novi: i16, ja_volim_vise: bool){
         match stari {
             Some(_stara_vrednost) => {
                 if ja_volim_vise && (novi > *_stara_vrednost) {
@@ -184,7 +184,7 @@ impl Grana {
         }
     }
 
-    fn ovaj_drugi_se_zajebo(drugi: &Option<i16>, moj_broj: i16, ja_volim_vise: bool) -> bool{
+    fn protivnik_se_zajebo(drugi: &Option<i16>, moj_broj: i16, ja_volim_vise: bool) -> bool{
         if drugi.is_none() {
             return false;
         }
