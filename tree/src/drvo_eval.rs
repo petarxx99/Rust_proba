@@ -171,13 +171,13 @@ impl Grana {
 
     fn updejtuj_najbolji_potez(najbolji_potez_za_sad: & mut Option<i16>, novi_potez: i16, ja_volim_vise: bool){
         match najbolji_potez_za_sad {
-            Some(_stari_najbolji_potez) => {
-                if ja_volim_vise && (novi_potez > *_stari_najbolji_potez) {
-                    *_stari_najbolji_potez = novi_potez;
+            Some(_najbolji_potez) => {
+                if ja_volim_vise && (novi_potez > *_najbolji_potez) {
+                    *_najbolji_potez = novi_potez;
                 } 
 
-                if !ja_volim_vise && (novi_potez < *_stari_najbolji_potez) {
-                    *_stari_najbolji_potez = novi_potez;
+                if !ja_volim_vise && (novi_potez < *_najbolji_potez) {
+                    *_najbolji_potez = novi_potez;
                 }
             }
             None => {*najbolji_potez_za_sad = Some(novi_potez);}
