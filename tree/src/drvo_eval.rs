@@ -1,7 +1,24 @@
 use std::vec::Vec;
 use std::boxed::Box;
 
+ /* Ako mogu da odigram potez tako da evaluacija bude povoljnija po mene nego u slucaju da je
+  u proslom potezu protivnik odigrao najbolji potez koji je do sada racunao,
+   to znaci da bi se protivnik zajebo ako bi odigrao ovaj potez. 
+   Nema potrebe dalje da se gledaju moji drugi odgovori, refutacija je pronadjena.
+ Na primer, ako protivnik ima "u dzepu" potez koji mu daje prednost, nazovimo taj potez X, 
+ ali on odigra potez koji mi daje mogucnost da evaluacija bude bolja po mene nego 
+ da je protivnik odigrao potez X, tu se analiza ove varijacije zavrsava,
+  jer je jasno da protivnik ne treba da odigra ovaj potez, zato sto ima potez X na raspolaganju.
 
+ Zamislimo da koristim ovaj algoritam za evaluaciju saha (sto mi je i bila motivacija da napisem ovaj kod).
+  Beli analizira poziciju, analizira poteze koje ima. Posle jednog poteza beli bi bio na +2.
+  To je najbolji potez koji je beli nasao za sada. Nazovimo ga potezom X. On nastavlja da gleda poteze.
+   Dok beli razmatra naredni potez, nazovimo ga potezom Y, beli vidi da protivnik ima odgovor na potez Y 
+  koji ce evaluaciju spustiti ispod +2, sto znaci da beli ne treba da odigra potez Y,
+   zato sto taj potez dozvoljava protivniku da dodje do bolje evaluacije nego da je beli
+  odigrao potez X. Nema potrebe da se dalje gledaju drugi odgovori koje crni ima na potez Y, onog trenutka
+  kada se ustanovi da nakon poteza Y crni ima i jedan potez koji ga dovodi u bolju situaciju nego
+  sto bi mogao da dodje da je beli odigrao potez X, to znaci da je potez Y inferiorniji od poteza X. */  
 
 pub struct Grana{
     deca: Vec<Grana>,
