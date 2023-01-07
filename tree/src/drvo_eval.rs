@@ -168,7 +168,7 @@ impl Grana {
         self.izracunaj_rekursivno(&None, ja_volim_vise)
     }
 
-    fn izracunaj_rekursivno(&mut self, vrednost_koju_on_ima_u_dzepu: &Option<i16>, ja_volim_vise:  bool) -> i16 {
+    fn izracunaj_rekursivno(&mut self, vrednost_koju_protivnik_ima_u_dzepu: &Option<i16>, ja_volim_vise:  bool) -> i16 {
         if self.deca.len() == 0{
             return self.sam_izracunaj_svoju_vrednost();
         }
@@ -176,7 +176,7 @@ impl Grana {
         let mut vrednost_mog_najboljeg_poteza: Option<i16> = None;
         for dete in &mut self.deca {
             let vrednost_mog_poteza = dete.izracunaj_rekursivno(&vrednost_mog_najboljeg_poteza, !ja_volim_vise);
-            if Grana::protivnik_se_zajebo(vrednost_koju_on_ima_u_dzepu, vrednost_mog_poteza, ja_volim_vise){
+            if Grana::protivnik_se_zajebo(vrednost_koju_protivnik_ima_u_dzepu, vrednost_mog_poteza, ja_volim_vise){
                 return vrednost_mog_poteza;
             } 
             Grana::updejtuj_najbolji_potez(& mut vrednost_mog_najboljeg_poteza, vrednost_mog_poteza, ja_volim_vise);
