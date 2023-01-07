@@ -184,15 +184,15 @@ impl Grana {
         }
     }
 
-    fn protivnik_se_zajebo(drugi: &Option<i16>, moj_broj: i16, ja_volim_vise: bool) -> bool{
-        if drugi.is_none() {
+    fn protivnik_se_zajebo(potez_koji_je_protivnik_trebalo_da_odigra: &Option<i16>, evaluacija_posle_mog_poteza: i16, ja_volim_vise: bool) -> bool{
+        if potez_koji_je_protivnik_trebalo_da_odigra.is_none() {
             return false;
         }
-        
+     
         if ja_volim_vise {
-            moj_broj > drugi.unwrap()
+            evaluacija_posle_mog_poteza > potez_koji_je_protivnik_trebalo_da_odigra.unwrap()
         } else {
-            moj_broj < drugi.unwrap()
+            evaluacija_posle_mog_poteza < potez_koji_je_protivnik_trebalo_da_odigra.unwrap()
         }
     }
 
