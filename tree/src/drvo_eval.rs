@@ -170,10 +170,11 @@ impl Grana {
 
     /* Dalje moze da se optimizuje da ova metoda vraca evaluaciju i boolean da li je ovo najbolji protivnikov potez do sad,
     ali trenutno mislim da je ovakav kod citkiji, pa ga necu menjati (sumnjam da bi bila velika razlika u performansama).
-    Kod kakav je sad 2 puta proverava istu stvar. Ako imam ranog return u petlji to znaci da protivnik
-    nije odigrao najbolji potez za sada, a ako se ne desi rani return to znaci da je protivnik odigrao
-    najbolji potez do sada, tako da je ne ponovna logika Grana::updejtuj_najbolji_potez suvisna. 
-    Ipak, smatram da je ovakav kod razumljiviji, pa ga necu menjati.*/
+    Kod kakav je sad 2 puta proverava istu stvar. Ako se u petlji desi rani return, 
+    to znaci da protivnik nije odigrao najbolji potez za sada, a ako se ne desi rani return 
+    to znaci da je protivnik odigrao najbolji potez do sada, tako da je ne ponovna logika u
+     Grana::updejtuj_najbolji_potez suvisna. Ipak, smatram da je ovakav kod razumljiviji, 
+     pa ga necu menjati.*/
     fn izracunaj_rekursivno(&mut self, vrednost_koju_protivnik_ima_u_dzepu: &Option<i16>, ja_volim_vise:  bool) -> i16 {
         if self.deca.len() == 0{
             return self.sam_izracunaj_svoju_vrednost();
