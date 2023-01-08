@@ -1,3 +1,7 @@
+pub enum Ko_je_na_potezu{
+    BELI = 0, CRNI = 1
+}
+
 
 pub struct Rokada {
     bela_kraljicina_rokada_vise_nije_moguca: bool,
@@ -7,12 +11,17 @@ pub struct Rokada {
     crna_kraljeva_rokada_vise_nije_moguca: bool,
 }
 
+/*https://doc.rust-lang.org/std/mem/fn.size_of.html */
+#[repr(C)]
 pub struct Tabla  {
     bele_figure: [u8; 16],
     crne_figure: [u8; 16],
     sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu: i32,
 }
 
+pub fn print_size_of_Tabla(){
+    println!("{}", std::mem::size_of::<Tabla>());
+}
 
 impl Tabla {
 
@@ -25,8 +34,19 @@ impl Tabla {
         sopstvena_evaluacija as i8
     }
 
+    fn set_sopstvena_evaluacija(&mut self, evaluacija: i8) {
+        /* Brisem prvi bajt. */
+        let prvi_bajt: i32 = (1<<8) - 1; /* 0b11111111 */
+        self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu
+        &= !prvi_bajt; 
+
+        /* Stavljam da prvi bajt bude isti kao i argument ove procedure. */
+        self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu
+        |= evaluacija as i32;
+    }
+
     /* bitovi za rokadu se nalaze u donja 4 bita drugog bajta (tj. od 9. to 12. bita).
-    Ako je bit 1, rokada je onemogucena, ako je bit 2, rokada je omogucena. */
+    Ako je bit 1, rokada je onemogucena, ako je bit 0, rokada je omogucena. */
     pub fn rokada(&self) -> Rokada {
         let bela_kraljicina_rokada_vise_nije_moguca = self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu
         & (1 << 8) == 1;
@@ -45,6 +65,21 @@ impl Tabla {
         };
     }
 
+    fn onemoguci_belu_kraljicinu_rokadu(bitfield: i32) -> i32{
+        bitfield | ((1<<8) -1)
+    }
+
+    fn onemoguci_belu_kraljevu_rokadu(bitfield: i32) -> i32{
+        bitfield | ((1<<9) -1)
+    }
+
+    fn onemoguci_crnu_kraljicinu_rokadu(bitfield: i32) -> i32 {
+        bitfield | ((1<<10) -1)
+    }
+
+    fn onemoguci_crnu_kraljevu_rokadu(bitfield: i32) -> i32 {
+        bitfield | ((1<<11) -1)
+    }
 
     /* Gornja 4 bita drugog bajta cuvaju ovu informaciju. 13.bit (5. bit drugog bajta) cuva informaciju
      da li je pijun uopste pomeren dva polja u prethodnom potezu.*/
@@ -64,6 +99,31 @@ impl Tabla {
         Some(fajl_pijuna as u8)
     }
 
+    fn dodaj_fajl_pijuna_koji_se_pomerio_2_polja(mut bitfield: i32, mut fajl: i32) -> i32 {
+        /* Stavljam trinaesti bit na 1, to znaci da se pijun pomerio 2 polja u proslom potezu */
+        bitfield |= 1 << 12;
+
+        /* Brisem bitove 14, 15 i 16. */
+        let tri_bita: i32 = 0b111 << 13;
+        bitfield &= !tri_bita;
+
+        /* Pomeram da bitovi 14, 15 i 16 cuvaju vrednost fajla, svi ostali bitovi su 0. */
+        fajl = fajl << 13;
+
+        /* Stavljam da se jedinice iz fajla upisu u bitfield. */
+        bitfield |= fajl;
+
+        bitfield
+    }
+
+
+    fn resetuj_fajl_pijuna_koji_se_pomerio_dva_polja(bitfield: i32) -> i32 {
+        /* Bitovi 13, 14, 15 i 16 treba da budu 0. */
+        let bitovi_za_reset: i32 = 0b1111 << 12;
+        bitfield & !bitovi_za_reset
+    }
+
+
     /* Ova informacija se cuva u prvih 6 bitova 3. bajta (tj. od 17. do 22. bita) */
     pub fn pre_koliko_poteza_je_50_move_rule_pomeren(&self) -> u8 {
         let prvih_6_bitova = (1<<6) -1;
@@ -73,6 +133,21 @@ impl Tabla {
         pre_koliko_poteza &= prvih_6_bitova;
         pre_koliko_poteza as u8
     }
+
+    fn sifruj_pre_koliko_poteza_je_50_move_rule_pomeren(mut bitfield: i32, mut pre_koliko_poteza: i32) -> i32 {
+        /* Brisem prvih 6 bitova 3. bajta. */
+        let prvih_sest_bitova: i32 = (1<<6) -1; /* 0b111111 */
+        let prvih_sest_bitova_treceg_bajta = prvih_sest_bitova << 16; 
+        bitfield &= !prvih_sest_bitova_treceg_bajta;
+
+        /* Pomeram da bitni bitovi pre_koliko_poteza budu od 17. do 22. bita, a ne od 1. do 6. 
+        Svi ostali bitovi su 0.*/
+        pre_koliko_poteza <<= 16;
+
+        /* Stavljam da bitovi od 17. do 22. bitfielda imaju vrednost pre koliko poteza je 50 move rule pomeren. */
+        bitfield | pre_koliko_poteza
+    }
+
 
     /* Ova informacija se cuva u bitu broj 23, tj. u 7. bitu treceg bajta. */
     pub fn beli_je_na_potezu(&self) -> bool {
@@ -86,6 +161,24 @@ impl Tabla {
             false
         }
     }
+
+    fn sifruj_ko_je_na_potezu(mut bitfield: i32, ko_je_na_potezu: Ko_je_na_potezu) -> i32 {
+        /* Obrisi bit za enkodovanje ko je na potezu (to je 23. bit).
+        Obrisi bit 23. */
+        let bit_broj_23: i32 = 1 << 22;
+        bitfield &= !bit_broj_23; 
+
+        let mut bit_za_enkodovanje: i32 = 0;
+        match ko_je_na_potezu {
+            Ko_je_na_potezu::BELI => {bit_za_enkodovanje = 0;},
+            Ko_je_na_potezu::CRNI => {bit_za_enkodovanje = 1;}
+        }
+
+        /* Broj koji se nalazio u bit_za_enkodovanje ce biti u 23. bitu bitfielda. */
+        bit_za_enkodovanje <<= 22;
+        bitfield | bit_za_enkodovanje
+    }
+
 }
 
 impl Tabla {
