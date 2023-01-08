@@ -1,0 +1,1 @@
+/home/bokalovic/Documents/Rust/github/prvi_github_rust_projekat/Rust_proba/tree/target/debug/tree: /home/bokalovic/Documents/Rust/github/prvi_github_rust_projekat/Rust_proba/tree/src/drvo_eval.rs /home/bokalovic/Documents/Rust/github/prvi_github_rust_projekat/Rust_proba/tree/src/main.rs /home/bokalovic/Documents/Rust/github/prvi_github_rust_projekat/Rust_proba/tree/src/tabla.rs
