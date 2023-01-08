@@ -4,6 +4,10 @@ pub enum Ko_je_na_potezu{
     BELI = 0, CRNI = 1
 }
 
+pub enum Promocija {
+    KRALJICA, TOP, LOVAC, KONJ
+}
+
 pub static BELI: u8 = 0;
 pub static CRNI: u8 = 1;
 pub static KRALJ: usize = 0;
@@ -283,3 +287,9 @@ pub struct File_rank{
     rank: u8
 }
  
+pub struct Potez{
+    start: File_rank,
+    destinacija: File_rank,
+    promocija: Option<Promocija>,
+}
+
