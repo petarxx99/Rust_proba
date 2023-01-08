@@ -2,6 +2,24 @@ pub enum Ko_je_na_potezu{
     BELI = 0, CRNI = 1
 }
 
+pub static BELI: u8 = 0;
+pub static CRNI: u8 = 1;
+pub static KRALJ: u8 = 0;
+pub static KRALJICA: u8 = 1;
+pub static LEVI_TOP: u8 = 2;
+pub static DESNI_TOP: u8 = 3;
+pub static LEVI_LOVAC: u8 = 4;
+pub static DESNI_LOVAC: u8 = 5;
+pub static LEVI_KONJ: u8 = 6;
+pub static DESNI_KONJ: u8 = 7;
+pub static A_FILE: u8 = 0;
+pub static B_FILE: u8 = 1;
+pub static C_FILE: u8 = 2;
+pub static D_FILE: u8 = 3;
+pub static E_FILE: u8 = 4;
+pub static F_FILE: u8 = 5;
+pub static G_FILE: u8 = 6;
+pub static H_FILE: u8 = 7;
 
 pub struct Rokada {
     bela_kraljicina_rokada_vise_nije_moguca: bool,
@@ -46,7 +64,11 @@ impl Tabla {
     }
 
     /* bitovi za rokadu se nalaze u donja 4 bita drugog bajta (tj. od 9. to 12. bita).
-    Ako je bit 1, rokada je onemogucena, ako je bit 0, rokada je omogucena. */
+    Ako je bit 1, rokada je onemogucena, ako je bit 0, rokada je omogucena. 
+    9. bit cuva informaciju o tome da li je bela kraljicina rokada moguca.
+    10. bit cuva informaciju o tome da li je bela kraljeva rokada moguca.
+    11. bit cuva informaciju o tome da li je crna kraljicina rokada moguca.
+    12. bit cuva informaciju o tome da li je crna kraljeva rokada moguca.*/
     pub fn rokada(&self) -> Rokada {
         let bela_kraljicina_rokada_vise_nije_moguca = self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu
         & (1 << 8) == 1;
@@ -202,6 +224,7 @@ top, lovac, konj, itd.). Ukoliko je pijun i dalje pijun, onda su ova poslednja d
 
     fn pocetna_pozicija_belih_figura() -> [u8; 16] {
         let mut niz = [0 as u8; 16];
+        niz[0] = 
         niz
     }
 
