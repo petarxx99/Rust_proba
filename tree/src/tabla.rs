@@ -82,7 +82,8 @@ impl Tabla {
     }
 
     /* Gornja 4 bita drugog bajta cuvaju ovu informaciju. 13.bit (5. bit drugog bajta) cuva informaciju
-     da li je pijun uopste pomeren dva polja u prethodnom potezu.*/
+     da li je pijun uopste pomeren dva polja u prethodnom potezu. Ako je 13. bit 0, onda pijun nije 
+     pomeren 2 polja u prethodnom potezu.*/
     pub fn fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu(&self) -> Option<u8> {
         let trinaesti_bit =  self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu
         & (1 << 12);
@@ -101,7 +102,7 @@ impl Tabla {
 
     fn dodaj_fajl_pijuna_koji_se_pomerio_2_polja(mut bitfield: i32, mut fajl: i32) -> i32 {
         /* Stavljam trinaesti bit na 1, to znaci da se pijun pomerio 2 polja u proslom potezu */
-        bitfield |= 1 << 12;
+        bitfield |= (1 << 12);
 
         /* Brisem bitove 14, 15 i 16. */
         let tri_bita: i32 = 0b111 << 13;
@@ -191,6 +192,13 @@ impl Tabla {
         }
     }
 
+    /* Prvih 8 bajtova cuvaju informacije o tome gde se figure nalaze. 
+Prvih 5 bajtova cuvaju informaciju o tome gde se nalaze na tabli, 6. bajt cuva informaciju o tome
+da li se uopste nalaze na tabli. 7. i 8. bajt su na raspolaganju pijunu koji je 8 mesta ispred njih
+ u nizu. Tih 8 bajtova cuvaju informaciju o tome u sta se pijun pretvorio (da li je postao kraljica,
+top, lovac, konj, itd.). Ukoliko je pijun i dalje pijun, onda su ova poslednja dva bajta nebitna.
+ Sto se tice pijuna, oni se nalaze od 8 do 15 mesta u nizu. Oni koriste prvih 6 bajtova za poziciju na tabli,
+ 7. bajt odredjuje da li su promovisani, ili ne, a 8. bajt ostaje neiskoriscen. */
 
     fn pocetna_pozicija_belih_figura() -> [u8; 16] {
         let mut niz = [0 as u8; 16];
