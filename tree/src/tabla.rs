@@ -1,17 +1,25 @@
+use std::fs::File;
+
 pub enum Ko_je_na_potezu{
     BELI = 0, CRNI = 1
 }
 
 pub static BELI: u8 = 0;
 pub static CRNI: u8 = 1;
-pub static KRALJ: u8 = 0;
-pub static KRALJICA: u8 = 1;
-pub static LEVI_TOP: u8 = 2;
-pub static DESNI_TOP: u8 = 3;
-pub static LEVI_LOVAC: u8 = 4;
-pub static DESNI_LOVAC: u8 = 5;
-pub static LEVI_KONJ: u8 = 6;
-pub static DESNI_KONJ: u8 = 7;
+pub static KRALJ: usize = 0;
+pub static KRALJICA: usize = 1;
+pub static LEVI_TOP: usize = 2;
+pub static DESNI_TOP: usize = 3;
+pub static LEVI_LOVAC: usize = 4;
+pub static DESNI_LOVAC: usize = 5;
+pub static LEVI_KONJ: usize = 6;
+pub static DESNI_KONJ: usize = 7;
+
+pub static PROMOVISANA_KRALJICA: u8 = 1;
+pub static PROMOVISAN_TOP: u8 = 2;
+pub static PROMOVISAN_LOVAC: u8 = 3;
+pub static PROMOVISAN_KONJ: u8 = 0;
+
 pub static A_FILE: u8 = 0;
 pub static B_FILE: u8 = 1;
 pub static C_FILE: u8 = 2;
@@ -178,7 +186,7 @@ impl Tabla {
         &
         (1<<22);
 
-        if bit_broj_23 == 0 {
+        if bit_broj_23 == BELI as i32{
             true
         } else {
             false
@@ -193,11 +201,12 @@ impl Tabla {
 
         let mut bit_za_enkodovanje: i32 = 0;
         match ko_je_na_potezu {
-            Ko_je_na_potezu::BELI => {bit_za_enkodovanje = 0;},
-            Ko_je_na_potezu::CRNI => {bit_za_enkodovanje = 1;}
+            Ko_je_na_potezu::BELI => {bit_za_enkodovanje = BELI as i32;},
+            Ko_je_na_potezu::CRNI => {bit_za_enkodovanje = CRNI as i32;}
         }
 
-        /* Broj koji se nalazio u bit_za_enkodovanje ce biti u 23. bitu bitfielda. */
+        /* Broj koji se nalazio u bit_za_enkodovanje ce biti u 23. bitu bitfielda.
+        23. bit bitfielda cuva informaciju o tome ko je na potezu. */
         bit_za_enkodovanje <<= 22;
         bitfield | bit_za_enkodovanje
     }
@@ -207,36 +216,70 @@ impl Tabla {
 impl Tabla {
     pub fn pocetna_pozicija() -> Tabla {
         Tabla {
-            bele_figure: Tabla::pocetna_pozicija_belih_figura(),
-            crne_figure: Tabla::pocetna_pozicija_crnih_figura(),
+            bele_figure: Tabla::pocetna_pozicija_figura(true),
+            crne_figure: Tabla::pocetna_pozicija_figura(false),
             sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu:
             Tabla::pocetni_bit_field()
         }
     }
 
     /* Prvih 8 bajtova cuvaju informacije o tome gde se figure nalaze. 
-Prvih 5 bajtova cuvaju informaciju o tome gde se nalaze na tabli, 6. bajt cuva informaciju o tome
-da li se uopste nalaze na tabli. 7. i 8. bajt su na raspolaganju pijunu koji je 8 mesta ispred njih
- u nizu. Tih 8 bajtova cuvaju informaciju o tome u sta se pijun pretvorio (da li je postao kraljica,
-top, lovac, konj, itd.). Ukoliko je pijun i dalje pijun, onda su ova poslednja dva bajta nebitna.
+Prvih 6 bajtova cuvaju informaciju o tome gde se nalaze na tabli. Informaciju o tome
+da li se figura nalazi na tabli cuvam tako sto figure koje su sklonjene sa table imaju istu lokaciju
+kao i njihov kralj koji je iste boje.
+7. i 8. bajt ostaju na raspolaganju pijunu koji se nalazi 8 ispred u nizu. 
+7. i 8. bajt cuvaju informaciju o tome u sta se pijun pretvorio (da li je postao kraljica,
+top, lovac, konj, itd.). Ako je pijun i dalje pijun, onda 7. i 8. bajt ne sluze ni cemu.
  Sto se tice pijuna, oni se nalaze od 8 do 15 mesta u nizu. Oni koriste prvih 6 bajtova za poziciju na tabli,
  7. bajt odredjuje da li su promovisani, ili ne, a 8. bajt ostaje neiskoriscen. */
 
-    fn pocetna_pozicija_belih_figura() -> [u8; 16] {
+    fn pocetna_pozicija_figura(ovo_su_bele_figure: bool) -> [u8; 16] {
+        let mut rank_figura = 8;
+        let mut rank_pijuna = 7;
+        if ovo_su_bele_figure {
+            rank_figura = 1;
+            rank_pijuna = 2;
+        } 
         let mut niz = [0 as u8; 16];
-        niz[0] = 
+        
+        niz[LEVI_TOP] = Tabla::file_rank_to_broj(A_FILE, rank_figura);
+        niz[LEVI_KONJ] = Tabla::file_rank_to_broj(B_FILE, rank_figura);
+        niz[LEVI_LOVAC] = Tabla::file_rank_to_broj(C_FILE, rank_figura);
+        niz[KRALJICA] = Tabla::file_rank_to_broj(D_FILE, rank_figura); 
+        niz[KRALJ] = Tabla::file_rank_to_broj(E_FILE, rank_figura);
+        niz[DESNI_LOVAC] = Tabla::file_rank_to_broj(F_FILE, rank_figura);
+        niz[DESNI_KONJ] = Tabla::file_rank_to_broj(G_FILE, rank_figura);
+        niz[DESNI_TOP] = Tabla::file_rank_to_broj(H_FILE, rank_figura);
+
+        for i in 8..16 as usize{
+            let file: u8 = ((i-8) + A_FILE as usize) as u8;
+            niz[i] = Tabla::file_rank_to_broj(file, rank_pijuna);
+        }
+
         niz
     }
 
-    fn pocetna_pozicija_crnih_figura() -> [u8; 16] {
-        let mut niz = [0 as u8; 16];
-        return niz;
-    }
 
     fn pocetni_bit_field() -> i32 {
         0
     }
+
+    fn file_rank_to_broj(file: u8, rank: u8) -> u8 {
+        (rank-1) << 3 + file
+    }
+
+    fn broj_to_file_rank(broj: u8) -> File_rank {
+        let rank = (broj >> 3) + 1;
+        let file = broj % 8;
+        File_rank {
+            file,
+            rank
+        }
+    }
 }
 
-
+pub struct File_rank{
+    file: u8,
+    rank: u8
+}
  
