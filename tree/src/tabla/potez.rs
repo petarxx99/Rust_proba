@@ -39,11 +39,12 @@ struct Potez_private {
 impl Potez {
     fn to_potez_private(&self, tabla: &Tabla) -> Option<Potez_private> {
         let mut figure: &[u8;16];
-  /* Ako tabla cuva informaciju da je beli na potezu, to znaci da je crni odigrao potez i obrnuto. */      
+     /* Potez se kombinuje sa tablom (tj. pozicijom) nad kojom se potez igra, tako da je boja igraca
+     koji odigrao potez ista ona koju ima tabla nad kojom potez treba da se odigra. */
         if tabla.beli_je_na_potezu() {
-            figure = &tabla.crne_figure;
-        } else {
             figure = &tabla.bele_figure;
+        } else {
+            figure = &tabla.crne_figure;
         }
 
         
