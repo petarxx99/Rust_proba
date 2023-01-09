@@ -99,24 +99,25 @@ impl Figura {
     }
 }
 
-fn map_to_figure(broj: usize) -> Option<Figura> {
-    if broj == KRALJ {
-        return Some(Figura::KRALJ);
+/* Unsafe zato sto ne uzima u obzir da li je pijun postao kraljica. */
+fn map_redni_broj_to_figure_unsafe(redni_broj: usize) -> Option<Figura> {
+    match redni_broj {
+        0 => Some(Figura::KRALJ),
+        1 => Some(Figura::KRALJICA),
+        2 => Some(Figura::TOP),
+        3 => Some(Figura::TOP),
+        4 => Some(Figura::LOVAC),
+        5 => Some(Figura::LOVAC),
+        6 => Some(Figura::KONJ),
+        7 => Some(Figura::KONJ),
+        broj => {
+            if broj < 16 {
+                return Some(Figura::PIJUN)
+            }
+            return None
+         }
     }
-    if broj == KRALJICA {
-        return Some(Figura::KRALJICA);
-    }
-    if broj == LEVI_TOP || broj == DESNI_TOP {
-        return Some(Figura::TOP);
-    }
-    if broj == LEVI_LOVAC || broj == DESNI_LOVAC {
-        return Some(Figura::LOVAC);
-    }
-    if broj == LEVI_KONJ || broj == DESNI_KONJ {
-        return Some(Figura::KONJ);
-    }
-
-    None
+  
 }
 
 pub struct File_rank{
@@ -287,7 +288,7 @@ Na taj nacin skladistim informaciju da je figura sklonjena sa table, kako bih us
         }
 
         /* takozvani happy path */
-        map_to_figure(broj_figure)
+        map_redni_broj_to_figure_unsafe(broj_figure)
     }
  }
 
