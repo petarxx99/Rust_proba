@@ -389,9 +389,10 @@ impl Tabla {
         let bit_broj_23: i32 = 1 << 22;
 
         if (bitfield & bit_broj_23) == 0 {
-            bitfield |= bit_broj_23
+            bitfield | bit_broj_23
+        } else {
+            bitfield & (!bit_broj_23)
         }
-        bitfield & (!bit_broj_23)
     }
 
 /* unsafe je zato sto mora uvek da se pazi da li se pomera kralj, jer kad se pomera kralj, figure
