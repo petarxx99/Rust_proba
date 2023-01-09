@@ -480,15 +480,19 @@ impl Tabla {
         bitfield & (!bit_broj_23)
     }
 
-
-    fn updejtuj_polozaj_figure(figure: &mut[u8;16], broj_figure: usize, file_rank: &File_rank) {
+/* unsafe je zato sto mora uvek da se pazi da li se pomera kralj, jer kad se pomera kralj, figure
+koje su pojedene moraju da prate novu poziciju kralja, jer na taj nacin cuvam informaciju da su
+pojedene. */
+    fn updejtuj_polozaj_figure_unsafe(figure: &mut[u8;16], broj_figure: usize, file_rank: &File_rank) {
         let mut sacuvaj_sedmi_osmi_bit: u8 = figure[broj_figure] >> 6;
         sacuvaj_sedmi_osmi_bit <<= 6;
 
         figure[broj_figure] = Tabla::file_rank_to_broj(file_rank.file, file_rank.rank);
         figure[broj_figure] |= sacuvaj_sedmi_osmi_bit;
     }
-    
+
+
+
 }
 
 impl Tabla{

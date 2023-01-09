@@ -135,7 +135,7 @@ su sklonjene sa table. */
         if Tabla::proveri_da_li_je_pomeren_pijun(figure, potez.broj_figure) {
             potez_info.pijun_pomeren_ili_figura_pojedena = true;
         }
-        Tabla::updejtuj_polozaj_figure(figure, potez.broj_figure,
+        Tabla::updejtuj_polozaj_figure_unsafe(figure, potez.broj_figure,
              &File_rank::new(potez.file, potez.rank));
 
         match &potez.promocija {
@@ -161,14 +161,14 @@ su sklonjene sa table. */
     fn prati_polozaj_kralja(figure: &mut[u8;16], broj_figure: usize){
 
         let (rank, file) = Tabla::broj_to_rank_file(figure[KRALJ]);
-        Tabla::updejtuj_polozaj_figure(figure, broj_figure, &File_rank{file, rank});
+        Tabla::updejtuj_polozaj_figure_unsafe(figure, broj_figure, &File_rank{file, rank});
     }
 
 
     fn pomeri_kralja(figure: & mut[u8;16], file: u8, rank: u8){
         let polozaj_kralja: u8 = figure[KRALJ];
 
-        Tabla::updejtuj_polozaj_figure(figure, KRALJ,
+        Tabla::updejtuj_polozaj_figure_unsafe(figure, KRALJ,
              &File_rank{file, rank});
 
         for i in 0..figure.len() {
