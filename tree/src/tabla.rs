@@ -1,6 +1,32 @@
 use std::{fs::File, env::VarError};
 
+mod normalna_tabla;
+mod potez;
 
+pub static BELI: u8 = 0;
+pub static CRNI: u8 = 1;
+pub static KRALJ: usize = 0;
+pub static KRALJICA: usize = 1;
+pub static LEVI_TOP: usize = 2;
+pub static DESNI_TOP: usize = 3;
+pub static LEVI_LOVAC: usize = 4;
+pub static DESNI_LOVAC: usize = 5;
+pub static LEVI_KONJ: usize = 6;
+pub static DESNI_KONJ: usize = 7;
+
+pub static PROMOVISANA_KRALJICA: u8 = 1;
+pub static PROMOVISAN_TOP: u8 = 2;
+pub static PROMOVISAN_LOVAC: u8 = 3;
+pub static PROMOVISAN_KONJ: u8 = 0;
+
+pub static A_FILE: u8 = 0;
+pub static B_FILE: u8 = 1;
+pub static C_FILE: u8 = 2;
+pub static D_FILE: u8 = 3;
+pub static E_FILE: u8 = 4;
+pub static F_FILE: u8 = 5;
+pub static G_FILE: u8 = 6;
+pub static H_FILE: u8 = 7;
 
 pub enum Ko_je_na_potezu{
     BELI = 0, CRNI = 1
@@ -93,30 +119,19 @@ fn map_to_figure(broj: usize) -> Option<Figura> {
     None
 }
 
-pub static BELI: u8 = 0;
-pub static CRNI: u8 = 1;
-pub static KRALJ: usize = 0;
-pub static KRALJICA: usize = 1;
-pub static LEVI_TOP: usize = 2;
-pub static DESNI_TOP: usize = 3;
-pub static LEVI_LOVAC: usize = 4;
-pub static DESNI_LOVAC: usize = 5;
-pub static LEVI_KONJ: usize = 6;
-pub static DESNI_KONJ: usize = 7;
+pub struct File_rank{
+    pub file: u8,
+    pub rank: u8,
+}
 
-pub static PROMOVISANA_KRALJICA: u8 = 1;
-pub static PROMOVISAN_TOP: u8 = 2;
-pub static PROMOVISAN_LOVAC: u8 = 3;
-pub static PROMOVISAN_KONJ: u8 = 0;
-
-pub static A_FILE: u8 = 0;
-pub static B_FILE: u8 = 1;
-pub static C_FILE: u8 = 2;
-pub static D_FILE: u8 = 3;
-pub static E_FILE: u8 = 4;
-pub static F_FILE: u8 = 5;
-pub static G_FILE: u8 = 6;
-pub static H_FILE: u8 = 7;
+impl File_rank{
+    pub fn new(file: u8, rank: u8) -> File_rank {
+        File_rank{
+            file,
+            rank
+        }
+    }
+}
 
 pub struct Rokada {
     pub bela_kraljicina_rokada_vise_nije_moguca: bool,
@@ -163,16 +178,9 @@ impl Figura_info{
 
     }
 }
+ 
 
 
-pub struct Normalna_tabla {
-    pub bele_figure: Vec<Option<Figura_info>>,
-    pub crne_figure: Vec<Option<Figura_info>>,
-    pub rokada_onemogucena: Rokada,
-    pub beli_je_na_potezu: bool,
-    pub fajl_pijuna_koji_se_pomerio_dva_polja_u_proslom_potezu: Option<u8>,
-    pub pre_koliko_poteza_je_odlozen_50_move_rule: u8,
-}
 
 /*https://doc.rust-lang.org/std/mem/fn.size_of.html */
 #[repr(C)]
@@ -474,6 +482,33 @@ impl Tabla {
 
 }
 
+impl Tabla{
+   
+
+    pub fn broj_to_rank_file(mut broj: u8) -> (u8, u8){
+        let prvih_6_bitova: u8 = (1<<6) - 1;
+        broj &= prvih_6_bitova;
+
+        let rank = (broj>>3) + 1;
+        let file = broj % 8;
+        (rank, file)
+    }
+
+    pub fn polja_se_slazu(mut polje1: u8, mut polje2: u8) -> bool{
+        let prvih_6_bitova: u8 = (1<<6) - 1;
+        polje1 &= prvih_6_bitova;
+        polje2 &= prvih_6_bitova;
+        polje1 == polje2
+    }
+
+    pub fn to_je_file_rank_polja(mut polje: u8, file: u8, rank: u8) -> bool {
+        let polje_2: u8 = Tabla::file_rank_to_broj(file, rank);
+        Tabla::polja_se_slazu(polje, polje_2)
+    }  
+    
+}
+
+
 impl Tabla {
     pub fn pocetna_pozicija() -> Tabla {
         Tabla {
@@ -531,360 +566,12 @@ impl Tabla {
     }
     
 
-    fn updejtuj_polozaj_figure(figure: &mut[u8;16], broj_figure: usize, file_rank: &File_rank) {
-        let mut sacuvaj_sedmi_osmi_bit: u8 = figure[broj_figure] >> 6;
-        sacuvaj_sedmi_osmi_bit <<= 6;
-
-        figure[broj_figure] = Tabla::file_rank_to_broj(file_rank.file, file_rank.rank);
-        figure[broj_figure] |= sacuvaj_sedmi_osmi_bit;
-    }
-
-    fn prati_polozaj_kralja(figure: &mut[u8;16], broj_figure: usize){
-
-        let (rank, file) = Tabla::broj_to_rank_file(figure[broj_figure]);
-        Tabla::updejtuj_polozaj_figure(figure, broj_figure, &File_rank{file, rank});
-    }
-
-
-
-}
-
-pub struct File_rank{
-    pub file: u8,
-    pub rank: u8,
-}
-
-impl File_rank{
-    pub fn new(file: u8, rank: u8) -> File_rank {
-        File_rank{
-            file,
-            rank
-        }
-    }
-}
-
-pub struct Potez_info {
-    pub rokada_onemogucena: Rokada,
-    pub file_pijuna_pomerenog_2_polja: Option<u32>,
-    pub pijun_pomeren_ili_figura_pojedena: bool,
-    pub beli_je_odigrao_potez: bool,
-}
-impl Potez_info {
-    pub fn new() -> Potez_info{
-        Potez_info { 
-            rokada_onemogucena: Rokada::new_sve_rokade_moguce(),
-            file_pijuna_pomerenog_2_polja: None, 
-            pijun_pomeren_ili_figura_pojedena: false,
-            beli_je_odigrao_potez: true
-         }
-    }
-}
-
-pub struct Potez{
-    pub start_file: u8,
-    pub start_rank: u8,
-
-    pub file_destinacije: u8,
-    pub rank_destinacije: u8,
-    pub promocija: Promocija,
-}
-
-struct Potez_private {
-    broj_figure: usize,
-    file: u8,
-    rank: u8,
-    promocija: Promocija,
-}
-
-impl Potez {
-    fn to_potez_private(&self, tabla: &Tabla) -> Option<Potez_private> {
-        let mut figure: &[u8;16];
-  /* Ako tabla cuva informaciju da je beli na potezu, to znaci da je crni odigrao potez i obrnuto. */      
-        if tabla.beli_je_na_potezu() {
-            figure = &tabla.crne_figure;
-        } else {
-            figure = &tabla.bele_figure;
-        }
-
-        
-   /* Kralja za svaki slucaj treniram kao specijalni slucaj, jer figure koje su sklonjene sa table imaju istu lokaciju kao kralj.
-   Ovaj deo koda je nepotreban, ali za slucaj da u buducnosti promenim redosled figura ovaj deo koda bi ucinio da takva promena ne proizvede bagove.*/     
-        if Tabla::to_je_file_rank_polja(figure[KRALJ], self.start_file, self.start_rank){
-            return Some(Potez_private{broj_figure: KRALJ, file: self.start_file, rank: self.start_rank, promocija: self.promocija.copy()})
-        }
-
-        for broj_figure in 0..figure.len() {
-            if Tabla::to_je_file_rank_polja(figure[broj_figure], self.start_file, self.start_rank) {
-                return Some(Potez_private { broj_figure, file: self.start_file, rank: self.start_rank, promocija: self.promocija.copy()})
-            }
-        }
-        None
-    }
-}
-
-impl Tabla {
-    pub fn to_Normalna_tabla(&self) -> Normalna_tabla {
-        let bele_figure: Vec<Option<Figura_info>> = Tabla::napravi_figure(&self.bele_figure, true);
-        let crne_figure: Vec<Option<Figura_info>> = Tabla::napravi_figure(&self.crne_figure, false);
-        let rokada_onemogucena: Rokada = self.rokada();
-        let beli_je_na_potezu: bool = self.beli_je_na_potezu();
-        let fajl_pijuna_koji_se_pomerio_dva_polja_u_proslom_potezu = self.fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu();
-        let pre_koliko_poteza_je_odlozen_50_move_rule = self.pre_koliko_poteza_je_50_move_rule_pomeren();
-
-        Normalna_tabla {
-            bele_figure,
-            crne_figure,
-            rokada_onemogucena,
-            beli_je_na_potezu,
-            fajl_pijuna_koji_se_pomerio_dva_polja_u_proslom_potezu,
-            pre_koliko_poteza_je_odlozen_50_move_rule
-        }
-    }
-
-    fn napravi_figure(figure: &[u8; 16], bela_boja: bool) -> Vec<Option<Figura_info>>{
-        let mut nove_figure: Vec<Option<Figura_info>> = Vec::new();
-
-        for i in 0..figure.len() {
-            let figura: Option<Figura> =  Tabla::koja_figura_se_nalazi_u_bitu(figure, i);
-
-            match figura  {
-                Some(f) => {
-                    let (rank, file) = Tabla::broj_to_rank_file(figure[i]);
-
-                    if bela_boja{
-                        nove_figure.push(Some(Figura_info::new(f, file, rank, Boja::BELA, true)));
-                    } else {
-                        nove_figure.push(Some(Figura_info::new(f, file, rank, Boja::CRNA, true)));
-                    }
-                },
-                None => {nove_figure.push(None);}
-            }
-        }
-
-        nove_figure
-    }
-
    
 
-    pub fn broj_to_rank_file(mut broj: u8) -> (u8, u8){
-        let prvih_6_bitova: u8 = (1<<6) - 1;
-        broj &= prvih_6_bitova;
 
-        let rank = (broj>>3) + 1;
-        let file = broj % 8;
-        (rank, file)
-    }
-
-    pub fn polja_se_slazu(mut polje1: u8, mut polje2: u8) -> bool{
-        let prvih_6_bitova: u8 = (1<<6) - 1;
-        polje1 &= prvih_6_bitova;
-        polje2 &= prvih_6_bitova;
-        polje1 == polje2
-    }
-
-    pub fn to_je_file_rank_polja(mut polje: u8, file: u8, rank: u8) -> bool {
-        let polje_2: u8 = Tabla::file_rank_to_broj(file, rank);
-        Tabla::polja_se_slazu(polje, polje_2)
-    }
-
-
-
-    pub fn from_normalna_tabla(normalna_tabla: &Normalna_tabla) -> Tabla {
-
-        let mut bele_figure: [u8; 16] = Tabla::napravi_figure_iz_normalne_table(&normalna_tabla.bele_figure);
-        let mut crne_figure: [u8; 16] = Tabla::napravi_figure_iz_normalne_table(&normalna_tabla.crne_figure);
-        let mut bitfield: i32 = Tabla::napravi_bitfield_iz_normalne_table(normalna_tabla);
-
-        Tabla {
-            bele_figure,
-            crne_figure,
-            sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu: bitfield,
-        }
-    }
-
-    fn napravi_figure_iz_normalne_table(figure: &Vec<Option<Figura_info>>) -> [u8; 16]{
-        let pozicija_kralja: u8 = Tabla::pozicija_kralja_iz_normalne_table(figure);
-        let mut nove_figure: [u8; 16] = [pozicija_kralja; 16];
-        Tabla::ubaci_figure_iz_normalne_table(figure, & mut nove_figure);       
-        
-        nove_figure
-    }
-
-    fn ubaci_figure_iz_normalne_table(figure: &Vec<Option<Figura_info>>,napravljene_figure: & mut [u8;16]){
-       
-        for i in 1..figure.len() {
-            let figura_info: &Option<Figura_info> = &figure[i];
-            match figura_info {
-                Some(f) => {
-                    napravljene_figure[i] = Tabla::file_rank_to_broj(f.file, f.rank);
-                    if i>=8{
-                        match f.tip {
-                            Figura::KRALJICA => {  
-                                Tabla::promovisi_pijuna(napravljene_figure, i, &Promocija::KRALJICA);
-                            },
-                            Figura::TOP => {
-                                Tabla::promovisi_pijuna(napravljene_figure, i, &Promocija::TOP);
-                            },
-                            Figura::LOVAC => {
-                                Tabla::promovisi_pijuna(napravljene_figure, i, &Promocija::LOVAC);
-                            },
-                            Figura::KONJ => {
-                                Tabla::promovisi_pijuna(napravljene_figure, i, &Promocija::KONJ);
-                            },
-                            _ => {}
-                        }
-                    }
-                },
-                None => {}
-            }
-            
-        }
-    }
-
-
-    
-    fn pozicija_kralja_iz_normalne_table(figure: &Vec<Option<Figura_info>>) -> u8 {
-        let mut pozicija_kralja: u8 = 0;
-        for figura_optional in figure {
-            match figura_optional {
-                Some(figura) => {  
-                    match figura.tip {
-                        Figura::KRALJ => {pozicija_kralja = Tabla::file_rank_to_broj(figura.file, figura.rank);},
-                         _ => {}
-                    }
-                },
-                None => {}
-            }
-        }
-        pozicija_kralja
-    }
-
-    fn napravi_bitfield_iz_normalne_table(normalna_tabla: &Normalna_tabla) -> i32 {
-        let mut bitfield: i32 = 0;
-
-        bitfield = Tabla::sifruj_pre_koliko_poteza_je_50_move_rule_pomeren(bitfield, normalna_tabla.pre_koliko_poteza_je_odlozen_50_move_rule as i32); 
-        bitfield = Tabla::onemoguci_rokadu(bitfield, &normalna_tabla.rokada_onemogucena);
-
-        if normalna_tabla.beli_je_na_potezu{
-            bitfield = Tabla::sifruj_ko_je_na_potezu(bitfield, Ko_je_na_potezu::BELI);
-        } else {
-            bitfield = Tabla::sifruj_ko_je_na_potezu(bitfield, Ko_je_na_potezu::CRNI);
-        }
-        
-
-        match normalna_tabla.fajl_pijuna_koji_se_pomerio_dva_polja_u_proslom_potezu {
-            Some(fajl) => {bitfield = Tabla::dodaj_fajl_pijuna_koji_se_pomerio_2_polja(bitfield, fajl as i32);},
-            None => {}
-        }
-        bitfield
-    }
 }
 
 
 
-impl Tabla {
-    pub fn tabla_nakon_validnog_poteza(&self, potez: &Potez) -> Tabla{
-        let potez_private: Potez_private = potez.to_potez_private(self).expect("Uneli ste nevalidan potez.");
-        let tabla_nakon_poteza: Tabla = self.tabla_nakon_poteza_private(&potez_private);
-        tabla_nakon_poteza
-    }
 
-    fn tabla_nakon_poteza_private(&self, potez: &Potez_private) -> Tabla{
-        let mut bele_figure: [u8; 16] = self.bele_figure.clone();
-        let mut crne_figure: [u8; 16] = self.crne_figure.clone();
-        let mut bitfield: i32 = self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu;
-       
-        let mut potez_info: Potez_info = Potez_info::new();
-        potez_info.beli_je_odigrao_potez = false;
-
-        if self.beli_je_na_potezu() {
-            potez_info.beli_je_odigrao_potez = true; /* self se odnosi na bivse stanje table */
-        } 
-
-        Tabla::updejtuj_figure_nakon_odigranog_poteza(& mut bele_figure, &mut crne_figure, potez, potez_info.beli_je_odigrao_potez, &mut potez_info);
-        bitfield = Tabla::updejtuj_bitfield_nakon_odigranog_poteza(bitfield, &potez_info);
     
-        Tabla {
-            bele_figure,
-            crne_figure,
-            sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu: bitfield,
-        }
-    }
-
-    fn updejtuj_bitfield_nakon_odigranog_poteza(mut bitfield: i32, potez_info: &Potez_info) -> i32{
-        bitfield = Tabla::obrni_ko_je_na_potezu(bitfield);
-        bitfield = Tabla::onemoguci_rokadu(bitfield, &potez_info.rokada_onemogucena);
-        if potez_info.pijun_pomeren_ili_figura_pojedena {
-            bitfield = Tabla::sifruj_pre_koliko_poteza_je_50_move_rule_pomeren(bitfield, 0);
-        }
-        bitfield = Tabla::resetuj_fajl_pijuna_koji_se_pomerio_dva_polja(bitfield);
-        match potez_info.file_pijuna_pomerenog_2_polja {
-            None => {},
-            Some(file) => {
-                bitfield = Tabla::dodaj_fajl_pijuna_koji_se_pomerio_2_polja(bitfield, file as i32);
-            }
-        }
-
-        bitfield
-    }
-
-    fn updejtuj_figure_nakon_odigranog_poteza(bele_figure: &mut [u8; 16], crne_figure: &mut [u8;16], potez: &Potez_private, beli_je_odigrao_potez: bool, potez_info: &mut Potez_info){
-        
-        if beli_je_odigrao_potez {
-            Tabla::updejtuj_figure_koje_su_odigrale_potez(bele_figure, potez, potez_info);
-            Tabla::updejtuj_figure_protiv_kojih_je_odigran_potez(crne_figure, potez, potez_info);
-        } else {
-            Tabla::updejtuj_figure_koje_su_odigrale_potez(crne_figure, potez, potez_info);
-            Tabla::updejtuj_figure_protiv_kojih_je_odigran_potez(bele_figure, potez, potez_info);
-        }
-    }
-
-/* Posebno obradjujem slucaj kad se pomera kralj, jer kralj ima istu lokaciju kao figure koje
-su sklonjene sa table. */
-    fn updejtuj_figure_koje_su_odigrale_potez(figure: & mut[u8; 16], potez: &Potez_private, potez_info: &mut Potez_info){
-        if potez.broj_figure == KRALJ {
-            potez_info.rokada_onemogucena.pomeren_kralj(potez_info.beli_je_odigrao_potez);
-            Tabla::pomeri_kralja(figure, potez.file, potez.rank);
-            return;
-        }
-
-        if Tabla::proveri_da_li_je_pomeren_pijun(figure, potez.broj_figure) {
-            potez_info.pijun_pomeren_ili_figura_pojedena = true;
-        }
-        Tabla::updejtuj_polozaj_figure(figure, potez.broj_figure,
-             &File_rank::new(potez.file, potez.rank));
-
-        match &potez.promocija {
-                Promocija::None => {},
-                _promocija => {
-                     Tabla::promovisi_pijuna(figure, potez.broj_figure, _promocija);
-                }
-        }       
-    } 
-
-    fn updejtuj_figure_protiv_kojih_je_odigran_potez(figure: &mut[u8;16], potez: &Potez_private, potez_info: &mut Potez_info){
-        let polje_destinacije: u8 = Tabla::file_rank_to_broj(potez.file, potez.rank);
-        for i in 0..figure.len() {
-            if Tabla::polja_se_slazu(polje_destinacije, figure[i]){
-                potez_info.pijun_pomeren_ili_figura_pojedena = true;
-                Tabla::prati_polozaj_kralja(figure, i);
-                return;
-            }
-        }
-    }
-
-    fn pomeri_kralja(figure: & mut[u8;16], file: u8, rank: u8){
-        let polozaj_kralja: u8 = figure[KRALJ];
-
-        Tabla::updejtuj_polozaj_figure(figure, KRALJ,
-             &File_rank{file, rank});
-
-        for i in 0..figure.len() {
-            if Tabla::polja_se_slazu(polozaj_kralja, figure[i]){
-                Tabla::prati_polozaj_kralja(figure, i);
-            }
-        }
-
-    }
-    
-}
