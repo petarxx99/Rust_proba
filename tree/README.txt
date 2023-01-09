@@ -31,5 +31,6 @@ u mojoj java sahovskoj aplikaciji. Kad sam napisao tu aplikaciju nisam odvojio p
 je potez validan sa odigravanjem poteza, tako da cu sada logiku napisati drugacije, jer mi
 prilikom pravljenja sahovskog programa treba da nadjem sve legalne poteze i izaberem najbolji.
 
+Ovo mi je prvi projekat u programskom jeziku Rust. Tek sam krenuo da ucim ovaj programski jezik.
 
 
