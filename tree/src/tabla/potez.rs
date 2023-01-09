@@ -136,12 +136,12 @@ impl Potez {
    /* Kralja za svaki slucaj treniram kao specijalni slucaj, jer figure koje su sklonjene sa table imaju istu lokaciju kao kralj.
    Ovaj deo koda je nepotreban, ali za slucaj da u buducnosti promenim redosled figura ovaj deo koda bi ucinio da takva promena ne proizvede bagove.*/     
         if Tabla::to_je_file_rank_polja(figure[KRALJ], self.start_file, self.start_rank){
-            return Some(Potez_private{broj_figure: KRALJ, file: self.start_file, rank: self.start_rank, promocija: self.promocija.copy()})
+            return Some(Potez_private{broj_figure: KRALJ, file: self.file_destinacije, rank: self.rank_destinacije, promocija: self.promocija.copy()})
         }
 
         for broj_figure in 0..figure.len() {
             if Tabla::to_je_file_rank_polja(figure[broj_figure], self.start_file, self.start_rank) {
-                return Some(Potez_private { broj_figure, file: self.start_file, rank: self.start_rank, promocija: self.promocija.copy()})
+                return Some(Potez_private { broj_figure, file: self.file_destinacije, rank: self.rank_destinacije, promocija: self.promocija.copy()})
             }
         }
         None
@@ -232,9 +232,20 @@ mod potez_tests{
         let tabla2: Tabla = tabla.tabla_nakon_poteza_private(&potez_private);
         assert_eq!(F_FILE, tabla2.fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu().unwrap());
         assert_eq!(false, tabla2.beli_je_na_potezu());
+
         let tabla3: Tabla = tabla2.tabla_nakon_poteza_private(&Potez_private { broj_figure: LEVI_KONJ, file: B_FILE, rank: 3, promocija: Promocija::None });
         assert_eq!(1, tabla3.pre_koliko_poteza_je_50_move_rule_pomeren());
         assert_eq!(true, tabla3.beli_je_na_potezu());    
+    }
+
+    #[test]
+    fn to_potez_private(){
+        let tabla: Tabla = Tabla::pocetna_pozicija();
+        let potez: Potez = Potez::new(E_FILE, 2, E_FILE, 4, Promocija::None);
+        let potez_private: Potez_private = potez.to_potez_private(&tabla).unwrap();
+        assert_eq!(12, potez_private.broj_figure);
+        assert_eq!(E_FILE, potez_private.file);
+        assert_eq!(4, potez_private.rank);
     }
 
     #[test]
