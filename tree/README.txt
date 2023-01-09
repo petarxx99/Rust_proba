@@ -28,8 +28,8 @@ Ovaj sahovski program cu na kraju povezati sa tom java aplikacijom.
 Za sada je ovaj projekat jos u fazi izrade, kada ce biti zavrsen zavisi od toga koliko budem imao vremena.
 U trenutku dok ovo pisem i dalje nisam promenio algoritam koji proverava da li je potez legalan
 u java sahovskoj aplikaciji. Kad sam napisao tu aplikaciju nisam odvojio proveru da li 
-je potez validan sa odigravanjem poteza, tako da cu sada logiku napisati drugacije, jer mi
-prilikom pravljenja sahovskog programa treba da nadjem sve legalne poteze i izaberem najbolji.
+je potez validan sa odigravanjem poteza, tako da cu sada logiku napisati drugacije, jer je 
+sahovskom programu neophodno da nadje sve legalne poteze i izabere najbolji.
 
 Ovo mi je prvi projekat u programskom jeziku Rust. Tek sam krenuo da ucim ovaj programski jezik.
 
