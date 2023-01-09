@@ -146,6 +146,8 @@ su sklonjene sa table. */
                 }
         }       
     } 
+    /*https://rust-lang.github.io/rfcs/2005-match-ergonomics.html
+    https://stackoverflow.com/questions/36590549/what-is-the-syntax-to-match-on-a-reference-to-an-enum */
 
     fn updejtuj_figure_protiv_kojih_je_odigran_potez(figure: &mut[u8;16], potez: &Potez_private, potez_info: &mut Potez_info){
         let polje_destinacije: u8 = Tabla::file_rank_to_broj(potez.file, potez.rank);
