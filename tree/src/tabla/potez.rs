@@ -265,7 +265,7 @@ mod potez_tests{
     }
 
     #[test]
-    fn odigraj_e4_Nc6_Bb5_Bc5_Bxc6(){
+    fn odigraj_e4_Nc6_Bb5_Bc5_Bxc6_Ke7(){
         let tabla1: Tabla = Tabla::pocetna_pozicija();
         let potez_e4: Potez = Potez::new(E_FILE, 2, E_FILE, 4, Promocija::None);
         let tabla2: Tabla = tabla1.tabla_nakon_validnog_poteza(&potez_e4);
