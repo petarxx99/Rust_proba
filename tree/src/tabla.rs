@@ -480,6 +480,15 @@ impl Tabla {
         bitfield & (!bit_broj_23)
     }
 
+
+    fn updejtuj_polozaj_figure(figure: &mut[u8;16], broj_figure: usize, file_rank: &File_rank) {
+        let mut sacuvaj_sedmi_osmi_bit: u8 = figure[broj_figure] >> 6;
+        sacuvaj_sedmi_osmi_bit <<= 6;
+
+        figure[broj_figure] = Tabla::file_rank_to_broj(file_rank.file, file_rank.rank);
+        figure[broj_figure] |= sacuvaj_sedmi_osmi_bit;
+    }
+    
 }
 
 impl Tabla{

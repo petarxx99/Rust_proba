@@ -100,7 +100,7 @@ impl Tabla {
         if potez_info.pijun_pomeren_ili_figura_pojedena {
             bitfield = Tabla::resetuj_50_move_rule(bitfield);
         }
-        
+
         bitfield = Tabla::resetuj_fajl_pijuna_koji_se_pomerio_dva_polja(bitfield);
         match potez_info.file_pijuna_pomerenog_2_polja {
             None => {},
@@ -157,13 +157,6 @@ su sklonjene sa table. */
         }
     }
 
-    fn updejtuj_polozaj_figure(figure: &mut[u8;16], broj_figure: usize, file_rank: &File_rank) {
-        let mut sacuvaj_sedmi_osmi_bit: u8 = figure[broj_figure] >> 6;
-        sacuvaj_sedmi_osmi_bit <<= 6;
-
-        figure[broj_figure] = Tabla::file_rank_to_broj(file_rank.file, file_rank.rank);
-        figure[broj_figure] |= sacuvaj_sedmi_osmi_bit;
-    }
 
     fn prati_polozaj_kralja(figure: &mut[u8;16], broj_figure: usize){
 
