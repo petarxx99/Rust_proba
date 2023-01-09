@@ -1,6 +1,6 @@
 
 Pokusavam da ustedim memorijski prostor koji koristim da bi sacuvao podatke o sahovskoj poziciji,
-bih mogao sto vise pozicija da skladistim tokom analize.
+kako bih mogao sto vise pozicija da skladistim tokom analize.
 
 U struct-u Tabla imam 2 niza bajtova za bele i crne figure. Evo kako skladistim informacije u tim 
 bitovima.
