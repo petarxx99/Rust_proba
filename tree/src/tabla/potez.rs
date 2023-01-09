@@ -137,8 +137,9 @@ su sklonjene sa table. */
         }
         Tabla::updejtuj_polozaj_figure_unsafe(figure, potez.broj_figure,
              &File_rank::new(potez.file, potez.rank));
-            
-        match &potez.promocija {
+
+        let promocija: &Promocija = &potez.promocija;
+        match promocija {
                 &Promocija::None => {},
                 _promocija => {
                      Tabla::promovisi_pijuna(figure, potez.broj_figure, _promocija);
