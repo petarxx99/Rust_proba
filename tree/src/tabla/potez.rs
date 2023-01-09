@@ -160,7 +160,7 @@ su sklonjene sa table. */
 
     fn prati_polozaj_kralja(figure: &mut[u8;16], broj_figure: usize){
 
-        let (rank, file) = Tabla::broj_to_rank_file(figure[broj_figure]);
+        let (rank, file) = Tabla::broj_to_rank_file(figure[KRALJ]);
         Tabla::updejtuj_polozaj_figure(figure, broj_figure, &File_rank{file, rank});
     }
 
