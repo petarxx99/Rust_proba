@@ -304,7 +304,7 @@ impl Tabla {
 
     fn dodaj_fajl_pijuna_koji_se_pomerio_2_polja(mut bitfield: i32, mut fajl: i32) -> i32 {
         /* Stavljam trinaesti bit na 1, to znaci da se pijun pomerio 2 polja u proslom potezu */
-        bitfield |= 1 << 12;
+        bitfield |= (1 << 12);
 
         /* Brisem bitove 14, 15 i 16. */
         let tri_bita: i32 = 0b111 << 13;
@@ -351,6 +351,11 @@ impl Tabla {
         bitfield | pre_koliko_poteza
     }
 
+/* unsafe zato sto ne proverava da li je broj presao 50. Ovde ima 6 bitova, znaci ako predje broj 63
+ova funkcija ce poceti da menja memoriju koja joj ne pripada. */
+    fn povecaj_50_move_rule_brojac_za_1_unsafe(mut bitfield: i32) -> i32 {
+        bitfield + (1 << 16)
+    }
 
     /* Ova informacija se cuva u bitu broj 23, tj. u 7. bitu treceg bajta. */
     pub fn beli_je_na_potezu(&self) -> bool {
@@ -497,6 +502,8 @@ impl Tabla {
         Tabla::sifruj_pre_koliko_poteza_je_50_move_rule_pomeren(bitfield, 0)
     }
 
+    
+
 }
 
 
@@ -505,7 +512,7 @@ impl Tabla {
 mod tabla_tests{
     use crate::tabla::KRALJICA;
 
-    use super::Tabla;
+    use super::{Tabla, E_FILE};
 
 
     #[test]
@@ -538,6 +545,13 @@ mod tabla_tests{
         tabla.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu = bitfield;
         beli_je_na_potezu = tabla.beli_je_na_potezu();
         assert_eq!(false, beli_je_na_potezu);
+    }
+
+    #[test]
+    fn fajl_pijuna_koji_se_pomerio_2_polja(){
+        let mut tabla: Tabla = Tabla::pocetna_pozicija();
+        tabla.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu =  Tabla::dodaj_fajl_pijuna_koji_se_pomerio_2_polja(tabla.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu,  E_FILE as i32);
+        assert_eq!(E_FILE, tabla.fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu().unwrap());
     }
 }
 
