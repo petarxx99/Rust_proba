@@ -513,9 +513,31 @@ mod tabla_tests{
         let tabla: Tabla = Tabla::pocetna_pozicija();
         let bit_bele_kraljice: u8 = 3;
         let bit_crne_kraljice: u8 = 59;
-        println!("Polje bele kraljice: {}", tabla.bele_figure[KRALJICA]);
+      
         assert_eq!(bit_bele_kraljice, tabla.bele_figure[KRALJICA]);
         assert_eq!(bit_crne_kraljice, tabla.crne_figure[KRALJICA]);
+    }
+
+    #[test]
+    fn drugi_pijun_dobro_inicijalizovan(){
+        let tabla: Tabla = Tabla::pocetna_pozicija();
+        let bit_drugog_belog_pijuna: u8 = 9;
+        let bit_drugog_crnog_pijuna: u8 = 49;
+
+        assert_eq!(bit_drugog_belog_pijuna, tabla.bele_figure[9]);
+        assert_eq!(bit_drugog_crnog_pijuna, tabla.crne_figure[9]);
+    }
+
+    #[test]
+    fn promena_ko_je_na_potezu(){
+        let mut tabla: Tabla = Tabla::pocetna_pozicija();
+        let mut beli_je_na_potezu = tabla.beli_je_na_potezu();
+        assert_eq!(true, beli_je_na_potezu);
+
+        let bitfield: i32 = Tabla::obrni_ko_je_na_potezu(tabla.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu);
+        tabla.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu = bitfield;
+        beli_je_na_potezu = tabla.beli_je_na_potezu();
+        assert_eq!(false, beli_je_na_potezu);
     }
 }
 
