@@ -12,7 +12,7 @@ imaju istu lokaciju kao i njihov kralj.
 7. i 8. bajt cuvaju informaciju o tome u sta se pijun pretvorio (da li je postao kraljica,
 top, lovac, konj, itd.). Ako je pijun i dalje pijun, onda 7. i 8. bajt ne sluze ni cemu.
  Sto se tice pijuna, oni se nalaze od 8. do 15. mesta u nizu. Oni koriste prvih 6 bitova za poziciju na tabli,
- 7. bajt odredjuje da li su promovisani, ili ne, a 8. bajt ostaje neiskoriscen. 
+ 7. bit odredjuje da li su promovisani, ili ne, a 8. bit ostaje neiskoriscen. 
 
 Imam i bitfield polje, to je trece polje struct-a Tabla.
 U njemu skladistim podatke o tome da li je rokada moguca, da li se pijun pomerio dva polja 
