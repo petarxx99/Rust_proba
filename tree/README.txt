@@ -25,9 +25,9 @@ U fajlu drvo_eval.rs se nalazi srz sahovskog algoritma. Funkcija izracunaj_rekur
 ima logiku koja ce biti srz mog sahovskog algoritma. 
 Vec sam u javi napravio sahovsku aplikaciju koja omogucava da 2 igraca igraju izmedju sebe.
 Ovaj sahovski program cu na kraju povezati sa tom java aplikacijom.
-Za sada je ovaj projekat jos u fazi izrade, videcu kad ce biti zavrsen.
+Za sada je ovaj projekat jos u fazi izrade, kada ce biti zavrsen zavisi od toga koliko budem imao vremena.
 U trenutku dok ovo pisem i dalje nisam promenio algoritam koji proverava da li je potez legalan
-u mojoj java sahovskoj aplikaciji. Kad sam napisao tu aplikaciju nisam odvojio proveru da li 
+u java sahovskoj aplikaciji. Kad sam napisao tu aplikaciju nisam odvojio proveru da li 
 je potez validan sa odigravanjem poteza, tako da cu sada logiku napisati drugacije, jer mi
 prilikom pravljenja sahovskog programa treba da nadjem sve legalne poteze i izaberem najbolji.
 
