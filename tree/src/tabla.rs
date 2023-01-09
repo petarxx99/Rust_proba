@@ -565,9 +565,9 @@ impl Tabla {
         Tabla::broj_to_rank_file(figure[0])
     }
     
-
-   
-
+    pub fn resetuj_50_move_rule(bitfield: i32) -> i32 {
+        Tabla::sifruj_pre_koliko_poteza_je_50_move_rule_pomeren(bitfield, 0)
+    }
 
 }
 

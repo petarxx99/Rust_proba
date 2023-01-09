@@ -98,8 +98,9 @@ impl Tabla {
         bitfield = Tabla::obrni_ko_je_na_potezu(bitfield);
         bitfield = Tabla::onemoguci_rokadu(bitfield, &potez_info.rokada_onemogucena);
         if potez_info.pijun_pomeren_ili_figura_pojedena {
-            bitfield = Tabla::sifruj_pre_koliko_poteza_je_50_move_rule_pomeren(bitfield, 0);
+            bitfield = Tabla::resetuj_50_move_rule(bitfield);
         }
+        
         bitfield = Tabla::resetuj_fajl_pijuna_koji_se_pomerio_dva_polja(bitfield);
         match potez_info.file_pijuna_pomerenog_2_polja {
             None => {},
