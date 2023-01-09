@@ -479,7 +479,7 @@ impl Tabla {
     }
 
     fn file_rank_to_broj(file: u8, rank: u8) -> u8 {
-        (rank-1) << 3 + file
+        ((rank-1) << 3) + file
     }
 
     fn polje_kralja(figure: &[u8;16]) -> u8 {
@@ -500,5 +500,22 @@ impl Tabla {
 
 
 
+#[cfg(test)]
+mod tabla_tests{
+    use crate::tabla::KRALJICA;
+
+    use super::Tabla;
+
+
+    #[test]
+    fn kraljice_su_dobro_inicijalizovane(){
+        let tabla: Tabla = Tabla::pocetna_pozicija();
+        let bit_bele_kraljice: u8 = 3;
+        let bit_crne_kraljice: u8 = 59;
+        println!("Polje bele kraljice: {}", tabla.bele_figure[KRALJICA]);
+        assert_eq!(bit_bele_kraljice, tabla.bele_figure[KRALJICA]);
+        assert_eq!(bit_crne_kraljice, tabla.crne_figure[KRALJICA]);
+    }
+}
 
     
