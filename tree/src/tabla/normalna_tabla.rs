@@ -11,6 +11,8 @@ use crate::tabla::Ko_je_na_potezu;
 
 use crate::tabla::Promocija;
 
+use super::KRALJ;
+
 
 pub struct Normalna_tabla {
     pub bele_figure: Vec<Option<Figura_info>>,
@@ -156,4 +158,97 @@ impl Tabla {
         bitfield
     }
 
+
+      /* Vraca None, ako se figura iz ovog bita ne nalazi na tabli, ako je figura pojedena. */
+      fn koja_figura_se_nalazi_u_bitu(figure: &[u8; 16], broj_figure: usize) -> Option<Figura> {
+
+        /* Ako figura nije kralj, ali je na poziciji svog kralja, to znaci da je figura sklonjena sa table.
+        Na taj nacin skladistim informaciju da je figura sklonjena sa table, kako bih ustedeo memorijski prostor. */
+                if broj_figure != KRALJ && figure[broj_figure] == figure[KRALJ]{
+                        return None;
+                }
+        
+        /* Ako je redni broj figure 8 ili vise, to znaci da je u pitanju pijun, ili figura koja je bila pijun. */
+                if broj_figure >=8 {
+                    if ! Tabla::pijun_je_promovisan(figure[broj_figure]){
+                        return Some(Figura::PIJUN);
+                    } 
+        
+        /* Sada obradjujem slucaj figure koja je bila pijun, ali je promovisana. */
+                    return Some(Tabla::u_sta_je_pijun_promovisan(&figure, broj_figure));
+                }
+        
+                /* takozvani happy path */
+                map_redni_broj_to_figure_unsafe(broj_figure)
+        }
 }
+
+
+
+impl Figura {
+    pub fn to_u8(&self) -> u8{
+        match self {
+            Figura::KRALJ => 0,
+            Figura::KRALJICA => 1,
+            Figura::TOP => 2,
+            Figura::LOVAC => 3,
+            Figura::KONJ => 4,
+            Figura::PIJUN => 5
+        }
+    }
+
+    pub fn from_u8(broj: u8) -> Figura {
+        if broj == 0 {
+            return Figura::KRALJ;
+        }
+        if broj ==1 {
+            return Figura::KRALJICA;
+        }
+        if broj == 2 {
+            return Figura::TOP;
+        }
+        if broj == 3 {
+            return Figura::LOVAC;
+        }
+        if broj == 4 {
+            return Figura::KONJ;
+        }
+
+        Figura::PIJUN
+    }
+
+    pub fn copy(&self) -> Figura {
+        match *self {
+            Self::KRALJICA => Self::KRALJICA,
+            Self::KONJ => Self::KONJ,
+            Self::TOP => Self::TOP,
+            Self::LOVAC => Self::LOVAC,
+            Self::KRALJ => Self::KRALJ,
+            Self::PIJUN => Self::PIJUN,
+        }
+    }
+}
+
+/* Unsafe zato sto ne uzima u obzir da li je pijun postao kraljica. */
+fn map_redni_broj_to_figure_unsafe(redni_broj: usize) -> Option<Figura> {
+    match redni_broj {
+        0 => Some(Figura::KRALJ),
+        1 => Some(Figura::KRALJICA),
+        2 => Some(Figura::TOP),
+        3 => Some(Figura::TOP),
+        4 => Some(Figura::LOVAC),
+        5 => Some(Figura::LOVAC),
+        6 => Some(Figura::KONJ),
+        7 => Some(Figura::KONJ),
+        broj => {
+            if broj < 16 {
+                return Some(Figura::PIJUN)
+            }
+            return None
+         }
+    }
+  
+}
+
+
+
