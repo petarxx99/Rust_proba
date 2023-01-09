@@ -234,14 +234,14 @@ impl Tabla {
     11. bit cuva informaciju o tome da li je crna kraljicina rokada moguca.
     12. bit cuva informaciju o tome da li je crna kraljeva rokada moguca.*/
     pub fn rokada(&self) -> Rokada {
-        let bela_kraljicina_rokada_vise_nije_moguca = self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu
-        & (1 << 8) == 1;
-        let bela_kraljeva_rokada_vise_nije_moguca = self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu
-        & (1<<9) == 1;
-        let crna_kraljicina_rokada_vise_nije_moguca = self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu
-        & (1<<10) == 1;
-        let crna_kraljeva_rokada_vise_nije_moguca = self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu
-        & (1<<11) == 1; 
+        let bela_kraljicina_rokada_vise_nije_moguca = (self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu
+        & (1 << 8)) == 1;
+        let bela_kraljeva_rokada_vise_nije_moguca = (self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu
+        & (1<<9)) == 1;
+        let crna_kraljicina_rokada_vise_nije_moguca = (self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu
+        & (1<<10)) == 1;
+        let crna_kraljeva_rokada_vise_nije_moguca = (self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu
+        & (1<<11)) == 1; 
 
         return Rokada {
             bela_kraljicina_rokada_vise_nije_moguca,
