@@ -1,4 +1,4 @@
-use super::{Rokada, Promocija, Tabla, KRALJ, File_rank};
+use super::{Rokada, Promocija, Tabla, KRALJ, File_rank, DESNI_TOP, F_FILE, LEVI_TOP, D_FILE};
 
 
 
@@ -179,9 +179,6 @@ impl Tabla {
     }
 
 
-   
-
-
     fn prati_polozaj_kralja(figure: &mut[u8;16], broj_figure: usize){
 
         let (rank, file) = Tabla::broj_to_rank_file(figure[KRALJ]);
@@ -195,6 +192,16 @@ impl Tabla {
         Tabla::updejtuj_polozaj_figure_unsafe(figure, KRALJ,
              &File_rank{file, rank});
 
+      /* Sledi kod koji se brine za rokadu. */       
+        let (start_rank, start_file) = Tabla::broj_to_rank_file(polozaj_kralja);
+
+        if file as i32 - start_file as i32 == 2 { /* kraljeva rokada */
+            Tabla::updejtuj_polozaj_figure_unsafe(figure, DESNI_TOP, &File_rank{file: F_FILE, rank});
+        } else if start_file as i32 - file as i32 == 2{ /* kraljicina rokada */
+            Tabla::updejtuj_polozaj_figure_unsafe(figure, LEVI_TOP, &File_rank{file: D_FILE, rank});
+        }
+
+/* Pojedene figure prate poziciju kralja. */
         for i in 0..figure.len() {
             if Tabla::polja_se_slazu(polozaj_kralja, figure[i]){
                 Tabla::prati_polozaj_kralja(figure, i);
@@ -208,7 +215,7 @@ impl Tabla {
 
 #[cfg(test)]
 mod potez_tests{
-    use crate::tabla::{Tabla, E_FILE, B_FILE, C_FILE, F_FILE, LEVI_KONJ, DESNI_LOVAC, Promocija};
+    use crate::tabla::{Tabla, E_FILE, B_FILE, C_FILE, F_FILE, LEVI_KONJ, DESNI_LOVAC, Promocija, G_FILE, DESNI_TOP};
 
     use super::{Potez, Potez_private, Potez_info};
 
@@ -249,7 +256,16 @@ mod potez_tests{
     }
 
     #[test]
-    fn odigraj_e4_Nc6_Bb5(){
+    fn desni_beli_top_se_pomeri_kao_da_je_rokada_ako_se_kralj_pomeri_za_2_fajla_udesno(){
+        let tabla: Tabla = Tabla::pocetna_pozicija();
+        let potez: Potez = Potez::new(E_FILE, 1, G_FILE, 1, Promocija::None);
+        let tabla_nakon_poteza = tabla.tabla_nakon_validnog_poteza(&potez);
+        let (_, file_topa) = Tabla::broj_to_rank_file(tabla_nakon_poteza.bele_figure[DESNI_TOP]);
+        assert_eq!(F_FILE, file_topa);
+    }
+
+    #[test]
+    fn odigraj_e4_Nc6_Bb5_Bc5_Bxc6(){
         let tabla1: Tabla = Tabla::pocetna_pozicija();
         let potez_e4: Potez = Potez::new(E_FILE, 2, E_FILE, 4, Promocija::None);
         let tabla2: Tabla = tabla1.tabla_nakon_validnog_poteza(&potez_e4);
@@ -273,6 +289,14 @@ mod potez_tests{
         assert_eq!(28, tabla4.bele_figure[12]); /* e pijun je na e4. */
         assert_eq!(42, tabla4.crne_figure[LEVI_KONJ]); /* crni konj na c6 */
         assert_eq!(33, tabla4.bele_figure[DESNI_LOVAC]); /* beli lovac na b5 */
+
+        let potez_Bc5: Potez = Potez::new(F_FILE, 8, C_FILE, 5, Promocija::None);
+        let potez_Bxc6: Potez = Potez::new(B_FILE, 5, C_FILE, 6, Promocija::None);
+        let tabla6: Tabla = tabla4.tabla_nakon_validnog_poteza(&potez_Bc5).tabla_nakon_validnog_poteza(&potez_Bxc6);
+        assert_eq!(0, tabla6.pre_koliko_poteza_je_50_move_rule_pomeren());
+        assert_eq!(false, tabla6.beli_je_na_potezu());
+
     }
 
+    
 }
