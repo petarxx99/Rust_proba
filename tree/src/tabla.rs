@@ -11,7 +11,18 @@ pub enum Boja {
 }
 
 pub enum Promocija {
-    KRALJICA, TOP, LOVAC, KONJ
+    KRALJICA, TOP, LOVAC, KONJ, None,
+}
+impl Promocija {
+    pub fn copy(&self) -> Promocija {
+        match (*self){
+            Self::KRALJICA => Self::KRALJICA,
+            Self::KONJ => Self::KONJ,
+            Self::TOP => Self::TOP,
+            Self::LOVAC => Self::LOVAC,
+            Self::None => Self::None
+        }
+    }
 }
 
 pub enum Figura {
@@ -48,6 +59,17 @@ impl Figura {
         }
 
         Figura::PIJUN
+    }
+
+    pub fn copy(&self) -> Figura {
+        match *self {
+            Self::KRALJICA => Self::KRALJICA,
+            Self::KONJ => Self::KONJ,
+            Self::TOP => Self::TOP,
+            Self::LOVAC => Self::LOVAC,
+            Self::KRALJ => Self::KRALJ,
+            Self::PIJUN => Self::PIJUN,
+        }
     }
 }
 
@@ -180,16 +202,17 @@ top, lovac, konj, itd.). Ako je pijun i dalje pijun, onda 7. i 8. bajt ne sluze 
         pijunov_bit | sedmi_bit
     }
 
-    fn promovisi_pijuna(figure: &mut[u8; 16], redni_broj_pijuna: usize, promocija: Promocija){
+    fn promovisi_pijuna(figure: &mut[u8; 16], redni_broj_pijuna: usize, promocija: &Promocija){
  /* Ovako bit koji je predstavljao pijuna zna da nije vise pijun. */       
         figure[redni_broj_pijuna] = Tabla::obradi_bit_pijuna_za_promociju(figure[redni_broj_pijuna]);
 
         let mut promocija_bitovi: u8 = 0;
-        match promocija {
+        match *promocija {
             Promocija::KRALJICA => {promocija_bitovi = PROMOVISANA_KRALJICA;},
             Promocija::TOP => {promocija_bitovi = PROMOVISAN_TOP;},
             Promocija::LOVAC => {promocija_bitovi = PROMOVISAN_LOVAC;},
             Promocija::KONJ => {promocija_bitovi = PROMOVISAN_KONJ;}
+            Promocija::None => {panic!("Aktivirana funkcija za promociju pijuna, iako pijun nije promovisan.")}
         }
 /* Bitovi promocije se cuvaju u dva najznacajnija bita figure koja se nalazi 8 mesta iza promovisanog pijuna. */
         promocija_bitovi <<= 6;
@@ -563,14 +586,14 @@ pub struct Potez{
 
     pub file_destinacije: u8,
     pub rank_destinacije: u8,
-    pub promocija: Option<Promocija>,
+    pub promocija: Promocija,
 }
 
 struct Potez_private {
     broj_figure: usize,
     file: u8,
     rank: u8,
-    promocija: Option<Promocija>,
+    promocija: Promocija,
 }
 
 impl Potez {
@@ -583,21 +606,16 @@ impl Potez {
             figure = &tabla.bele_figure;
         }
 
-        let promocija: Option<Promocija>;
-        let promocija_2: Option<Promocija>;
-        match self.promocija {
-            None => {promocija = None; promocija_2 = None},
-            Some(p) => {promocija = Some(p); promocija_2 = Some(p);}
-        }
+        
    /* Kralja za svaki slucaj treniram kao specijalni slucaj, jer figure koje su sklonjene sa table imaju istu lokaciju kao kralj.
    Ovaj deo koda je nepotreban, ali za slucaj da u buducnosti promenim redosled figura ovaj deo koda bi ucinio da takva promena ne proizvede bagove.*/     
         if Tabla::to_je_file_rank_polja(figure[KRALJ], self.start_file, self.start_rank){
-            return Some(Potez_private{broj_figure: KRALJ, file: self.start_file, rank: self.start_rank, promocija: self.promocija})
+            return Some(Potez_private{broj_figure: KRALJ, file: self.start_file, rank: self.start_rank, promocija: self.promocija.copy()})
         }
 
         for broj_figure in 0..figure.len() {
             if Tabla::to_je_file_rank_polja(figure[broj_figure], self.start_file, self.start_rank) {
-                return Some(Potez_private { broj_figure, file: self.start_file, rank: self.start_rank, promocija: self.promocija})
+                return Some(Potez_private { broj_figure, file: self.start_file, rank: self.start_rank, promocija: self.promocija.copy()})
             }
         }
         None
@@ -702,16 +720,16 @@ impl Tabla {
                     if i>=8{
                         match f.tip {
                             Figura::KRALJICA => {  
-                                Tabla::promovisi_pijuna(napravljene_figure, i, Promocija::KRALJICA);
+                                Tabla::promovisi_pijuna(napravljene_figure, i, &Promocija::KRALJICA);
                             },
                             Figura::TOP => {
-                                Tabla::promovisi_pijuna(napravljene_figure, i, Promocija::TOP);
+                                Tabla::promovisi_pijuna(napravljene_figure, i, &Promocija::TOP);
                             },
                             Figura::LOVAC => {
-                                Tabla::promovisi_pijuna(napravljene_figure, i, Promocija::LOVAC);
+                                Tabla::promovisi_pijuna(napravljene_figure, i, &Promocija::LOVAC);
                             },
                             Figura::KONJ => {
-                                Tabla::promovisi_pijuna(napravljene_figure, i, Promocija::KONJ);
+                                Tabla::promovisi_pijuna(napravljene_figure, i, &Promocija::KONJ);
                             },
                             _ => {}
                         }
@@ -836,9 +854,9 @@ su sklonjene sa table. */
         Tabla::updejtuj_polozaj_figure(figure, potez.broj_figure,
              &File_rank::new(potez.file, potez.rank));
 
-        match potez.promocija {
-                None => {},
-                Some(_promocija) => {
+        match &potez.promocija {
+                Promocija::None => {},
+                _promocija => {
                      Tabla::promovisi_pijuna(figure, potez.broj_figure, _promocija);
                 }
         }       
@@ -870,4 +888,3 @@ su sklonjene sa table. */
     }
     
 }
-
