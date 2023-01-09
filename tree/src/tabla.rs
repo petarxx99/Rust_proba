@@ -28,6 +28,9 @@ pub static F_FILE: u8 = 5;
 pub static G_FILE: u8 = 6;
 pub static H_FILE: u8 = 7;
 
+pub enum Figura {
+    KRALJ=0, KRALJICA=1, TOP=2, LOVAC=3, KONJ=4, PIJUN=5
+}
 pub enum Ko_je_na_potezu{
     BELI = 0, CRNI = 1
 }
@@ -88,9 +91,7 @@ impl Rokada {
     }
 }
 
-pub enum Figura {
-    KRALJ=0, KRALJICA=1, TOP=2, LOVAC=3, KONJ=4, PIJUN=5
-}
+
 
 pub struct Figura_info {
     pub tip: Figura,
