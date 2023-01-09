@@ -292,9 +292,10 @@ mod potez_tests{
 
         let potez_Bc5: Potez = Potez::new(F_FILE, 8, C_FILE, 5, Promocija::None);
         let potez_Bxc6: Potez = Potez::new(B_FILE, 5, C_FILE, 6, Promocija::None);
-        let tabla6: Tabla = tabla4.tabla_nakon_validnog_poteza(&potez_Bc5).tabla_nakon_validnog_poteza(&potez_Bxc6);
-        assert_eq!(0, tabla6.pre_koliko_poteza_je_50_move_rule_pomeren());
-        assert_eq!(false, tabla6.beli_je_na_potezu());
+        let potez_Ke7: Potez = Potez::new(E_FILE, 8, E_FILE, 7, Promocija::None);
+        let tabla7: Tabla = tabla4.tabla_nakon_validnog_poteza(&potez_Bc5).tabla_nakon_validnog_poteza(&potez_Bxc6).tabla_nakon_validnog_poteza(&potez_Ke7);
+        assert_eq!(1, tabla7.pre_koliko_poteza_je_50_move_rule_pomeren());
+        assert_eq!(true, tabla7.beli_je_na_potezu());
 
     }
 
