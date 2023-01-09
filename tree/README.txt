@@ -5,7 +5,7 @@ bih mogao sto vise pozicija da skladistim tokom analize.
 U struct-u Tabla imam 2 niza bajtova za bele i crne figure. Evo kako skladistim informacije u tim 
 bitovima.
  Prvih 8 bajtova cuvaju informacije o tome gde se figure nalaze. 
-Prvih 6 bajtova cuvaju informaciju o tome gde se nalaze na tabli. 
+Prvih 6 bitova cuvaju informaciju o tome gde se figura nalaze na tabli. 
 Informaciju o tome da li se figura nalazi na tabli cuvam tako sto figure koje su sklonjene sa table
 imaju istu lokaciju kao i njihov kralj.
 7. i 8. bajt ostaju na raspolaganju pijunu koji se nalazi 8 ispred u nizu. 
