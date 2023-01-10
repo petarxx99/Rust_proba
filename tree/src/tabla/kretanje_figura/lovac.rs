@@ -7,6 +7,38 @@ pub fn prirodno_kretanje_lovca(
     rokada: &Rokada, 
     fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>{
         
+        let polja: Vec<u8> = Vec::new();
+        let (rank_lovca, file_lovca) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
+        
+        
+        let mut rank: i8 = rank_lovca as i8  - 1;
+        let mut file_razlika: u8 = 1;
+
+        while rank>=1 {
+            if (file_lovca - file_razlika) >= A_FILE {
+                polja.push(Tabla::file_rank_to_broj(file_lovca - file_razlika, rank as u8));
+            } 
+            if (file_lovca + file_razlika) <= H_FILE {
+                polja.push(Tabla::file_rank_to_broj(file_lovca + file_razlika, rank as u8));
+            }
+            rank -=1;
+            file_razlika += 1;
+        }
+
+        file_razlika = 1;
+        rank = 1+ rank_lovca as i8;
+        while rank <=8 {
+            if (file_lovca - file_razlika) >= A_FILE {
+                polja.push(Tabla::file_rank_to_broj(file_lovca - file_razlika, rank as u8));
+            }
+            if (file_lovca + file_razlika) <= H_FILE {
+                polja.push(Tabla::file_rank_to_broj(file_lovca + file_razlika, rank as u8));
+            }
+            rank += 1;
+            file_razlika += 1;
+        }
+
+        polja
     }
 
 pub fn lovac_napada_kralja<T>(tabla: &T, polje_lovca: u8, kralj_je_beli: bool) -> bool 
@@ -54,7 +86,7 @@ where T:Ima_podatke_o_tabli{
     for i in (min_file+1)..file {
         let x: i8 = i as i8;
         let y = k*x + n;
-        polja_izmedju.push(Tabla::file_rank_to_broj(x, y as u8));
+        polja_izmedju.push(Tabla::file_rank_to_broj(i, y as u8));
     }
 
     tabla.da_li_su_polja_prazna(&polja_izmedju)
