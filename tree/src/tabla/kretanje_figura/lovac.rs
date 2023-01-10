@@ -7,7 +7,7 @@ pub fn prirodno_kretanje_lovca(
     rokada: &Rokada, 
     fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>{
         
-        let polja: Vec<u8> = Vec::new();
+        let mut polja: Vec<u8> = Vec::new();
         let (rank_lovca, file_lovca) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
         
         
