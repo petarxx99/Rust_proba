@@ -300,6 +300,28 @@ impl Tabla {
         }
         None
     }
+
+    pub fn polje_je_prazno_preko_broja(&self, polje: u8) -> bool {
+        let (rank, file) = Tabla::broj_to_rank_file(polje);
+        self.polje_je_prazno(&File_rank{file, rank})
+    }
+
+
+    pub fn polje_je_prazno(&self, file_rank_polja: &File_rank) -> bool {
+        let mut polje_je_prazno = true;
+        match Tabla::koja_figura_se_figura_nalazi_na_polju(file_rank_polja, &self.bele_figure) {
+            None => {},
+            Some(_) => {polje_je_prazno = false;}
+        }
+        if !polje_je_prazno {
+            return false;
+        }
+
+        match Tabla::koja_figura_se_figura_nalazi_na_polju(file_rank_polja, &self.crne_figure){
+            None => true,
+            Some(_) => false
+        }
+    }
 }
 
 #[cfg(test)]
