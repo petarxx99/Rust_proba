@@ -1,6 +1,4 @@
-use super::{Rokada, Promocija, Tabla, KRALJ, File_rank, DESNI_TOP, F_FILE, LEVI_TOP, D_FILE};
-
-
+use super::{Rokada, Promocija, Tabla, KRALJ, File_rank, DESNI_TOP, F_FILE, LEVI_TOP, D_FILE, Figura};
 
 
 pub struct Potez_info {
@@ -210,8 +208,51 @@ impl Tabla {
 
     }
 
+    pub fn figura_je_pojedena(figure: &[u8;16], redni_broj_figure: usize) -> bool {
+        if redni_broj_figure == KRALJ {
+            return false;
+        }
+        Tabla::polja_se_slazu(figure[KRALJ], figure[redni_broj_figure])
+    }
 }
 
+
+pub static MAX_EVALUACIJA: i8 = 99;
+pub static MIN_EVALUACIJA: i8 = -99;
+
+impl Figura {
+    pub fn vrednost(&self) -> f32 {
+        match *self {
+            Figura::KRALJ => 0.0,
+            Figura::KRALJICA => 9.0,
+            Figura::TOP => 5.0,
+            Figura::LOVAC => 3.5,
+            Figura::KONJ => 3.0,
+            Figura::PIJUN => 1.0
+        }
+    }
+}
+
+impl Tabla {
+    pub fn ukupna_vrednost_nepojedenih_figura(figure: &[u8;16]) -> u8 {
+        let mut vrednost_nepojedenih_figura: f32 = 0.0;
+        for i in 1..8 {
+            if !Tabla::figura_je_pojedena(figure, i){
+                vrednost_nepojedenih_figura += Figura::map_redni_broj_to_figure_unsafe(i).unwrap().vrednost();
+            }
+        }
+        for i in 8..16 {
+            if Tabla::pijun_je_promovisan(figure[i]){
+                vrednost_nepojedenih_figura += Tabla::u_sta_je_pijun_promovisan(figure, i).vrednost();
+            } else {
+                vrednost_nepojedenih_figura += Figura::PIJUN.vrednost();
+            }
+        }
+
+        let rezultat = vrednost_nepojedenih_figura as u8;
+        rezultat
+    } 
+}
 
 #[cfg(test)]
 mod potez_tests{
@@ -296,7 +337,9 @@ mod potez_tests{
         let tabla7: Tabla = tabla4.tabla_nakon_validnog_poteza(&potez_Bc5).tabla_nakon_validnog_poteza(&potez_Bxc6).tabla_nakon_validnog_poteza(&potez_Ke7);
         assert_eq!(1, tabla7.pre_koliko_poteza_je_50_move_rule_pomeren());
         assert_eq!(true, tabla7.beli_je_na_potezu());
-
+        assert_eq!(true, Tabla::figura_je_pojedena(&tabla7.crne_figure, LEVI_KONJ));
+        assert_eq!(37, Tabla::ukupna_vrednost_nepojedenih_figura(&tabla7.crne_figure));
+        assert_eq!(40, Tabla::ukupna_vrednost_nepojedenih_figura(&tabla7.bele_figure));
     }
 
     

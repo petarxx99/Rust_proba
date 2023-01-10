@@ -179,7 +179,7 @@ impl Tabla {
                 }
         
                 /* takozvani happy path */
-                map_redni_broj_to_figure_unsafe(broj_figure)
+                Figura::map_redni_broj_to_figure_unsafe(broj_figure)
         }
 }
 
@@ -227,10 +227,9 @@ impl Figura {
             Self::PIJUN => Self::PIJUN,
         }
     }
-}
 
-/* Unsafe zato sto ne uzima u obzir da li je pijun postao kraljica. */
-fn map_redni_broj_to_figure_unsafe(redni_broj: usize) -> Option<Figura> {
+    /* Unsafe zato sto ne uzima u obzir da li je pijun postao kraljica. */
+pub fn map_redni_broj_to_figure_unsafe(redni_broj: usize) -> Option<Figura> {
     match redni_broj {
         0 => Some(Figura::KRALJ),
         1 => Some(Figura::KRALJICA),
@@ -247,6 +246,9 @@ fn map_redni_broj_to_figure_unsafe(redni_broj: usize) -> Option<Figura> {
             return None
          }
     }
+}
+
+
   
 }
 

@@ -31,6 +31,8 @@ pub static H_FILE: u8 = 7;
 pub enum Figura {
     KRALJ=0, KRALJICA=1, TOP=2, LOVAC=3, KONJ=4, PIJUN=5
 }
+
+
 pub enum Ko_je_na_potezu{
     BELI = 0, CRNI = 1
 }
@@ -502,7 +504,6 @@ impl Tabla {
         Tabla::sifruj_pre_koliko_poteza_je_50_move_rule_pomeren(bitfield, 0)
     }
 
-    
 
 }
 
