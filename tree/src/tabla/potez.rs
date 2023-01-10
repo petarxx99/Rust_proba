@@ -257,13 +257,40 @@ impl Tabla {
         let rezultat = vrednost_nepojedenih_figura as u8;
         rezultat
     } 
+
+    /* Ova funkcija zavisi od toga da je kralj na prvom mestu u nizu figura. Zasto?
+    Zato sto figure koje su sklonjene sa table imaju istu lokaciju kao i kralj. Ako proveravam polje
+    na kom se nalazi kralj i prvo proverim neku pojedenu figuru, funkcija bi pogresno vratila tu 
+    pojedenu figuru umesto kralja. */
+    pub fn koja_figura_se_figura_nalazi_na_polju(file_rank_polja: &File_rank, figure: &[u8;16]) 
+    -> Option<Figura> {
+        for i in 0..8{           
+            /* Ako se figura nalazi na polju koje trazim onda vracam tu figuru. */
+            if Tabla::polja_se_slazu(figure[i], Tabla::file_rank_to_broj(file_rank_polja.file, file_rank_polja.rank)){
+                return Some(Figura::map_redni_broj_to_figure_unsafe(i).unwrap());
+            }
+        }
+
+        for i in 8..16 {
+            if !Tabla::polja_se_slazu(figure[i], Tabla::file_rank_to_broj(file_rank_polja.file, file_rank_polja.rank)){
+                continue; /* Ako se ova figura ne nalazi na polju koje trazim onda preskacem iteraciju. */
+            }
+
+            if !Tabla::pijun_je_promovisan(figure[i]){
+                return Some(Figura::PIJUN);
+            }
+            return Some(Tabla::u_sta_je_pijun_promovisan(figure, i));
+        }
+        None
+    }
 }
 
 #[cfg(test)]
 mod potez_tests{
-    use crate::tabla::{Tabla, E_FILE, B_FILE, C_FILE, F_FILE, LEVI_KONJ, DESNI_LOVAC, Promocija, G_FILE, DESNI_TOP};
+    use crate::tabla::{Tabla, E_FILE, B_FILE, C_FILE, F_FILE, LEVI_KONJ, DESNI_LOVAC, Promocija, G_FILE, DESNI_TOP, File_rank};
 
     use super::{Potez, Potez_private, Potez_info};
+    use crate::tabla::{Figura};
 
     #[test]
     fn info_o_pijunu(){
@@ -345,6 +372,8 @@ mod potez_tests{
         assert_eq!(true, Tabla::figura_je_pojedena(&tabla7.crne_figure, LEVI_KONJ));
         assert_eq!(37, Tabla::ukupna_vrednost_nepojedenih_figura(&tabla7.crne_figure));
         assert_eq!(40, Tabla::ukupna_vrednost_nepojedenih_figura(&tabla7.bele_figure));
+        assert_eq!(Figura::LOVAC.vrednost(), (Tabla::koja_figura_se_figura_nalazi_na_polju(&File_rank{file: C_FILE, rank:5}, &tabla7.crne_figure)).unwrap().vrednost());
+        assert_eq!(Figura::PIJUN.vrednost(), (Tabla::koja_figura_se_figura_nalazi_na_polju(&File_rank{file: E_FILE, rank: 4}, &tabla7.bele_figure)).unwrap().vrednost());
     }
 
     
