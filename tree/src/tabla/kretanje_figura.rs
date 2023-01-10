@@ -6,6 +6,8 @@ mod konj;
 mod top;
 mod kraljica;
 mod lovac;
+mod kralj;
+mod pijun;
 
 pub struct Figura_interfejs<T> 
 where T: Ima_podatke_o_tabli
