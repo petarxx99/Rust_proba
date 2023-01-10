@@ -1,13 +1,14 @@
 
 use std::boxed::Box;
 
-use super::{Rokada, Tabla, Zna_da_li_su_polja_prazna};
+use super::{Rokada, Tabla, Ima_podatke_o_tabli};
 mod konj;
 
 pub struct Figura_interfejs<T> 
-where T: Zna_da_li_su_polja_prazna
+where T: Ima_podatke_o_tabli
 {
-    pub prirodno_kretanje: fn(
+    pub prirodno_kretanje: 
+    fn(
          polje_na_kom_se_nalazim: u8,
          rokada: &Rokada, 
          fajl_pijuna_2_polja: Option<u8>) -> Vec<u8>,
@@ -17,7 +18,7 @@ where T: Zna_da_li_su_polja_prazna
 
 
 impl<T> Figura_interfejs<T> 
-where T: Zna_da_li_su_polja_prazna
+where T: Ima_podatke_o_tabli
 {
     pub fn new(prirodno_kretanje: fn(
         polje_na_kom_se_nalazim: u8,

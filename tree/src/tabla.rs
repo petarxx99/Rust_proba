@@ -133,11 +133,12 @@ pub fn print_size_of_Tabla(){
 }
 
 
-pub trait Zna_da_li_su_polja_prazna{
+pub trait Ima_podatke_o_tabli{
     fn da_li_su_polja_prazna(&self, polja: &[u8]) -> bool;
+    fn pozicija_protivnickog_kralja(&self) -> u8;
 }
 
-impl Zna_da_li_su_polja_prazna for Tabla {
+impl Ima_podatke_o_tabli for Tabla {
     fn da_li_su_polja_prazna(&self, polja: &[u8]) -> bool {
         for polje in polja {
             if !self.polje_je_prazno_preko_broja(*polje){
@@ -145,6 +146,14 @@ impl Zna_da_li_su_polja_prazna for Tabla {
             }
         }
         true
+    }
+
+    fn pozicija_protivnickog_kralja(&self) -> u8 {
+        if self.beli_je_na_potezu() {
+            self.crne_figure[KRALJ]
+        } else {
+            self.bele_figure[KRALJ]
+        }
     }
 }
     /* Prvih 8 bajtova cuvaju informacije o tome gde se figure nalaze. 
