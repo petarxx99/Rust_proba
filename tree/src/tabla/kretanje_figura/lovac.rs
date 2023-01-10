@@ -43,6 +43,8 @@ pub fn prirodno_kretanje_lovca<T>(
         polja
     }
 
+
+    
 pub fn lovac_napada_kralja<T>(tabla: &T, polje_lovca: u8, kralj_je_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
 

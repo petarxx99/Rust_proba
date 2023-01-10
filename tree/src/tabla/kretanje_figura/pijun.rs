@@ -68,7 +68,7 @@ pub fn prirodno_kretanje_pijuna<T>(
 pub fn pijun_napada_kralja<T>(tabla: &T, polje_pijuna: u8, kralj_je_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
     let polje_kralja: u8 = tabla.pozicija_kralja(kralj_je_beli);
-    pijun_napada_polje(polje_kralja, tabla, polje_pijuna, kralj_je_beli)
+    pijun_napada_polje(polje_kralja, tabla, polje_pijuna, !kralj_je_beli)
 }
 
 pub fn pijun_napada_polje<T>(polje: u8, tabla: &T, polje_pijuna: u8, ja_sam_beli: bool) -> bool 
