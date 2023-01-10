@@ -524,4 +524,17 @@ mod potez_tests{
         let tabla4: Tabla = tabla.odigraj_validan_potez_bez_promocije(H_FILE, 8, H_FILE, 6);
         assert_eq!(true, tabla.rokada().crna_kraljeva_rokada_vise_nije_moguca);
     }
+
+    #[test]
+    fn test_rokada(){
+        let tabla: Tabla = Tabla::pocetna_pozicija().odigraj_validan_potez_bez_promocije(F_FILE, 1, F_FILE, 3)
+        .odigraj_validan_potez_bez_promocije(B_FILE, 8, B_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(G_FILE, 1, G_FILE, 3)
+        .odigraj_validan_potez_bez_promocije(C_FILE, 8, C_FILE, 8)
+  /*promocija */      .odigraj_validan_potez_bez_promocije(E_FILE, 1, G_FILE, 1)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 8, D_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(A_FILE, 2, A_FILE, 2)
+   /* promocija */     .odigraj_validan_potez_bez_promocije(E_FILE, 8, C_FILE, 8);
+
+    }
 }
