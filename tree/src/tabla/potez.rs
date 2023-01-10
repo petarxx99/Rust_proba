@@ -149,6 +149,10 @@ impl Potez {
 
 
 impl Tabla {
+    pub fn odigraj_validan_potez_bez_promocije(&self, start_file: u8, start_rank: u8, file_destinacije: u8, rank_destinacije: u8) -> Tabla {
+        self.tabla_nakon_validnog_poteza(&Potez{start_file, start_rank, file_destinacije, rank_destinacije, promocija: Promocija::None})
+    }
+
     pub fn tabla_nakon_validnog_poteza(&self, potez: &Potez) -> Tabla{
         let potez_private: Potez_private = potez.to_potez_private(self).expect("Uneli ste nevalidan potez.");
         let tabla_nakon_poteza: Tabla = self.tabla_nakon_poteza_private(&potez_private);
@@ -246,6 +250,9 @@ impl Tabla {
         }
     /* Sada obradjujem pijune i figure koje su nastale promocijom pijuna. */    
         for i in 8..16 {
+            if Tabla::figura_je_pojedena(figure, i) {
+                continue;
+            }
             if Tabla::pijun_je_promovisan(figure[i]){
                 let promovisana_figura: Figura = Tabla::u_sta_je_pijun_promovisan(figure, i);
                 vrednost_nepojedenih_figura += promovisana_figura.vrednost();
@@ -257,6 +264,16 @@ impl Tabla {
         let rezultat = vrednost_nepojedenih_figura as u8;
         rezultat
     } 
+
+    pub fn broj_nepojedenih_figura(figure: &[u8;16]) -> u8 {
+        let mut broj_nepojedenih_figura=1;
+        for i in 1..16 {
+            if !Tabla::figura_je_pojedena(figure, i){
+                broj_nepojedenih_figura += 1;
+            }
+        }
+        broj_nepojedenih_figura
+    }
 
     /* Ova funkcija zavisi od toga da je kralj na prvom mestu u nizu figura. Zasto?
     Zato sto figure koje su sklonjene sa table imaju istu lokaciju kao i kralj. Ako proveravam polje
@@ -287,7 +304,7 @@ impl Tabla {
 
 #[cfg(test)]
 mod potez_tests{
-    use crate::tabla::{Tabla, E_FILE, B_FILE, C_FILE, F_FILE, LEVI_KONJ, DESNI_LOVAC, Promocija, G_FILE, DESNI_TOP, File_rank};
+    use crate::tabla::{Tabla, E_FILE, B_FILE, C_FILE, F_FILE, LEVI_KONJ, DESNI_LOVAC, Promocija, G_FILE, DESNI_TOP, File_rank, A_FILE, D_FILE};
 
     use super::{Potez, Potez_private, Potez_info};
     use crate::tabla::{Figura};
@@ -338,7 +355,7 @@ mod potez_tests{
     }
 
     #[test]
-    fn odigraj_e4_Nc6_Bb5_Bc5_Bxc6_Ke7(){
+    fn odigraj_e4_Nc6_Bb5_Bc5_Bxc6_e6_a3_Ke7(){
         let tabla1: Tabla = Tabla::pocetna_pozicija();
         let potez_e4: Potez = Potez::new(E_FILE, 2, E_FILE, 4, Promocija::None);
         let tabla2: Tabla = tabla1.tabla_nakon_validnog_poteza(&potez_e4);
@@ -362,19 +379,77 @@ mod potez_tests{
         assert_eq!(28, tabla4.bele_figure[12]); /* e pijun je na e4. */
         assert_eq!(42, tabla4.crne_figure[LEVI_KONJ]); /* crni konj na c6 */
         assert_eq!(33, tabla4.bele_figure[DESNI_LOVAC]); /* beli lovac na b5 */
+        
 
         let potez_Bc5: Potez = Potez::new(F_FILE, 8, C_FILE, 5, Promocija::None);
         let potez_Bxc6: Potez = Potez::new(B_FILE, 5, C_FILE, 6, Promocija::None);
+        let potez_e6: Potez = Potez::new(E_FILE, 7, E_FILE, 6, Promocija::None);
+        let potez_a3: Potez = Potez::new(A_FILE, 2, A_FILE, 3, Promocija::None);
         let potez_Ke7: Potez = Potez::new(E_FILE, 8, E_FILE, 7, Promocija::None);
-        let tabla7: Tabla = tabla4.tabla_nakon_validnog_poteza(&potez_Bc5).tabla_nakon_validnog_poteza(&potez_Bxc6).tabla_nakon_validnog_poteza(&potez_Ke7);
-        assert_eq!(1, tabla7.pre_koliko_poteza_je_50_move_rule_pomeren());
-        assert_eq!(true, tabla7.beli_je_na_potezu());
-        assert_eq!(true, Tabla::figura_je_pojedena(&tabla7.crne_figure, LEVI_KONJ));
-        assert_eq!(37, Tabla::ukupna_vrednost_nepojedenih_figura(&tabla7.crne_figure));
-        assert_eq!(40, Tabla::ukupna_vrednost_nepojedenih_figura(&tabla7.bele_figure));
-        assert_eq!(Figura::LOVAC.vrednost(), (Tabla::koja_figura_se_figura_nalazi_na_polju(&File_rank{file: C_FILE, rank:5}, &tabla7.crne_figure)).unwrap().vrednost());
-        assert_eq!(Figura::PIJUN.vrednost(), (Tabla::koja_figura_se_figura_nalazi_na_polju(&File_rank{file: E_FILE, rank: 4}, &tabla7.bele_figure)).unwrap().vrednost());
+        let tabla_kraj: Tabla = tabla4.tabla_nakon_validnog_poteza(&potez_Bc5).tabla_nakon_validnog_poteza(&potez_Bxc6)
+        .tabla_nakon_validnog_poteza(&potez_e6).tabla_nakon_validnog_poteza(&potez_a3).tabla_nakon_validnog_poteza(&potez_Ke7);
+ 
+        assert_eq!(1, tabla_kraj.pre_koliko_poteza_je_50_move_rule_pomeren());
+        assert_eq!(true, tabla_kraj.beli_je_na_potezu());
+        assert_eq!(true, Tabla::figura_je_pojedena(&tabla_kraj.crne_figure, LEVI_KONJ));
+        assert_eq!(15, Tabla::broj_nepojedenih_figura(&tabla_kraj.crne_figure));
+        assert_eq!(40, Tabla::ukupna_vrednost_nepojedenih_figura(&tabla_kraj.bele_figure));
+        assert_eq!(37, Tabla::ukupna_vrednost_nepojedenih_figura(&tabla_kraj.crne_figure));
+        assert_eq!(Figura::LOVAC.vrednost(), (Tabla::koja_figura_se_figura_nalazi_na_polju(&File_rank{file: C_FILE, rank:5}, &tabla_kraj.crne_figure)).unwrap().vrednost());
+        assert_eq!(Figura::PIJUN.vrednost(), (Tabla::koja_figura_se_figura_nalazi_na_polju(&File_rank{file: E_FILE, rank: 4}, &tabla_kraj.bele_figure)).unwrap().vrednost());
     }
 
+    fn potezi_ka_promociji_e4_d5_exd5_c6_dxc6_Nf6_cxb7_h6_bxa8Queen_Nc6() -> Tabla {
+        let e4: Potez = Potez::new(E_FILE, 2, E_FILE, 4, Promocija::None);
+        let d5: Potez = Potez::new(D_FILE, 7, D_FILE, 5, Promocija::None);
+        let exd5: Potez = Potez::new(E_FILE, 4, D_FILE, 5, Promocija::None);
+        let c6: Potez = Potez::new(C_FILE, 7, C_FILE, 6, Promocija::None);
+        let dxc6: Potez = Potez::new(D_FILE, 5, C_FILE, 6, Promocija::None);
+        let Nf6: Potez = Potez::new(G_FILE, 8, F_FILE, 6, Promocija::None);
+        let cxb7: Potez = Potez::new(C_FILE, 6, B_FILE, 7, Promocija::None);
+        let h6: Potez = Potez::new(A_FILE, 7, A_FILE, 6, Promocija::None);
+        let bxa8Queen: Potez = Potez::new(B_FILE, 7, A_FILE, 8, Promocija::KRALJICA);
+        let Nc6: Potez = Potez::new(B_FILE, 8, C_FILE, 6, Promocija::None);
+
+        let tabla: Tabla = Tabla::pocetna_pozicija();
+        tabla.tabla_nakon_validnog_poteza(&e4).tabla_nakon_validnog_poteza(&d5).
+        tabla_nakon_validnog_poteza(&exd5).tabla_nakon_validnog_poteza(&c6)
+        .tabla_nakon_validnog_poteza(&dxc6)
+        .tabla_nakon_validnog_poteza(&Nf6)
+        .tabla_nakon_validnog_poteza(&cxb7)
+        .tabla_nakon_validnog_poteza(&h6)
+        .tabla_nakon_validnog_poteza(&bxa8Queen)
+        .tabla_nakon_validnog_poteza(&Nc6)
+    }
+    #[test]
+    fn testiraj_promociju(){
+       let tabla: Tabla = potezi_ka_promociji_e4_d5_exd5_c6_dxc6_Nf6_cxb7_h6_bxa8Queen_Nc6();
+       assert_eq!(Figura::KRALJICA.vrednost(), Tabla::koja_figura_se_nalazi_u_bitu(&tabla.bele_figure, 12).unwrap().vrednost());
+       assert_eq!(Figura::KRALJICA.vrednost(), Tabla::koja_figura_se_figura_nalazi_na_polju(&File_rank{file:A_FILE, rank:8}, &tabla.bele_figure).unwrap().vrednost());
+    }
+
+    #[test]
+    fn testiraj_ukupna_vrednost_nepojedenih_figura(){
+        let tabla: Tabla = potezi_ka_promociji_e4_d5_exd5_c6_dxc6_Nf6_cxb7_h6_bxa8Queen_Nc6();
+        assert_eq!(48, Tabla::ukupna_vrednost_nepojedenih_figura(&tabla.bele_figure));
+        assert_eq!(32, Tabla::ukupna_vrednost_nepojedenih_figura(&tabla.crne_figure));
+    }
     
+    #[test]
+    fn testiraj_broj_nepojedenih_figura1(){
+        let tabla: Tabla = potezi_ka_promociji_e4_d5_exd5_c6_dxc6_Nf6_cxb7_h6_bxa8Queen_Nc6();
+        assert_eq!(16, Tabla::broj_nepojedenih_figura(&tabla.bele_figure));
+        assert_eq!(12, Tabla::broj_nepojedenih_figura(&tabla.crne_figure));
+    }
+
+    #[test]
+    fn testiraj_broj_nepojedenih_figura2(){
+        let tabla: Tabla = Tabla::pocetna_pozicija();
+        let tabla2: Tabla = tabla.odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 7, F_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 4, F_FILE, 5);
+
+        assert_eq!(15, Tabla::broj_nepojedenih_figura(&tabla2.crne_figure));
+        assert_eq!(16, Tabla::broj_nepojedenih_figura(&tabla2.bele_figure));
+    }
 }

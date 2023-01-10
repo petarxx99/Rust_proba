@@ -253,4 +253,18 @@ pub fn map_redni_broj_to_figure_unsafe(redni_broj: usize) -> Option<Figura> {
 }
 
 
+mod test_normalna_tabla{
+    use crate::tabla::{Tabla, KRALJICA};
 
+    use super::Figura;
+
+    #[test]
+    fn testiraj_koja_figura_se_nalazi_u_bitu(){
+        let tabla: Tabla = Tabla::pocetna_pozicija();
+        let pijun: Figura = Tabla::koja_figura_se_nalazi_u_bitu(&tabla.bele_figure, 9).unwrap();
+        let kraljica: Figura = Tabla::koja_figura_se_nalazi_u_bitu(&tabla.crne_figure, KRALJICA).unwrap();
+
+        assert_eq!(pijun.vrednost(), Figura::PIJUN.vrednost());
+        assert_eq!(kraljica.vrednost(), Figura::KRALJICA.vrednost());
+    }
+}
