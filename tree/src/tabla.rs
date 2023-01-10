@@ -276,13 +276,13 @@ impl Tabla {
     12. bit cuva informaciju o tome da li je crna kraljeva rokada moguca.*/
     pub fn rokada(&self) -> Rokada {
         let bela_kraljicina_rokada_vise_nije_moguca = (self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu
-        & (1 << 8)) == 1;
+        & (1 << 8)) != 0;
         let bela_kraljeva_rokada_vise_nije_moguca = (self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu
-        & (1<<9)) == 1;
+        & (1<<9)) != 0;
         let crna_kraljicina_rokada_vise_nije_moguca = (self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu
-        & (1<<10)) == 1;
+        & (1<<10)) != 0;
         let crna_kraljeva_rokada_vise_nije_moguca = (self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu
-        & (1<<11)) == 1; 
+        & (1<<11)) != 0; 
 
         return Rokada {
             bela_kraljicina_rokada_vise_nije_moguca,
@@ -552,7 +552,7 @@ impl Tabla {
 mod tabla_tests{
     use crate::tabla::KRALJICA;
 
-    use super::{Tabla, E_FILE};
+    use super::{Tabla, E_FILE, Rokada};
 
 
     #[test]
@@ -592,6 +592,26 @@ mod tabla_tests{
         let mut tabla: Tabla = Tabla::pocetna_pozicija();
         tabla.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu =  Tabla::dodaj_fajl_pijuna_koji_se_pomerio_2_polja(tabla.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu,  E_FILE as i32);
         assert_eq!(E_FILE, tabla.fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu().unwrap());
+    }
+
+    #[test]
+    fn test_onemoguci_rokadu(){
+        let nula: i32 = 0;
+        let rokada: Rokada = Rokada{
+            bela_kraljeva_rokada_vise_nije_moguca: false,
+            bela_kraljicina_rokada_vise_nije_moguca: true,
+            crna_kraljicina_rokada_vise_nije_moguca: false,
+            crna_kraljeva_rokada_vise_nije_moguca: true
+        };
+        let bitfield = Tabla::onemoguci_rokadu(nula, &rokada);
+        assert_ne!(bitfield, 0);
+        let mut tabla = Tabla::pocetna_pozicija();
+        tabla.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu = bitfield;
+        let rokada2: Rokada = tabla.rokada();
+        assert_eq!(true, rokada2.bela_kraljicina_rokada_vise_nije_moguca);
+        assert_eq!(true, rokada2.crna_kraljeva_rokada_vise_nije_moguca);
+        assert_eq!(false, rokada2.bela_kraljeva_rokada_vise_nije_moguca);
+        assert_eq!(false, rokada2.crna_kraljicina_rokada_vise_nije_moguca);
     }
 }
 
