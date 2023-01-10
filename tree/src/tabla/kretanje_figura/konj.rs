@@ -35,7 +35,7 @@ pub fn prirodno_kretanje_konja(
 
     pub fn konj_napada_kralja<T>(tabla: &T, polje_na_kom_se_nalazim: u8, kralj_je_beli: bool) -> bool
     where T: Ima_podatke_o_tabli{
-        let polje_kralja = tabla.pozicija_protivnickog_kralja();
+        let polje_kralja = tabla.pozicija_kralja(kralj_je_beli);
         konj_napada_polje(polje_kralja, tabla, polje_na_kom_se_nalazim, !kralj_je_beli)
     }
 

@@ -1,22 +1,50 @@
 use crate::tabla::{Rokada, Tabla, File_rank, H_FILE, A_FILE, G_FILE, Ima_podatke_o_tabli};
 
+use super::figure::abs;
+use super::figure::ako_su_validni_dodaj_u_vektor;
 
 pub fn prirodno_kretanje_kralja(
     polje_na_kom_se_nalazim: u8,
     rokada: &Rokada, 
     fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>{
-        Vec::new()
+        let (rank_u8, file_u8) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
+        let rank: i32 = rank_u8 as i32;
+        let file: i32 = file_u8 as i32;
+
+        let mut polja: Vec<u8> = Vec::new();
+        ako_su_validni_dodaj_u_vektor(&mut polja, rank, file-1);
+        ako_su_validni_dodaj_u_vektor(&mut polja, rank-1, file-1);
+        ako_su_validni_dodaj_u_vektor(&mut polja, rank-1, file);
+        ako_su_validni_dodaj_u_vektor(&mut polja, rank-1, file+1);
+        ako_su_validni_dodaj_u_vektor(&mut polja, rank, file+1);
+        ako_su_validni_dodaj_u_vektor(&mut polja, rank+1, file+1);
+        ako_su_validni_dodaj_u_vektor(&mut polja, rank, file+1);
+        ako_su_validni_dodaj_u_vektor(&mut polja, rank-1, file+1);
+        polja
     }
 
 pub fn kralj_napada_kralja<T>(tabla: &T, polje_kralja: u8, kralj_je_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
-    false
+    kralj_napada_polje(tabla.pozicija_kralja(kralj_je_beli), tabla, polje_kralja, !kralj_je_beli)
 }
+
+
 
 pub fn kralj_napada_polje<T>(polje: u8, tabla: &T, polje_kralja: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
-    false
+    let (rank, file) = Tabla::broj_to_rank_file(polje);
+    let (moj_rank, moj_file) = Tabla::broj_to_rank_file(polje_kralja);
+
+    if moj_rank == rank && abs(file as i32 - moj_file as i32) == 1 {
+        return true;
+    }
+    if abs(moj_rank as i32 - rank as i32) == 1 && abs(moj_file as i32 - file as i32) == 1{
+        return true;
+    }
+    moj_file == file && abs(rank as i32 - moj_rank as i32) == 1
 }
+
+
 
 #[cfg(test)]
 pub mod test_kralj{

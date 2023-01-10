@@ -1,25 +1,84 @@
 use crate::tabla::{Rokada, Tabla, File_rank, H_FILE, A_FILE, G_FILE, Ima_podatke_o_tabli};
-
+use super::figure::abs;
+use super::figure::ako_su_validni_dodaj_u_vektor;
 
 
 pub fn polja_na_koja_ide_top(
     polje_na_kom_se_nalazim: u8,
     rokada: &Rokada, 
     fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>{
-         Vec::new()
+
+         let mut polja: Vec<u8> = Vec::new();
+         let (rank_u8, file_u8) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
+
+         for i in A_FILE..(H_FILE+1){
+            for j in 1..9 {
+                if i == file_u8 && j==rank_u8{
+                    continue;
+                }
+                polja.push(Tabla::file_rank_to_broj(i, j))
+            }
+         }
+         polja
     }
 
 pub fn top_napada_kralja<T>(tabla: &T, polje_na_kom_se_nalazim: u8, kralj_je_beo: bool) -> bool
 where T: Ima_podatke_o_tabli
 {
-    let polje_kralja: u8 = tabla.pozicija_protivnickog_kralja();
+    let polje_kralja: u8 = tabla.pozicija_kralja(kralj_je_beo);
     top_napada_polje(polje_kralja, tabla, polje_na_kom_se_nalazim, !kralj_je_beo)
 }
 
 pub fn top_napada_polje<T>(polje: u8, tabla: &T, polje_na_kom_se_nalazim: u8, ja_sam_beo: bool) -> bool
 where T: Ima_podatke_o_tabli
 {
-    false
+    let (rank, file) = Tabla::broj_to_rank_file(polje);
+    let (moj_rank, moj_file) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
+    if moj_rank == rank && moj_file == file {
+        return false /* Figura ne moze da napada polje na kom se nalazi. */
+    }
+    if moj_rank != rank && moj_file != file {
+        return false  /* Top napada vodoravno, ili horizontalno. */
+    }
+    /* Posle ovih uslova je ustanovljeno da se top nalazi vodoravno ili horizontalno u odnosu
+    na polje koje napada. */
+
+    if abs(moj_rank as i32 - rank as i32) == 1 || abs(moj_file as i32 - file as i32) == 1 {
+        return true; /* Ako je top odmah pored mete, onda ne moze da bude nista izmedju topa i mete. */
+    }
+
+    let mut polja: Vec<u8> = Vec::new();
+
+    if moj_rank == rank {    
+        let min_file: u8;
+        let max_file: u8;
+        if moj_file < file {
+            min_file = moj_file;
+            max_file = file;
+        } else {
+            min_file = file;
+            max_file = moj_file;
+        }        
+        for i in (min_file+1)..max_file{
+            polja.push(Tabla::file_rank_to_broj(i, rank));
+        }
+        return tabla.da_li_su_polja_prazna(&polja)
+    }
+
+    /* Slucaj kad je isti fajl, a razlicit rank. */
+    if moj_rank < rank {
+        for i in (moj_rank+1)..rank{
+            polja.push(Tabla::file_rank_to_broj(file, i));
+        }
+        tabla.da_li_su_polja_prazna(&polja)
+    } else{
+        for i in (rank+1)..moj_rank{
+            polja.push(Tabla::file_rank_to_broj(file, i));
+        }
+        tabla.da_li_su_polja_prazna(&polja)
+    }
+
+    
 }
 
 

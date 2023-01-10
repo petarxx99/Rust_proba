@@ -151,7 +151,7 @@ pub fn print_size_of_Tabla(){
 
 pub trait Ima_podatke_o_tabli{
     fn da_li_su_polja_prazna(&self, polja: &[u8]) -> bool;
-    fn pozicija_protivnickog_kralja(&self) -> u8;
+    fn pozicija_kralja(&self, kralj_je_bele_boje: bool) -> u8;
     fn polja_nisu_napadnuta(&self, polja: &Vec<u8>, bele_ne_crne_figure_napadaju: bool) -> bool;
 }
 
@@ -165,8 +165,8 @@ impl Ima_podatke_o_tabli for Tabla {
         true
     }
 
-    fn pozicija_protivnickog_kralja(&self) -> u8 {
-        if self.beli_je_na_potezu() {
+    fn pozicija_kralja(&self, kralj_je_bele_boje: bool) -> u8 {
+        if !kralj_je_bele_boje {
             self.crne_figure[KRALJ]
         } else {
             self.bele_figure[KRALJ]

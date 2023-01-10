@@ -4,7 +4,7 @@ kralj::{prirodno_kretanje_kralja, kralj_napada_kralja, kralj_napada_polje},
 lovac::{prirodno_kretanje_lovca,lovac_napada_kralja, lovac_napada_polje},
  kraljica::{prirodno_kretanje_kraljice, kraljica_napada_kralja, kraljica_napada_polje},
   pijun::{prirodno_kretanje_pijuna, pijun_napada_kralja, pijun_napada_polje},
-   top::{polja_na_koja_ide_top, top_napada_kralja, top_napada_polje}}, Figura, Tabla};
+   top::{polja_na_koja_ide_top, top_napada_kralja, top_napada_polje}}, Figura, Tabla, A_FILE, H_FILE};
 
 use super::Figura_interfejs;
 
@@ -40,10 +40,22 @@ impl Figura {
                 Some(f_interfejs) => rezultat.push(f_interfejs)
             }
         }
-        
+
         rezultat
     }
 }
 
 
 
+pub fn abs(broj: i32) -> u32 {
+    if broj<0 {
+        return (-broj) as u32
+    }
+    broj as u32
+}
+
+pub fn ako_su_validni_dodaj_u_vektor(vektor: &mut Vec<u8>, rank: i32, file: i32){
+    if rank >= 1 && rank <=8 && file>=A_FILE as i32 && file <=H_FILE as i32{
+       vektor.push(Tabla::file_rank_to_broj(file as u8, rank as u8));
+    }
+}
