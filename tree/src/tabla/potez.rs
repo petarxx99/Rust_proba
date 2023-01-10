@@ -107,6 +107,7 @@ pub struct Potez{
     pub promocija: Promocija,
 }
 
+#[repr(C)]
 struct Potez_private {
     broj_figure: usize,
     file: u8,
@@ -236,14 +237,18 @@ impl Figura {
 impl Tabla {
     pub fn ukupna_vrednost_nepojedenih_figura(figure: &[u8;16]) -> u8 {
         let mut vrednost_nepojedenih_figura: f32 = 0.0;
+     /* Mesta 1,2,3,4,5,6,7 cuvaju figure koje nisu pijuni (broj 0 je kralj, zato ga preskacem.) */   
         for i in 1..8 {
             if !Tabla::figura_je_pojedena(figure, i){
-                vrednost_nepojedenih_figura += Figura::map_redni_broj_to_figure_unsafe(i).unwrap().vrednost();
+                let figura: Figura = Figura::map_redni_broj_to_figure_unsafe(i).unwrap();
+                vrednost_nepojedenih_figura += figura.vrednost();
             }
         }
+    /* Sada obradjujem pijune i figure koje su nastale promocijom pijuna. */    
         for i in 8..16 {
             if Tabla::pijun_je_promovisan(figure[i]){
-                vrednost_nepojedenih_figura += Tabla::u_sta_je_pijun_promovisan(figure, i).vrednost();
+                let promovisana_figura: Figura = Tabla::u_sta_je_pijun_promovisan(figure, i);
+                vrednost_nepojedenih_figura += promovisana_figura.vrednost();
             } else {
                 vrednost_nepojedenih_figura += Figura::PIJUN.vrednost();
             }
