@@ -104,7 +104,7 @@ pub fn prirodno_kretanje_kralja<T>(
 
 pub fn kralj_napada_kralja<T>(tabla: &T, polje_kralja: u8, kralj_je_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
-    let polje_protivnickog_kralja: u8 = tabla.pozicija_kralja(!kralj_je_beli);
+    let polje_protivnickog_kralja: u8 = tabla.pozicija_kralja(kralj_je_beli);
     kralj_napada_polje(polje_protivnickog_kralja, tabla, polje_kralja, !kralj_je_beli)
 }
 
@@ -135,14 +135,14 @@ pub mod test_kralj{
 
     fn test_kralj_napada_kralja(file_belog_kralja: u8, rank_belog_kralja: u8,
          file_crnog_kralja: u8, rank_crnog_kralja: u8, 
-        lovac_napada_kralja: bool){
+        napadam_kralja: bool){
             let tabla: Tabla = Tabla::pocetna_pozicija()
             .odigraj_validan_potez_bez_promocije(E_FILE, 1, file_belog_kralja, rank_belog_kralja)
             .odigraj_validan_potez_bez_promocije(E_FILE, 8, file_crnog_kralja, rank_crnog_kralja);
             
             let polje: u8 = Tabla::file_rank_to_broj(file_belog_kralja, rank_crnog_kralja);
             assert_eq!(
-                lovac_napada_kralja,
+                napadam_kralja,
                  crate::tabla::kretanje_figura::kralj::kralj_napada_kralja(&tabla, polje, false));
         }
 
