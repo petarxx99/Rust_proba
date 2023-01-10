@@ -3,10 +3,12 @@ use super::figure::abs;
 use super::figure::ako_su_validni_dodaj_u_vektor;
 
 
-pub fn polja_na_koja_ide_top(
+pub fn polja_na_koja_ide_top<T>(
+    tabla: &T,
     polje_na_kom_se_nalazim: u8,
     rokada: &Rokada, 
-    fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>{
+    fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>
+    where T:Ima_podatke_o_tabli{
 
          let mut polja: Vec<u8> = Vec::new();
          let (rank_u8, file_u8) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
@@ -97,7 +99,7 @@ mod top_test{
 
     fn na_koliko_polja(file: u8, rank: u8) -> usize{
         let polje_na_koje_idem: u8= Tabla::file_rank_to_broj(file, rank);
-        polja_na_koja_ide_top(polje_na_koje_idem, &Rokada::new_sve_rokade_moguce(), None, true).len()
+        polja_na_koja_ide_top(&Tabla::pocetna_pozicija(), polje_na_koje_idem, &Rokada::new_sve_rokade_moguce(), None, true).len()
     }
     #[test]
     fn top_sa_a4_vidi_15_polja(){

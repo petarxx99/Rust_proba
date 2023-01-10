@@ -24,9 +24,11 @@ where T: Ima_podatke_o_tabli
 {
     pub prirodno_kretanje: 
     fn(
-         polje_na_kom_se_nalazim: u8,
-         rokada: &Rokada, 
-         fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>,
+        tabla: &T,
+        polje_na_kom_se_nalazim: u8,
+        rokada: &Rokada, 
+        fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>,
+        
 
     pub napadam_kralja: fn(tabla: &T, polje_na_kom_se_nalazim: u8, kralj_je_beo: bool) -> bool,
     pub napadam_polje: fn(polje: u8, tabla: &T, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool) -> bool,
@@ -37,10 +39,11 @@ impl<T> Figura_interfejs<T>
 where T: Ima_podatke_o_tabli
 {
     pub fn new(prirodno_kretanje: fn(
+        tabla: &T,
         polje_na_kom_se_nalazim: u8,
         rokada: &Rokada, 
         fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>,
-
+       
         napadam_kralja: fn(tabla: &T, polje_na_kom_se_nalazim: u8, kralj_je_beo: bool) -> bool,
         napadam_polje: fn(polje: u8, tabla: &T, polje_na_kom_se_nalazim: u8, kralj_je_beli: bool) -> bool,
     ) -> Figura_interfejs<T>{

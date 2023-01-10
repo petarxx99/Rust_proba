@@ -3,10 +3,12 @@ use crate::tabla::{Rokada, Tabla, File_rank, H_FILE, A_FILE, G_FILE, Ima_podatke
 use super::figure::abs;
 use super::figure::ako_su_validni_dodaj_u_vektor;
 
-pub fn prirodno_kretanje_kralja(
+pub fn prirodno_kretanje_kralja<T>(
+    tabla: &T,
     polje_na_kom_se_nalazim: u8,
     rokada: &Rokada, 
-    fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>{
+    fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>
+    where T:Ima_podatke_o_tabli{
         let (rank_u8, file_u8) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
         let rank: i32 = rank_u8 as i32;
         let file: i32 = file_u8 as i32;
@@ -119,7 +121,7 @@ pub mod test_kralj{
         }
 
         fn broj_kraljevih_poteza(file: u8, rank: u8, rokada: &Rokada, ja_sam_beli: bool) -> usize {
-            prirodno_kretanje_kralja(Tabla::file_rank_to_broj(file, rank), rokada, None, ja_sam_beli).len()
+            prirodno_kretanje_kralja(&Tabla::pocetna_pozicija(),Tabla::file_rank_to_broj(file, rank), rokada, None, ja_sam_beli).len()
         }
 
         #[test]

@@ -2,10 +2,12 @@ use crate::tabla::{Rokada, Tabla, File_rank, H_FILE, A_FILE, G_FILE, Ima_podatke
 use std::boxed::Box;
 
 
-pub fn prirodno_kretanje_konja(
+pub fn prirodno_kretanje_konja<T>(
+    tabla: &T,
     polje_na_kom_se_nalazim: u8,
     rokada: &Rokada, 
-    fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>{
+    fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>
+    where T:Ima_podatke_o_tabli{
 
         let (rank_u8, file_u8) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
         let rank: i32 = rank_u8 as i32;
@@ -72,7 +74,7 @@ pub fn prirodno_kretanje_konja(
         use super::{prirodno_kretanje_konja, konj_napada_kralja};
 
         fn gde_moze_konj(file: u8, rank: u8) -> Vec<u8> {
-            prirodno_kretanje_konja(Tabla::file_rank_to_broj(file, rank), &Rokada::new_sve_rokade_moguce(), None, true)
+            prirodno_kretanje_konja(&Tabla::pocetna_pozicija(), Tabla::file_rank_to_broj(file, rank), &Rokada::new_sve_rokade_moguce(), None, true)
         }
 
         #[test]

@@ -2,12 +2,14 @@ use crate::tabla::{Rokada, Tabla, File_rank, H_FILE, A_FILE, G_FILE, Ima_podatke
 
 use super::{lovac::{prirodno_kretanje_lovca, lovac_napada_polje}, top::{polja_na_koja_ide_top, top_napada_polje}};
 
-pub fn prirodno_kretanje_kraljice(
+pub fn prirodno_kretanje_kraljice<T>(
+    tabla: &T,
     polje_na_kom_se_nalazim: u8,
     rokada: &Rokada, 
-    fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>{
-        let dijagonale: Vec<u8> = prirodno_kretanje_lovca(polje_na_kom_se_nalazim, rokada, fajl_pijuna_2_polja, ja_sam_beli);
-        let mut kao_top: Vec<u8> = polja_na_koja_ide_top(polje_na_kom_se_nalazim, rokada, fajl_pijuna_2_polja, ja_sam_beli);
+    fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>
+    where T:Ima_podatke_o_tabli{
+        let dijagonale: Vec<u8> = prirodno_kretanje_lovca(tabla, polje_na_kom_se_nalazim, rokada, fajl_pijuna_2_polja, ja_sam_beli);
+        let mut kao_top: Vec<u8> = polja_na_koja_ide_top(tabla, polje_na_kom_se_nalazim, rokada, fajl_pijuna_2_polja, ja_sam_beli);
         
         for polje in dijagonale {
             kao_top.push(polje);

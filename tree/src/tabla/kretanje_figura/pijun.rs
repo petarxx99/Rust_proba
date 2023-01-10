@@ -5,10 +5,13 @@ use super::figure::abs;
 
 
 
-pub fn prirodno_kretanje_pijuna(
+pub fn prirodno_kretanje_pijuna<T>(
+    tabla: &T,
     polje_na_kom_se_nalazim: u8,
     rokada: &Rokada, 
-    fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>{
+    fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>
+    where T:Ima_podatke_o_tabli
+    {
         let polja: Vec<u8> = Vec::new();
         let (rank, file) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
         
