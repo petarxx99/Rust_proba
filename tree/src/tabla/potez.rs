@@ -18,9 +18,9 @@ impl Potez_info {
     }
 
     pub fn zapisi_info_ako_je_pomeren_pijun(&mut self, figure: &[u8;16], potez: &Potez_bits) {
-        if Tabla::proveri_da_li_je_pomeren_pijun(figure, potez.broj_figure) {
+        if Tabla::proveri_da_li_je_pomeren_pijun(figure, potez.broj_figure as usize) {
             self.pijun_pomeren_ili_figura_pojedena = true;
-            let (start_rank, start_file) = Tabla::broj_to_rank_file(figure[potez.broj_figure]);
+            let (start_rank, start_file) = Tabla::broj_to_rank_file(figure[potez.broj_figure as usize]);
            
             if (start_rank as i32 - potez.rank as i32 == 2) || (potez.rank as i32 - start_rank as i32 == 2) {
                 self.file_pijuna_pomerenog_2_polja = Some(potez.file as u32);
@@ -63,7 +63,7 @@ impl Potez_info {
 /* Posebno obradjujem slucaj kad se pomera kralj, jer kralj ima istu lokaciju kao figure koje
 su sklonjene sa table. */
     fn updejtuj_figure_koje_su_odigrale_potez(&mut self, figure: & mut[u8; 16], potez: &Potez_bits){
-        if potez.broj_figure == KRALJ {
+        if potez.broj_figure == KRALJ as u8{
             self.rokada_onemogucena.pomeren_kralj(self.beli_je_odigrao_potez);
             Tabla::pomeri_kralja(figure, potez.file, potez.rank);
             return;
@@ -72,14 +72,14 @@ su sklonjene sa table. */
         self.zapisi_info_ako_je_pomeren_pijun(figure, potez);
         self.zapisi_info_za_rokadu(potez);
 
-        Tabla::updejtuj_polozaj_figure_unsafe(figure, potez.broj_figure,
+        Tabla::updejtuj_polozaj_figure_unsafe(figure, potez.broj_figure as usize,
              &File_rank::new(potez.file, potez.rank));
 
         let promocija: &Promocija = &potez.promocija;
         match promocija {
                 &Promocija::None => {},
                 _promocija => {
-                     Tabla::promovisi_pijuna(figure, potez.broj_figure, _promocija);
+                     Tabla::promovisi_pijuna(figure, potez.broj_figure as usize, _promocija);
                 }
         }       
     } 
@@ -98,16 +98,16 @@ su sklonjene sa table. */
     }
 
     fn zapisi_info_za_rokadu(&mut self, potez: &Potez_bits){
-         if self.beli_je_odigrao_potez && potez.broj_figure == LEVI_TOP {
+         if self.beli_je_odigrao_potez && potez.broj_figure == LEVI_TOP as u8{
             self.rokada_onemogucena.bela_kraljicina_rokada_vise_nije_moguca = true;
          }
-         if self.beli_je_odigrao_potez && potez.broj_figure == DESNI_TOP {
+         if self.beli_je_odigrao_potez && potez.broj_figure == DESNI_TOP as u8{
             self.rokada_onemogucena.bela_kraljeva_rokada_vise_nije_moguca = true;
          }
-         if !self.beli_je_odigrao_potez && potez.broj_figure == LEVI_TOP {
+         if !self.beli_je_odigrao_potez && potez.broj_figure == LEVI_TOP as u8{
             self.rokada_onemogucena.crna_kraljicina_rokada_vise_nije_moguca = true;
          }
-         if !self.beli_je_odigrao_potez && potez.broj_figure == DESNI_TOP {
+         if !self.beli_je_odigrao_potez && potez.broj_figure == DESNI_TOP as u8{
             self.rokada_onemogucena.crna_kraljeva_rokada_vise_nije_moguca = true;
          }
        
@@ -126,7 +126,7 @@ pub struct Potez{
 
 #[repr(C)]
 struct Potez_bits {
-    broj_figure: usize,
+    broj_figure: u8,
     file: u8,
     rank: u8,
     promocija: Promocija,
@@ -152,12 +152,12 @@ impl Potez {
    /* Kralja za svaki slucaj treniram kao specijalni slucaj, jer figure koje su sklonjene sa table imaju istu lokaciju kao kralj.
    Ovaj deo koda je nepotreban, ali za slucaj da u buducnosti promenim redosled figura ovaj deo koda bi ucinio da takva promena ne proizvede bagove.*/     
         if Tabla::to_je_file_rank_polja(figure[KRALJ], self.start_file, self.start_rank){
-            return Some(Potez_bits{broj_figure: KRALJ, file: self.file_destinacije, rank: self.rank_destinacije, promocija: self.promocija.copy()})
+            return Some(Potez_bits{broj_figure: KRALJ as u8, file: self.file_destinacije, rank: self.rank_destinacije, promocija: self.promocija.copy()})
         }
 
         for broj_figure in 0..figure.len() {
             if Tabla::to_je_file_rank_polja(figure[broj_figure], self.start_file, self.start_rank) {
-                return Some(Potez_bits { broj_figure, file: self.file_destinacije, rank: self.rank_destinacije, promocija: self.promocija.copy()})
+                return Some(Potez_bits { broj_figure: broj_figure as u8, file: self.file_destinacije, rank: self.rank_destinacije, promocija: self.promocija.copy()})
             }
         }
         None
@@ -369,7 +369,7 @@ mod potez_tests{
         assert_eq!(F_FILE, tabla2.fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu().unwrap());
         assert_eq!(false, tabla2.beli_je_na_potezu());
 
-        let tabla3: Tabla = tabla2.tabla_nakon_poteza_private(&Potez_bits { broj_figure: LEVI_KONJ, file: B_FILE, rank: 3, promocija: Promocija::None });
+        let tabla3: Tabla = tabla2.tabla_nakon_poteza_private(&Potez_bits { broj_figure: LEVI_KONJ as u8, file: B_FILE, rank: 3, promocija: Promocija::None });
         assert_eq!(1, tabla3.pre_koliko_poteza_je_50_move_rule_pomeren());
         assert_eq!(true, tabla3.beli_je_na_potezu());    
     }
