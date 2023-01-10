@@ -512,4 +512,16 @@ mod potez_tests{
          assert_eq!(true, Tabla::figura_je_pojedena(&tabla.bele_figure, LEVI_TOP));
          assert_eq!(true, Tabla::figura_je_pojedena(&tabla.bele_figure,DESNI_KONJ));
     }
+
+    #[test]
+    fn test_zapisi_info_za_rokadu(){
+        let tabla: Tabla = Tabla::pocetna_pozicija().odigraj_validan_potez_bez_promocije(H_FILE, 1, H_FILE, 3); 
+        assert_eq!(true, tabla.rokada().bela_kraljeva_rokada_vise_nije_moguca);
+        let tabla2: Tabla = tabla.odigraj_validan_potez_bez_promocije(A_FILE, 8, A_FILE, 6);
+        assert_eq!(true, tabla.rokada().crna_kraljicina_rokada_vise_nije_moguca);
+        let tabla3: Tabla = tabla.odigraj_validan_potez_bez_promocije(A_FILE, 1, A_FILE, 3);
+        assert_eq!(true, tabla.rokada().bela_kraljicina_rokada_vise_nije_moguca);
+        let tabla4: Tabla = tabla.odigraj_validan_potez_bez_promocije(H_FILE, 8, H_FILE, 6);
+        assert_eq!(true, tabla.rokada().crna_kraljeva_rokada_vise_nije_moguca);
+    }
 }
