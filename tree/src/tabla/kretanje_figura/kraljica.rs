@@ -1,5 +1,11 @@
 use crate::tabla::{Rokada, Tabla, File_rank, H_FILE, A_FILE, G_FILE, Ima_podatke_o_tabli};
 
+pub fn prirodno_kretanje_kraljice(
+    polje_na_kom_se_nalazim: u8,
+    rokada: &Rokada, 
+    fajl_pijuna_2_polja: Option<u8>) -> Vec<u8>{
+        Vec::new()
+    }
 
 pub fn kraljica_napada_kralja<T>(tabla: &T, polje_kraljice: u8) -> bool 
 where T:Ima_podatke_o_tabli{

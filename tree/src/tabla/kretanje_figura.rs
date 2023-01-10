@@ -5,6 +5,7 @@ use super::{Rokada, Tabla, Ima_podatke_o_tabli};
 mod konj;
 mod top;
 mod kraljica;
+mod lovac;
 
 pub struct Figura_interfejs<T> 
 where T: Ima_podatke_o_tabli
