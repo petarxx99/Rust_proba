@@ -131,6 +131,10 @@ struct Potez_bits {
     rank: u8,
     promocija: Promocija,
 }
+pub fn print_size_of_Potez_bits(){
+    println!("{}", std::mem::size_of::<Potez_bits>());
+}
+
 
 impl Potez {
 
