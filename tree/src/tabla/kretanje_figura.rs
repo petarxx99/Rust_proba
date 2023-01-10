@@ -16,7 +16,7 @@ where T: Ima_podatke_o_tabli
     fn(
          polje_na_kom_se_nalazim: u8,
          rokada: &Rokada, 
-         fajl_pijuna_2_polja: Option<u8>) -> Vec<u8>,
+         fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>,
 
     pub da_li_napadam_protivnickog_kralja: fn(tabla: &T, polje_na_kom_se_nalazim: u8) -> bool,
 }
@@ -28,7 +28,7 @@ where T: Ima_podatke_o_tabli
     pub fn new(prirodno_kretanje: fn(
         polje_na_kom_se_nalazim: u8,
         rokada: &Rokada, 
-        fajl_pijuna_2_polja: Option<u8>) -> Vec<u8>,
+        fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>,
 
         da_li_napadam_protivnickog_kralja: fn(tabla: &T, polje_na_kom_se_nalazim: u8) -> bool
     ) -> Figura_interfejs<T>{

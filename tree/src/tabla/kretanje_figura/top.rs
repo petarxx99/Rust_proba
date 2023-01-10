@@ -5,7 +5,7 @@ use crate::tabla::{Rokada, Tabla, File_rank, H_FILE, A_FILE, G_FILE, Ima_podatke
 pub fn polja_na_koja_ide_top(
     polje_na_kom_se_nalazim: u8,
     rokada: &Rokada, 
-    fajl_pijuna_2_polja: Option<u8>) -> Vec<u8>{
+    fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>{
          Vec::new()
     }
 
@@ -27,10 +27,14 @@ mod top_test{
         tabla1.odigraj_validan_potez_bez_promocije(E_FILE, 8, file_kralja, rank_kralja)
     }
 
+    fn na_koliko_polja(file: u8, rank: u8) -> usize{
+        let polje_na_koje_idem: u8= Tabla::file_rank_to_broj(file, rank);
+        polja_na_koja_ide_top(polje_na_koje_idem, &Rokada::new_sve_rokade_moguce(), None, true).len()
+    }
     #[test]
     fn top_sa_a4_vidi_15_polja(){
         let tabla: Tabla = top_na_polje_kralj_na_polje(A_FILE, 4, G_FILE, 8);
-        assert_eq!(15, polja_na_koja_ide_top(Tabla::file_rank_to_broj(A_FILE, 4), &Rokada::new_sve_rokade_moguce(), None).len());
+        assert_eq!(15, na_koliko_polja(A_FILE, 4));
 
     }
 

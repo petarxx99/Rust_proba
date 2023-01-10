@@ -6,7 +6,7 @@ use crate::tabla::{Rokada, Tabla, File_rank, H_FILE, A_FILE, G_FILE, Ima_podatke
 pub fn prirodno_kretanje_pijuna(
     polje_na_kom_se_nalazim: u8,
     rokada: &Rokada, 
-    fajl_pijuna_2_polja: Option<u8>) -> Vec<u8>{
+    fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>{
         Vec::new()
     }
 
@@ -19,7 +19,9 @@ where T:Ima_podatke_o_tabli{
 
 #[cfg(test)]
 pub mod test_pijun{
-    use crate::tabla::{Tabla, E_FILE,A_FILE, B_FILE, C_FILE, D_FILE, F_FILE, G_FILE, H_FILE};
+    use crate::tabla::{Tabla, E_FILE,A_FILE, B_FILE, C_FILE, D_FILE, F_FILE, G_FILE, H_FILE, Rokada};
+
+    use super::prirodno_kretanje_pijuna;
 
 
     fn beli_pijun_napada_kralja(file_belog_pijuna: u8, rank_belog_pijuna: u8,
@@ -91,20 +93,44 @@ pub mod test_pijun{
             crni_pijun_napada_kralja(F_FILE, 4, D_FILE, 2, false);
        }
 
-
-       fn na_koliko_polja_mogu_da_odem(polje: u8, file_pijuna_koji_se_pomerio_2_polja: Option<u8>, beli: bool) -> u8{
-        match file_pijuna_koji_se_pomerio_2_polja {
-            None => bez_en_passant(polje, beli),
-            Some(file) => sa_en_passant(polje, file, beli)
-        }
+       fn broj_polja(start_file: u8, start_rank: u8, en_passant_file: Option<u8>, ja_sam_beli: bool) -> usize{
+            let start_polje = Tabla::file_rank_to_broj(start_file, start_rank);
+            prirodno_kretanje_pijuna(start_polje, &Rokada::new_sve_rokade_moguce(), en_passant_file, ja_sam_beli).len()
        }
 
-       fn bez_en_passant(polje: u8, beli: bool) -> u8{
-            
+       #[test]
+       fn beli_pijun_sa_e4_moze_na_1_polja(){
+            assert_eq!(2, broj_polja(E_FILE, 4, None, true));
        }
 
-       fn sa_en_passant(polje: u8, fajl_pijuna_koji_se_pomerio_2_polje: u8, beli: bool) -> u8{
+       #[test]
+       fn beli_pijun_sa_e2_moze_na_2_polja(){
+            assert_eq!(2, broj_polja(E_FILE, 2, None, true));
+       }
 
+       #[test]
+       fn beli_pijun_sa_g6_moze_na_3_polja(){
+            assert_eq!(3, broj_polja(G_FILE, 6, None, true));
+       }
+
+       #[test]
+       fn en_passant_beli_pijun_na_f5_moze_na_2_polja_jer_je_g5_odigran(){
+            assert_eq!(2, broj_polja(F_FILE, 5, Some(G_FILE), true));
+       }
+
+       #[test]
+       fn crni_moze_na_2_polja_zbog_en_passant(){
+            assert_eq!(2, broj_polja(B_FILE, 4, Some(C_FILE), false));
+       }
+
+       #[test]
+       fn crni_moze_sa_c3_na_3_polja(){
+            assert_eq!(3, broj_polja(C_FILE, 3, None, false));
+       }
+
+       #[test]
+       fn crni_moze_sa_g7_na_2_polja(){
+            assert_eq!(2, broj_polja(G_FILE, 7, None, false));
        }
 
 }

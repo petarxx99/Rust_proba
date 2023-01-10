@@ -3,7 +3,7 @@ use crate::tabla::{Rokada, Tabla, File_rank, H_FILE, A_FILE, G_FILE, Ima_podatke
 pub fn prirodno_kretanje_lovca(
     polje_na_kom_se_nalazim: u8,
     rokada: &Rokada, 
-    fajl_pijuna_2_polja: Option<u8>) -> Vec<u8>{
+    fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>{
         Vec::new()
     }
 
@@ -20,7 +20,7 @@ pub mod test_lovac{
         fn test_kretanje_lovca(broj_polja: usize, file_lovca: u8, rank_lovca: u8){
             let polje: u8 = Tabla::file_rank_to_broj(file_lovca, rank_lovca);
             assert_eq!(broj_polja, 
-                crate::tabla::kretanje_figura::lovac::prirodno_kretanje_lovca(polje, &Rokada::new_sve_rokade_moguce(), None).len());
+                crate::tabla::kretanje_figura::lovac::prirodno_kretanje_lovca(polje, &Rokada::new_sve_rokade_moguce(), None, true).len());
         }
 
         #[test]
