@@ -523,7 +523,7 @@ mod potez_tests{
 
         let tabla3: Tabla = tabla2.odigraj_validan_potez_bez_promocije(A_FILE, 1, A_FILE, 3);
         assert_eq!(true, tabla3.rokada().bela_kraljicina_rokada_vise_nije_moguca);
-        
+
         let tabla4: Tabla = tabla3.odigraj_validan_potez_bez_promocije(H_FILE, 8, H_FILE, 6);
         assert_eq!(true, tabla4.rokada().crna_kraljeva_rokada_vise_nije_moguca);
     }
@@ -540,5 +540,6 @@ mod potez_tests{
    /* promocija */     .odigraj_validan_potez_bez_promocije(E_FILE, 8, C_FILE, 8);
         assert_eq!(Tabla::file_rank_to_broj(F_FILE, 1), tabla.bele_figure[DESNI_TOP]);
         assert_eq!(Tabla::file_rank_to_broj(D_FILE, 8), tabla.crne_figure[LEVI_TOP]);
+        assert_eq!(true, tabla.rokada().nijedna_rokada_nije_moguca());
     }
 }

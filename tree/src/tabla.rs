@@ -92,6 +92,20 @@ impl Rokada {
     pub fn new_sve_rokade_moguce() -> Rokada{
         Rokada { bela_kraljicina_rokada_vise_nije_moguca: false, bela_kraljeva_rokada_vise_nije_moguca: false, crna_kraljicina_rokada_vise_nije_moguca: false, crna_kraljeva_rokada_vise_nije_moguca: false }
     }
+
+    pub fn nijedna_rokada_ove_boje_nije_moguca(&self, beli: bool) -> bool {
+        if beli {
+            return self.bela_kraljeva_rokada_vise_nije_moguca && self.bela_kraljicina_rokada_vise_nije_moguca;
+        } else {
+            return self.crna_kraljeva_rokada_vise_nije_moguca && self.crna_kraljicina_rokada_vise_nije_moguca;
+        }
+    }
+    pub fn nijedna_rokada_nije_moguca(&self)->bool{
+        self.bela_kraljeva_rokada_vise_nije_moguca
+        && self.bela_kraljicina_rokada_vise_nije_moguca
+        && self.crna_kraljeva_rokada_vise_nije_moguca
+        && self.crna_kraljicina_rokada_vise_nije_moguca
+    }
 }
 
 
