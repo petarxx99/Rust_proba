@@ -13,7 +13,7 @@ pub fn prirodno_kretanje_pijuna<T>(
     where T:Ima_podatke_o_tabli
 
     {
-        let polja: Vec<u8> = Vec::new();
+        let mut polja: Vec<u8> = Vec::new();
         let (rank, file) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
         let (pocetni_rank, napred_jedno_polje, en_passant_rank) = pocetni_rank_napred_jedno_polje_en_passant_rank(ja_sam_beli);
 /* Pijun moze da ide jedno polje napred. */
