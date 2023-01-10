@@ -172,7 +172,7 @@ pub mod test_pijun{
 
        #[test]
        fn beli_pijun_sa_e4_moze_na_1_polja(){
-            assert_eq!(2, broj_polja(E_FILE, 4, None, true));
+            assert_eq!(1, broj_polja(E_FILE, 4, None, true));
        }
 
        #[test]
