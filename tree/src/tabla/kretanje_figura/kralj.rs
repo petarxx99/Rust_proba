@@ -1,3 +1,4 @@
+use crate::tabla::{F_FILE, C_FILE, B_FILE, D_FILE};
 use crate::tabla::{Rokada, Tabla, File_rank, H_FILE, A_FILE, G_FILE, Ima_podatke_o_tabli};
 
 use super::figure::abs;
@@ -22,8 +23,84 @@ pub fn prirodno_kretanje_kralja<T>(
         ako_su_validni_dodaj_u_vektor(&mut polja, rank+1, file+1);
         ako_su_validni_dodaj_u_vektor(&mut polja, rank, file+1);
         ako_su_validni_dodaj_u_vektor(&mut polja, rank-1, file+1);
+
+        probaj_rokadu(&mut polja, tabla, rokada, ja_sam_beli);
         polja
     }
+
+    fn probaj_rokadu<T>(polja: &mut Vec<u8>, tabla: &T, rokada: &Rokada, ja_sam_beli: bool)
+    where T: Ima_podatke_o_tabli{
+        if rokada.nijedna_rokada_nije_moguca() {
+            return;
+        }
+    
+        let (kraljicina_rokada, kraljeva_rokada, kraljev_rank) = 
+        get_kraljicina_rokada_kraljeva_rokada_kraljev_rank(rokada, ja_sam_beli);
+
+        if moze_kraljeva_rokada(kraljev_rank, tabla, kraljeva_rokada, ja_sam_beli){
+            polja.push(Tabla::file_rank_to_broj(G_FILE, kraljev_rank));
+        }
+
+        if moze_kraljicina_rokada(kraljev_rank, tabla, kraljicina_rokada, ja_sam_beli){
+            polja.push(Tabla::file_rank_to_broj(C_FILE, kraljev_rank));
+        }
+    }
+
+    fn moze_kraljicina_rokada<T>(kraljev_rank: u8, tabla: &T, kraljicina_rokada: bool, ja_sam_beli: bool) -> bool 
+    where T: Ima_podatke_o_tabli
+    {
+        let mut polja_izmedju_kraljicine_rokade: Vec<u8> = vec![
+            Tabla::file_rank_to_broj(D_FILE, kraljev_rank),
+            Tabla::file_rank_to_broj(C_FILE, kraljev_rank),
+            Tabla::file_rank_to_broj(B_FILE, kraljev_rank),
+        ];
+        if kraljicina_rokada && tabla.da_li_su_polja_prazna(&polja_izmedju_kraljicine_rokade){
+            polja_izmedju_kraljicine_rokade.pop();
+            if tabla.polja_nisu_napadnuta(&polja_izmedju_kraljicine_rokade, !ja_sam_beli){
+                return true;
+            }
+        }
+        false
+    }
+
+
+    fn moze_kraljeva_rokada<T>(kraljev_rank: u8, tabla: &T, kraljeva_rokada: bool, ja_sam_beli: bool) -> bool
+    where T:Ima_podatke_o_tabli
+    {
+        let polja_izmedju_kraljeve_rokade: Vec<u8> = vec![
+            Tabla::file_rank_to_broj(F_FILE, kraljev_rank),
+            Tabla::file_rank_to_broj(G_FILE, kraljev_rank)
+        ];
+        if kraljeva_rokada &&
+            tabla.da_li_su_polja_prazna(&polja_izmedju_kraljeve_rokade)
+            &&
+            tabla.polja_nisu_napadnuta(&polja_izmedju_kraljeve_rokade, !ja_sam_beli){
+                return true;
+            }
+
+        false    
+    }
+
+
+    fn get_kraljicina_rokada_kraljeva_rokada_kraljev_rank(rokada: &Rokada, ja_sam_beli: bool) 
+    -> (bool, bool, u8) {
+          if ja_sam_beli{
+                return (
+                        !rokada.bela_kraljeva_rokada_vise_nije_moguca,
+                        !rokada.bela_kraljicina_rokada_vise_nije_moguca,
+                        1 as u8
+                        )  
+            } 
+
+            return
+                (
+                    !rokada.crna_kraljeva_rokada_vise_nije_moguca,
+                    !rokada.crna_kraljicina_rokada_vise_nije_moguca,
+                     8 as u8
+                )
+            
+        }
+    
 
 pub fn kralj_napada_kralja<T>(tabla: &T, polje_kralja: u8, kralj_je_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
