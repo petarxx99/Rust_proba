@@ -17,7 +17,7 @@ impl Potez_info {
          }
     }
 
-    pub fn zapisi_info_ako_je_pomeren_pijun(&mut self, figure: &[u8;16], potez: &Potez_private) {
+    pub fn zapisi_info_ako_je_pomeren_pijun(&mut self, figure: &[u8;16], potez: &Potez_bits) {
         if Tabla::proveri_da_li_je_pomeren_pijun(figure, potez.broj_figure) {
             self.pijun_pomeren_ili_figura_pojedena = true;
             let (start_rank, start_file) = Tabla::broj_to_rank_file(figure[potez.broj_figure]);
@@ -49,7 +49,7 @@ impl Potez_info {
     }
 
 
-    fn updejtuj_figure_nakon_odigranog_poteza(&mut self, bele_figure: &mut [u8; 16], crne_figure: &mut [u8;16], potez: &Potez_private, beli_je_odigrao_potez: bool){
+    fn updejtuj_figure_nakon_odigranog_poteza(&mut self, bele_figure: &mut [u8; 16], crne_figure: &mut [u8;16], potez: &Potez_bits, beli_je_odigrao_potez: bool){
         
         if beli_je_odigrao_potez {
             self.updejtuj_figure_koje_su_odigrale_potez(bele_figure, potez);
@@ -62,7 +62,7 @@ impl Potez_info {
 
 /* Posebno obradjujem slucaj kad se pomera kralj, jer kralj ima istu lokaciju kao figure koje
 su sklonjene sa table. */
-    fn updejtuj_figure_koje_su_odigrale_potez(&mut self, figure: & mut[u8; 16], potez: &Potez_private){
+    fn updejtuj_figure_koje_su_odigrale_potez(&mut self, figure: & mut[u8; 16], potez: &Potez_bits){
         if potez.broj_figure == KRALJ {
             self.rokada_onemogucena.pomeren_kralj(self.beli_je_odigrao_potez);
             Tabla::pomeri_kralja(figure, potez.file, potez.rank);
@@ -85,7 +85,7 @@ su sklonjene sa table. */
     /*https://rust-lang.github.io/rfcs/2005-match-ergonomics.html
     https://stackoverflow.com/questions/36590549/what-is-the-syntax-to-match-on-a-reference-to-an-enum */
 
-    fn updejtuj_figure_protiv_kojih_je_odigran_potez(&mut self, figure: &mut[u8;16], potez: &Potez_private){
+    fn updejtuj_figure_protiv_kojih_je_odigran_potez(&mut self, figure: &mut[u8;16], potez: &Potez_bits){
         let polje_destinacije: u8 = Tabla::file_rank_to_broj(potez.file, potez.rank);
         for i in 0..figure.len() {
             if Tabla::polja_se_slazu(polje_destinacije, figure[i]){
@@ -108,7 +108,7 @@ pub struct Potez{
 }
 
 #[repr(C)]
-struct Potez_private {
+struct Potez_bits {
     broj_figure: usize,
     file: u8,
     rank: u8,
@@ -121,7 +121,7 @@ impl Potez {
         Potez{start_file, start_rank, file_destinacije, rank_destinacije, promocija}
     }
 
-    fn to_potez_private(&self, tabla: &Tabla) -> Option<Potez_private> {
+    fn to_Potez_bits(&self, tabla: &Tabla) -> Option<Potez_bits> {
         let mut figure: &[u8;16];
      /* Potez se kombinuje sa tablom (tj. pozicijom) nad kojom se potez igra, tako da je boja igraca
      koji odigrao potez ista ona koju ima tabla nad kojom potez treba da se odigra. */
@@ -135,12 +135,12 @@ impl Potez {
    /* Kralja za svaki slucaj treniram kao specijalni slucaj, jer figure koje su sklonjene sa table imaju istu lokaciju kao kralj.
    Ovaj deo koda je nepotreban, ali za slucaj da u buducnosti promenim redosled figura ovaj deo koda bi ucinio da takva promena ne proizvede bagove.*/     
         if Tabla::to_je_file_rank_polja(figure[KRALJ], self.start_file, self.start_rank){
-            return Some(Potez_private{broj_figure: KRALJ, file: self.file_destinacije, rank: self.rank_destinacije, promocija: self.promocija.copy()})
+            return Some(Potez_bits{broj_figure: KRALJ, file: self.file_destinacije, rank: self.rank_destinacije, promocija: self.promocija.copy()})
         }
 
         for broj_figure in 0..figure.len() {
             if Tabla::to_je_file_rank_polja(figure[broj_figure], self.start_file, self.start_rank) {
-                return Some(Potez_private { broj_figure, file: self.file_destinacije, rank: self.rank_destinacije, promocija: self.promocija.copy()})
+                return Some(Potez_bits { broj_figure, file: self.file_destinacije, rank: self.rank_destinacije, promocija: self.promocija.copy()})
             }
         }
         None
@@ -154,12 +154,12 @@ impl Tabla {
     }
 
     pub fn tabla_nakon_validnog_poteza(&self, potez: &Potez) -> Tabla{
-        let potez_private: Potez_private = potez.to_potez_private(self).expect("Uneli ste nevalidan potez.");
-        let tabla_nakon_poteza: Tabla = self.tabla_nakon_poteza_private(&potez_private);
+        let Potez_bits: Potez_bits = potez.to_Potez_bits(self).expect("Uneli ste nevalidan potez.");
+        let tabla_nakon_poteza: Tabla = self.tabla_nakon_poteza_private(&Potez_bits);
         tabla_nakon_poteza
     }
 
-    fn tabla_nakon_poteza_private(&self, potez: &Potez_private) -> Tabla{
+    fn tabla_nakon_poteza_private(&self, potez: &Potez_bits) -> Tabla{
         let mut bele_figure: [u8; 16] = self.bele_figure.clone();
         let mut crne_figure: [u8; 16] = self.crne_figure.clone();
         let mut bitfield: i32 = self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu;
@@ -328,12 +328,12 @@ impl Tabla {
 mod potez_tests{
     use crate::tabla::{Tabla, E_FILE, B_FILE, C_FILE, F_FILE, LEVI_KONJ, DESNI_LOVAC, Promocija, G_FILE, DESNI_TOP, File_rank, A_FILE, D_FILE, H_FILE};
 
-    use super::{Potez, Potez_private, Potez_info};
+    use super::{Potez, Potez_bits, Potez_info};
     use crate::tabla::{Figura};
 
     #[test]
     fn info_o_pijunu(){
-        let potez: Potez_private = Potez_private{broj_figure: 12, file: E_FILE, rank: 4, promocija: Promocija::None};
+        let potez: Potez_bits = Potez_bits{broj_figure: 12, file: E_FILE, rank: 4, promocija: Promocija::None};
         let mut potez_info: Potez_info = Potez_info::new();
         let mut tabla: Tabla = Tabla::pocetna_pozicija();
         potez_info.zapisi_info_ako_je_pomeren_pijun(&tabla.bele_figure, &potez);
@@ -347,24 +347,24 @@ mod potez_tests{
     #[test]
     fn testiraj_tabla_nakon_poteza_private(){
         let tabla: Tabla = Tabla::pocetna_pozicija();
-        let potez_private: Potez_private = Potez_private{broj_figure: 14, file: F_FILE, rank: 4, promocija: Promocija::None};
-        let tabla2: Tabla = tabla.tabla_nakon_poteza_private(&potez_private);
+        let Potez_bits: Potez_bits = Potez_bits{broj_figure: 14, file: F_FILE, rank: 4, promocija: Promocija::None};
+        let tabla2: Tabla = tabla.tabla_nakon_poteza_private(&Potez_bits);
         assert_eq!(F_FILE, tabla2.fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu().unwrap());
         assert_eq!(false, tabla2.beli_je_na_potezu());
 
-        let tabla3: Tabla = tabla2.tabla_nakon_poteza_private(&Potez_private { broj_figure: LEVI_KONJ, file: B_FILE, rank: 3, promocija: Promocija::None });
+        let tabla3: Tabla = tabla2.tabla_nakon_poteza_private(&Potez_bits { broj_figure: LEVI_KONJ, file: B_FILE, rank: 3, promocija: Promocija::None });
         assert_eq!(1, tabla3.pre_koliko_poteza_je_50_move_rule_pomeren());
         assert_eq!(true, tabla3.beli_je_na_potezu());    
     }
 
     #[test]
-    fn to_potez_private(){
+    fn to_Potez_bits(){
         let tabla: Tabla = Tabla::pocetna_pozicija();
         let potez: Potez = Potez::new(E_FILE, 2, E_FILE, 4, Promocija::None);
-        let potez_private: Potez_private = potez.to_potez_private(&tabla).unwrap();
-        assert_eq!(12, potez_private.broj_figure);
-        assert_eq!(E_FILE, potez_private.file);
-        assert_eq!(4, potez_private.rank);
+        let Potez_bits: Potez_bits = potez.to_Potez_bits(&tabla).unwrap();
+        assert_eq!(12, Potez_bits.broj_figure);
+        assert_eq!(E_FILE, Potez_bits.file);
+        assert_eq!(4, Potez_bits.rank);
     }
 
     #[test]

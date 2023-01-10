@@ -132,6 +132,21 @@ pub fn print_size_of_Tabla(){
     println!("{}", std::mem::size_of::<Tabla>());
 }
 
+
+pub trait Zna_da_li_su_polja_prazna{
+    fn da_li_su_polja_prazna(&self, polja: &[u8]) -> bool;
+}
+
+impl Zna_da_li_su_polja_prazna for Tabla {
+    fn da_li_su_polja_prazna(&self, polja: &[u8]) -> bool {
+        for polje in polja {
+            if !self.polje_je_prazno_preko_broja(*polje){
+                return false
+            }
+        }
+        true
+    }
+}
     /* Prvih 8 bajtova cuvaju informacije o tome gde se figure nalaze. 
 Prvih 6 bajtova cuvaju informaciju o tome gde se nalaze na tabli. 
 Informaciju o tome da li se figura nalazi na tabli cuvam tako sto figure koje su sklonjene sa table
