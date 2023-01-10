@@ -49,6 +49,7 @@ pub mod test_pijun{
                     crate::tabla::kretanje_figura::pijun::pijun_napada_kralja(&tabla, polje));
         }
 
+        
 
        #[test]
        fn beli_pijun_sa_c5_napada_kralja_na_b6(){
@@ -88,6 +89,22 @@ pub mod test_pijun{
        #[test]
        fn crni_pijun_sa_f4_ne_napada_kralja_na_d2(){
             crni_pijun_napada_kralja(F_FILE, 4, D_FILE, 2, false);
+       }
+
+
+       fn na_koliko_polja_mogu_da_odem(polje: u8, file_pijuna_koji_se_pomerio_2_polja: Option<u8>){
+        match file_pijuna_koji_se_pomerio_2_polja {
+            None => {bez_en_passant(polje);},
+            Some(file) => {sa_en_passant(polje, file);}
+        }
+       }
+
+       fn bez_en_passant(polje: u8){
+
+       }
+
+       fn sa_en_passant(polje: u8, fajl_pijuna_koji_se_pomerio_2_polje: u8){
+
        }
 
 }
