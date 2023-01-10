@@ -102,9 +102,9 @@ mod top_test{
         polja_na_koja_ide_top(&Tabla::pocetna_pozicija(), polje_na_koje_idem, &Rokada::new_sve_rokade_moguce(), None, true).len()
     }
     #[test]
-    fn top_sa_a4_vidi_15_polja(){
+    fn top_sa_a4_vidi_14_polja(){
         let tabla: Tabla = top_na_polje_kralj_na_polje(A_FILE, 4, G_FILE, 8);
-        assert_eq!(15, na_koliko_polja(A_FILE, 4));
+        assert_eq!(14, na_koliko_polja(A_FILE, 4));
 
     }
 
@@ -116,8 +116,8 @@ mod top_test{
     }
 
     #[test]
-    fn top_sa_h3_vidi_kralja_na_h3_kad_nema_nista_izmedju(){
-        let tabla: Tabla = top_na_polje_kralj_na_polje(H_FILE, 3, H_FILE, 3);
+    fn top_sa_h3_vidi_kralja_na_h6_kad_nema_nista_izmedju(){
+        let tabla: Tabla = top_na_polje_kralj_na_polje(H_FILE, 3, H_FILE, 6);
         assert_eq!(true, testiraj_top_napada_crnog_kralja(&tabla, H_FILE, 3));
     }
 

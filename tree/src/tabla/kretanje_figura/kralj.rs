@@ -21,8 +21,8 @@ pub fn prirodno_kretanje_kralja<T>(
         ako_su_validni_dodaj_u_vektor(&mut polja, rank-1, file+1);
         ako_su_validni_dodaj_u_vektor(&mut polja, rank, file+1);
         ako_su_validni_dodaj_u_vektor(&mut polja, rank+1, file+1);
-        ako_su_validni_dodaj_u_vektor(&mut polja, rank, file+1);
-        ako_su_validni_dodaj_u_vektor(&mut polja, rank-1, file+1);
+        ako_su_validni_dodaj_u_vektor(&mut polja, rank+1, file);
+        ako_su_validni_dodaj_u_vektor(&mut polja, rank+1, file-1);
 
         probaj_rokadu(&mut polja, tabla, rokada, ja_sam_beli);
         polja

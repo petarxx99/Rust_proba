@@ -109,8 +109,8 @@ pub mod test_lovac{
         }
 
         #[test]
-        fn lovac_vidi_12_polja_sa_d3(){
-            test_kretanje_lovca(12, D_FILE, 3);
+        fn lovac_vidi_11_polja_sa_d3(){
+            test_kretanje_lovca(11, D_FILE, 3);
         }
 
         #[test]
