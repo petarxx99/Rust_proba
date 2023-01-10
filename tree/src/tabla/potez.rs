@@ -125,7 +125,7 @@ pub struct Potez{
 }
 
 #[repr(C)]
-struct Potez_bits {
+pub struct Potez_bits {
     broj_figure: u8,
     file: u8,
     rank: u8,
