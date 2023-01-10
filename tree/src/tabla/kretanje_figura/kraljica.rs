@@ -1,15 +1,24 @@
 use crate::tabla::{Rokada, Tabla, File_rank, H_FILE, A_FILE, G_FILE, Ima_podatke_o_tabli};
 
+use super::{lovac::prirodno_kretanje_lovca, top::polja_na_koja_ide_top};
+
 pub fn prirodno_kretanje_kraljice(
     polje_na_kom_se_nalazim: u8,
     rokada: &Rokada, 
     fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>{
-        Vec::new()
+        let dijagonale: Vec<u8> = prirodno_kretanje_lovca(polje_na_kom_se_nalazim, rokada, fajl_pijuna_2_polja, ja_sam_beli);
+        let mut kao_top: Vec<u8> = polja_na_koja_ide_top(polje_na_kom_se_nalazim, rokada, fajl_pijuna_2_polja, ja_sam_beli);
+        
+        for polje in dijagonale {
+            kao_top.push(polje);
+        }
+        kao_top
     }
 
 pub fn kraljica_napada_kralja<T>(tabla: &T, polje_kraljice: u8, kralj_je_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
-    false
+    let polje_kralja: u8 = tabla.pozicija_kralja(kralj_je_beli);
+    kraljica_napada_polje(polje_kralja, tabla, polje_kraljice, !kralj_je_beli)
 }
 
 pub fn kraljica_napada_polje<T>(polje: u8, tabla: &T, polje_kraljice: u8, ja_sam_beli: bool) -> bool 
