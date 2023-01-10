@@ -177,8 +177,8 @@ pub mod test_kralj{
         }
 
         #[test]
-        fn na_c5_e4(){
-            test_kralj_napada_kralja(C_FILE, 5, E_FILE, 4, true);
+        fn kralj_na_c5_ne_napada_kralja_na_e4(){
+            test_kralj_napada_kralja(C_FILE, 5, E_FILE, 4, false);
         }
 
         #[test]
