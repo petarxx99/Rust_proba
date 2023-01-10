@@ -9,7 +9,11 @@ pub fn prirodno_kretanje_pijuna(
     polje_na_kom_se_nalazim: u8,
     rokada: &Rokada, 
     fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>{
-        Vec::new()
+        let polja: Vec<u8> = Vec::new();
+        let (rank, file) = Tabla::broj_to_rank_file(polje_na_kojem_se_nalazim);
+        
+
+        polja
     }
 
 pub fn pijun_napada_kralja<T>(tabla: &T, polje_pijuna: u8, kralj_je_beli: bool) -> bool 
