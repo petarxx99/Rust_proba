@@ -326,7 +326,7 @@ impl Tabla {
 
 #[cfg(test)]
 mod potez_tests{
-    use crate::tabla::{Tabla, E_FILE, B_FILE, C_FILE, F_FILE, LEVI_KONJ, DESNI_LOVAC, Promocija, G_FILE, DESNI_TOP, File_rank, A_FILE, D_FILE};
+    use crate::tabla::{Tabla, E_FILE, B_FILE, C_FILE, F_FILE, LEVI_KONJ, DESNI_LOVAC, Promocija, G_FILE, DESNI_TOP, File_rank, A_FILE, D_FILE, H_FILE};
 
     use super::{Potez, Potez_private, Potez_info};
     use crate::tabla::{Figura};
@@ -473,5 +473,14 @@ mod potez_tests{
 
         assert_eq!(15, Tabla::broj_nepojedenih_figura(&tabla2.crne_figure));
         assert_eq!(16, Tabla::broj_nepojedenih_figura(&tabla2.bele_figure));
+    }
+
+    #[test]
+    fn testiraj_polje_je_prazno(){
+        let tabla: Tabla = Tabla::pocetna_pozicija();
+        assert_eq!(true, tabla.polje_je_prazno(&File_rank{file: G_FILE, rank: 4}));
+        assert_eq!(false, tabla.polje_je_prazno(&File_rank{file: E_FILE, rank: 1}));
+        assert_eq!(false, tabla.polje_je_prazno(&File_rank{file: H_FILE, rank: 7}));
+        assert_eq!(false, tabla.polje_je_prazno(&File_rank{file: B_FILE, rank: 8}));
     }
 }
