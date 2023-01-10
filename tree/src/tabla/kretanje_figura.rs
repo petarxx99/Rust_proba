@@ -13,7 +13,7 @@ where T: Ima_podatke_o_tabli
          rokada: &Rokada, 
          fajl_pijuna_2_polja: Option<u8>) -> Vec<u8>,
 
-    pub da_li_napadam_protivnickog_kralja: fn(tabla: &T) -> bool,
+    pub da_li_napadam_protivnickog_kralja: fn(tabla: &T, polje_na_kom_se_nalazim: u8) -> bool,
 }
 
 
@@ -25,7 +25,7 @@ where T: Ima_podatke_o_tabli
         rokada: &Rokada, 
         fajl_pijuna_2_polja: Option<u8>) -> Vec<u8>,
 
-        da_li_napadam_protivnickog_kralja: fn(tabla: &T) -> bool
+        da_li_napadam_protivnickog_kralja: fn(tabla: &T, polje_na_kom_se_nalazim: u8) -> bool
     ) -> Figura_interfejs<T>{
         Figura_interfejs{prirodno_kretanje, da_li_napadam_protivnickog_kralja}
     }
