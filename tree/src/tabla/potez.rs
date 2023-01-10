@@ -326,7 +326,7 @@ impl Tabla {
 
 #[cfg(test)]
 mod potez_tests{
-    use crate::tabla::{Tabla, E_FILE, B_FILE, C_FILE, F_FILE, LEVI_KONJ, DESNI_LOVAC, Promocija, G_FILE, DESNI_TOP, File_rank, A_FILE, D_FILE, H_FILE};
+    use crate::tabla::{Tabla, E_FILE, B_FILE, C_FILE, F_FILE, LEVI_KONJ, DESNI_LOVAC, Promocija, G_FILE, DESNI_TOP, File_rank, A_FILE, D_FILE, H_FILE, DESNI_KONJ, LEVI_TOP};
 
     use super::{Potez, Potez_bits, Potez_info};
     use crate::tabla::{Figura};
@@ -482,5 +482,17 @@ mod potez_tests{
         assert_eq!(false, tabla.polje_je_prazno(&File_rank{file: E_FILE, rank: 1}));
         assert_eq!(false, tabla.polje_je_prazno(&File_rank{file: H_FILE, rank: 7}));
         assert_eq!(false, tabla.polje_je_prazno(&File_rank{file: B_FILE, rank: 8}));
+    }
+
+    #[test]
+    fn testiraj_pojedene_figure_kad_se_pomeri_kralj(){
+        let tabla: Tabla = Tabla::pocetna_pozicija().
+        odigraj_validan_potez_bez_promocije(A_FILE, 1, C_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 7,C_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(H_FILE, 2, H_FILE, 3)
+        .odigraj_validan_potez_bez_promocije(H_FILE, 7, G_FILE, 1)
+        .odigraj_validan_potez_bez_promocije(E_FILE,1, E_FILE, 3);
+         assert_eq!(true, Tabla::figura_je_pojedena(&tabla.bele_figure, LEVI_TOP));
+         assert_eq!(true, Tabla::figura_je_pojedena(&tabla.bele_figure,DESNI_KONJ));
     }
 }

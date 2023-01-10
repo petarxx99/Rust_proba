@@ -3,6 +3,7 @@ use std::boxed::Box;
 
 use super::{Rokada, Tabla, Ima_podatke_o_tabli};
 mod konj;
+mod top;
 
 pub struct Figura_interfejs<T> 
 where T: Ima_podatke_o_tabli
