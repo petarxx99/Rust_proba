@@ -1,6 +1,6 @@
 use crate::tabla::{Rokada, Tabla, File_rank, H_FILE, A_FILE, G_FILE, Ima_podatke_o_tabli};
 
-use super::{lovac::prirodno_kretanje_lovca, top::polja_na_koja_ide_top};
+use super::{lovac::{prirodno_kretanje_lovca, lovac_napada_polje}, top::{polja_na_koja_ide_top, top_napada_polje}};
 
 pub fn prirodno_kretanje_kraljice(
     polje_na_kom_se_nalazim: u8,
@@ -23,7 +23,9 @@ where T:Ima_podatke_o_tabli{
 
 pub fn kraljica_napada_polje<T>(polje: u8, tabla: &T, polje_kraljice: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
-    false
+    lovac_napada_polje(polje, tabla, polje_kraljice, ja_sam_beli)
+    ||
+    top_napada_polje(polje, tabla, polje_kraljice, ja_sam_beli)
 }
 
 
