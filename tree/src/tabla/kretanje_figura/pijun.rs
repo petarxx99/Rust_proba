@@ -75,11 +75,11 @@ pub fn pijun_napada_polje<T>(polje: u8, tabla: &T, polje_pijuna: u8, ja_sam_beli
 where T:Ima_podatke_o_tabli{
     let (moj_rank, moj_file) = Tabla::broj_to_rank_file(polje_pijuna);
     let (rank_destinacije, file_destinacije) = Tabla::broj_to_rank_file(polje);
-
+   
     if abs(file_destinacije as i32 - moj_file as i32) != 1 {
         return false
     }
-
+    
     if ja_sam_beli && (rank_destinacije as i8 - moj_rank as i8) == 1 {
         return true
     }
@@ -102,7 +102,7 @@ pub mod test_pijun{
             let tabla: Tabla = Tabla::pocetna_pozicija()
             .odigraj_validan_potez_bez_promocije(E_FILE, 2, file_belog_pijuna, rank_belog_pijuna)
             .odigraj_validan_potez_bez_promocije(E_FILE, 8, file_kralja, rank_kralja);
-            
+ 
             let polje: u8 = Tabla::file_rank_to_broj(file_belog_pijuna, rank_belog_pijuna);
             assert_eq!(
                 pijun_napada_kralja,
@@ -131,8 +131,8 @@ pub mod test_pijun{
        }
 
        #[test]
-       fn beli_pijun_sa_f7_napada_kralja_na_h8(){
-            beli_pijun_napada_kralja(F_FILE, 7, H_FILE, 8, true);
+       fn beli_pijun_sa_f7_ne_napada_kralja_na_h8(){
+            beli_pijun_napada_kralja(F_FILE, 7, H_FILE, 8, false);
        }
 
        #[test]
