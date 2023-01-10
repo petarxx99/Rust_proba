@@ -104,7 +104,8 @@ pub fn prirodno_kretanje_kralja<T>(
 
 pub fn kralj_napada_kralja<T>(tabla: &T, polje_kralja: u8, kralj_je_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
-    kralj_napada_polje(tabla.pozicija_kralja(kralj_je_beli), tabla, polje_kralja, !kralj_je_beli)
+    let polje_protivnickog_kralja: u8 = tabla.pozicija_kralja(!kralj_je_beli);
+    kralj_napada_polje(polje_protivnickog_kralja, tabla, polje_kralja, !kralj_je_beli)
 }
 
 
