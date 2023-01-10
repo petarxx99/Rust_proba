@@ -160,7 +160,7 @@ impl Tabla {
 
 
       /* Vraca None, ako se figura iz ovog bita ne nalazi na tabli, ako je figura pojedena. */
-      fn koja_figura_se_nalazi_u_bitu(figure: &[u8; 16], broj_figure: usize) -> Option<Figura> {
+      pub fn koja_figura_se_nalazi_u_bitu(figure: &[u8; 16], broj_figure: usize) -> Option<Figura> {
 
         /* Ako figura nije kralj, ali je na poziciji svog kralja, to znaci da je figura sklonjena sa table.
         Na taj nacin skladistim informaciju da je figura sklonjena sa table, kako bih ustedeo memorijski prostor. */
