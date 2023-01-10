@@ -28,7 +28,21 @@ pub fn prirodno_kretanje_pijuna<T>(
         let rank_ispred = ((rank as i8) + napred_jedno_polje) as u8;
         za_slucaj_da_pijun_moze_da_jede_drugu_figuru(&mut polja, tabla, ja_sam_beli, file, rank_ispred);
 
+        if en_passant_rank == rank {
+            probaj_da_dodas_en_passant(&mut polja, &fajl_pijuna_2_polja, file, rank);
+        }
         polja
+    }
+
+    fn probaj_da_dodas_en_passant(polja: &mut Vec<u8>, file_pijun_za_en_passant: &Option<u8>, file: u8, rank_ispred: u8){
+        match file_pijun_za_en_passant{
+            &None => {},
+            &Some(en_passant_file) => {
+                if abs(file as i32 - en_passant_file as i32) == 1{
+                    polja.push(Tabla::file_rank_to_broj(en_passant_file, rank_ispred));
+                }
+            }
+        }
     }
 
     fn za_slucaj_da_pijun_moze_da_jede_drugu_figuru<T>(polja: &mut Vec<u8>, tabla: &T, ja_sam_beli: bool, file: u8, rank_ispred:u8)
