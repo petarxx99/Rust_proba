@@ -176,11 +176,11 @@ impl Tabla {
 
     pub fn tabla_nakon_validnog_poteza(&self, potez: &Potez) -> Tabla{
         let Potez_bits: Potez_bits = potez.to_Potez_bits(self).expect("Uneli ste nevalidan potez.");
-        let tabla_nakon_poteza: Tabla = self.tabla_nakon_poteza_private(&Potez_bits);
+        let tabla_nakon_poteza: Tabla = self.tabla_nakon_poteza_bits(&Potez_bits);
         tabla_nakon_poteza
     }
 
-    fn tabla_nakon_poteza_private(&self, potez: &Potez_bits) -> Tabla{
+    fn tabla_nakon_poteza_bits(&self, potez: &Potez_bits) -> Tabla{
         let mut bele_figure: [u8; 16] = self.bele_figure.clone();
         let mut crne_figure: [u8; 16] = self.crne_figure.clone();
         let mut bitfield: i32 = self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu;
@@ -362,14 +362,14 @@ mod potez_tests{
     }
 
     #[test]
-    fn testiraj_tabla_nakon_poteza_private(){
+    fn testiraj_tabla_nakon_poteza_bits(){
         let tabla: Tabla = Tabla::pocetna_pozicija();
         let Potez_bits: Potez_bits = Potez_bits{broj_figure: 14, file: F_FILE, rank: 4, promocija: Promocija::None};
-        let tabla2: Tabla = tabla.tabla_nakon_poteza_private(&Potez_bits);
+        let tabla2: Tabla = tabla.tabla_nakon_poteza_bits(&Potez_bits);
         assert_eq!(F_FILE, tabla2.fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu().unwrap());
         assert_eq!(false, tabla2.beli_je_na_potezu());
 
-        let tabla3: Tabla = tabla2.tabla_nakon_poteza_private(&Potez_bits { broj_figure: LEVI_KONJ as u8, file: B_FILE, rank: 3, promocija: Promocija::None });
+        let tabla3: Tabla = tabla2.tabla_nakon_poteza_bits(&Potez_bits { broj_figure: LEVI_KONJ as u8, file: B_FILE, rank: 3, promocija: Promocija::None });
         assert_eq!(1, tabla3.pre_koliko_poteza_je_50_move_rule_pomeren());
         assert_eq!(true, tabla3.beli_je_na_potezu());    
     }
@@ -516,7 +516,7 @@ mod potez_tests{
     #[test]
     fn test_zapisi_info_za_rokadu(){
         let tabla: Tabla = Tabla::pocetna_pozicija().odigraj_validan_potez_bez_promocije(H_FILE, 1, H_FILE, 3); 
-        assert_eq!(false, tabla.rokada().bela_kraljeva_rokada_vise_nije_moguca);
+        assert_eq!(true, tabla.rokada().bela_kraljeva_rokada_vise_nije_moguca);
 
         let tabla2: Tabla = tabla.odigraj_validan_potez_bez_promocije(A_FILE, 8, A_FILE, 6);
         assert_eq!(true, tabla2.rokada().crna_kraljicina_rokada_vise_nije_moguca);
@@ -528,6 +528,26 @@ mod potez_tests{
         assert_eq!(true, tabla4.rokada().crna_kraljeva_rokada_vise_nije_moguca);
     }
 
+    #[test]
+    fn test2_zapisi_info_za_rokadu(){
+        let mut potez_info: Potez_info = Potez_info::new();
+        let potez: Potez_bits = Potez_bits{
+            broj_figure: DESNI_TOP as u8,
+            file: H_FILE,
+            rank: 3,
+            promocija: Promocija::None,
+        };
+        potez_info.zapisi_info_za_rokadu(&potez);
+        assert_eq!(true, potez_info.rokada_onemogucena.bela_kraljeva_rokada_vise_nije_moguca);
+        
+    }
+
+    #[test]
+    fn testiraj_koja_figura_se_nalazi_u_polju(){
+        let tabla: Tabla = Tabla::pocetna_pozicija();
+        let polje:u8 = Tabla::file_rank_to_broj(H_FILE, 1);
+        Tabla::koja_figura_se_figura_nalazi_na_polju(&File_rank{file: H_FILE, rank:1}, &tabla.bele_figure);
+    }
     #[test]
     fn test_rokada(){
         let tabla: Tabla = Tabla::pocetna_pozicija().odigraj_validan_potez_bez_promocije(F_FILE, 1, F_FILE, 3)
@@ -541,5 +561,33 @@ mod potez_tests{
         assert_eq!(Tabla::file_rank_to_broj(F_FILE, 1), tabla.bele_figure[DESNI_TOP]);
         assert_eq!(Tabla::file_rank_to_broj(D_FILE, 8), tabla.crne_figure[LEVI_TOP]);
         assert_eq!(true, tabla.rokada().nijedna_rokada_nije_moguca());
+    }
+
+    #[test]
+    fn test_to_potez_bits(){
+        let potez: Potez = Potez::new(H_FILE, 1, H_FILE, 3, Promocija::None);
+        let tabla: Tabla = Tabla::pocetna_pozicija();
+        let potez_bits: Potez_bits = potez.to_Potez_bits(&tabla).unwrap();
+        assert_eq!(DESNI_TOP as u8, potez_bits.broj_figure);
+    }
+
+    #[test]
+    fn test_novi_potez(){
+        let potez: Potez = Potez::new(H_FILE, 1, H_FILE, 3, Promocija::None);
+        let tabla: Tabla = Tabla::pocetna_pozicija();
+        let potez_bits: Potez_bits = potez.to_Potez_bits(&tabla).unwrap();
+        let tabla2: Tabla = tabla.tabla_nakon_poteza_bits(&potez_bits);
+
+        assert_eq!(true, tabla2.rokada().bela_kraljeva_rokada_vise_nije_moguca);
+    }
+
+    #[test]
+    fn test_pracenje_rokade(){
+        let potez: Potez = Potez::new(H_FILE, 1, H_FILE, 3, Promocija::None);
+        let tabla: Tabla = Tabla::pocetna_pozicija();
+        let tabla2: Tabla = tabla.tabla_nakon_validnog_poteza(&potez);
+        assert_eq!(true, tabla2.rokada().bela_kraljeva_rokada_vise_nije_moguca);
+        let tabla3: Tabla = tabla.odigraj_validan_potez_bez_promocije(H_FILE, 1, H_FILE, 8);
+        assert_eq!(true, tabla3.rokada().bela_kraljeva_rokada_vise_nije_moguca);   
     }
 }

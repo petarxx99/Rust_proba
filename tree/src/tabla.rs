@@ -613,6 +613,8 @@ mod tabla_tests{
         assert_eq!(false, rokada2.bela_kraljeva_rokada_vise_nije_moguca);
         assert_eq!(false, rokada2.crna_kraljicina_rokada_vise_nije_moguca);
     }
+
+    
 }
 
     
