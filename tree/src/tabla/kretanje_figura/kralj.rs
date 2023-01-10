@@ -8,7 +8,7 @@ pub fn prirodno_kretanje_kralja(
         Vec::new()
     }
 
-pub fn kralj_napada_kralja<T>(tabla: &T, polje_kraljice: u8) -> bool 
+pub fn kralj_napada_kralja<T>(tabla: &T, polje_kralja: u8) -> bool 
 where T:Ima_podatke_o_tabli{
     false
 }
