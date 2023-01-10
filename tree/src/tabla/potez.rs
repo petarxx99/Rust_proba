@@ -70,6 +70,7 @@ su sklonjene sa table. */
         }
 
         self.zapisi_info_ako_je_pomeren_pijun(figure, potez);
+        self.zapisi_info_za_rokadu(potez);
 
         Tabla::updejtuj_polozaj_figure_unsafe(figure, potez.broj_figure,
              &File_rank::new(potez.file, potez.rank));
@@ -94,6 +95,22 @@ su sklonjene sa table. */
                 return;
             }
         }
+    }
+
+    fn zapisi_info_za_rokadu(&mut self, potez: &Potez_bits){
+         if self.beli_je_odigrao_potez && potez.broj_figure == LEVI_TOP {
+            self.rokada_onemogucena.bela_kraljicina_rokada_vise_nije_moguca = true;
+         }
+         if self.beli_je_odigrao_potez && potez.broj_figure == DESNI_TOP {
+            self.rokada_onemogucena.bela_kraljeva_rokada_vise_nije_moguca = true;
+         }
+         if !self.beli_je_odigrao_potez && potez.broj_figure == LEVI_TOP {
+            self.rokada_onemogucena.crna_kraljicina_rokada_vise_nije_moguca = true;
+         }
+         if !self.beli_je_odigrao_potez && potez.broj_figure == DESNI_TOP {
+            self.rokada_onemogucena.crna_kraljeva_rokada_vise_nije_moguca = true;
+         }
+       
     }
 
 }
