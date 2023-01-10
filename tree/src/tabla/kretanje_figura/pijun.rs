@@ -11,9 +11,43 @@ pub fn prirodno_kretanje_pijuna<T>(
     rokada: &Rokada, 
     fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>
     where T:Ima_podatke_o_tabli
+
     {
         let polja: Vec<u8> = Vec::new();
         let (rank, file) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
+        let (pocetni_rank, napred_jedno_polje, en_passant_rank) = pocetni_rank_napred_jedno_polje_en_passant_rank(ja_sam_beli);
+/* Pijun moze da ide jedno polje napred. */
+        polja.push(Tabla::file_rank_to_broj(file, ((rank as i8) + napred_jedno_polje) as u8));
+
+       /*  ako_nisam_pomerao_pijuna_mogu_ga_pomeriti_dvaput*/
+        if rank == pocetni_rank {
+            polja.push(Tabla::file_rank_to_broj(file, ((rank as i8) + 2 * napred_jedno_polje) as u8));
+        }
+
+/* Pijun jede ukoso, drugacije nego sto ide. Zato moram posebno da obradjujem ovaj slucaj. */
+        let rank_ispred = ((rank as i8) + napred_jedno_polje) as u8;
+        za_slucaj_da_pijun_moze_da_jede_drugu_figuru(&mut polja, tabla, ja_sam_beli, file, rank_ispred);
+
+        polja
+    }
+
+    fn za_slucaj_da_pijun_moze_da_jede_drugu_figuru<T>(polja: &mut Vec<u8>, tabla: &T, ja_sam_beli: bool, file: u8, rank_ispred:u8)
+    where T: Ima_podatke_o_tabli{
+
+          if (file as i32) - 1 >= A_FILE as i32{
+             if tabla.da_li_je_figura_boje_na_polju(!ja_sam_beli, rank_ispred, file-1){
+                    polja.push(Tabla::file_rank_to_broj(file-1, rank_ispred));
+            }    
+        }
+
+        if file + 1 <= H_FILE {
+            if tabla.da_li_je_figura_boje_na_polju(!ja_sam_beli, rank_ispred, file+1){
+                polja.push(Tabla::file_rank_to_broj(file+1, rank_ispred));
+            }
+        }
+    }
+
+    fn pocetni_rank_napred_jedno_polje_en_passant_rank(ja_sam_beli: bool) -> (u8, i8, u8) {
         let pocetni_rank: u8;
         let napred_jedno_polje: i8;
         let en_passant_rank: u8;
@@ -27,31 +61,10 @@ pub fn prirodno_kretanje_pijuna<T>(
             napred_jedno_polje = -1;
             en_passant_rank = 5;
         }
-        polja.push(Tabla::file_rank_to_broj(file, (rank as i8+ napred_jedno_polje) as u8));
-        if rank == pocetni_rank {
-            polja.push(Tabla::file_rank_to_broj(file, (rank as i8 + 2 * napred_jedno_polje) as u8));
-        }
-
-        let rank_ispred = (rank as i8 + napred_jedno_polje) as u8;
-        if (file as i32) - 1 >= A_FILE as i32{
-             if tabla.da_li_je_figura_boje_na_polju(!ja_sam_beli, rank_ispred, file-1){
-                    polja.push(Tabla::file_rank_to_broj(file-1, rank_ispred));
-            }    
-        }
-
-        if file + 1 <= H_FILE {
-            if tabla.da_li_je_figura_boje_na_polju(!ja_sam_beli, rank_ispred, file+1){
-                polja.push(Tabla::file_rank_to_broj(file+1, rank_ispred));
-            }
-        }
-
-        polja
+        (pocetni_rank, napred_jedno_polje, en_passant_rank)
     }
 
-
-    
-
-
+  
 pub fn pijun_napada_kralja<T>(tabla: &T, polje_pijuna: u8, kralj_je_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
     let polje_kralja: u8 = tabla.pozicija_kralja(kralj_je_beli);
