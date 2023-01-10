@@ -92,18 +92,18 @@ pub mod test_pijun{
        }
 
 
-       fn na_koliko_polja_mogu_da_odem(polje: u8, file_pijuna_koji_se_pomerio_2_polja: Option<u8>) -> u8{
+       fn na_koliko_polja_mogu_da_odem(polje: u8, file_pijuna_koji_se_pomerio_2_polja: Option<u8>, beli: bool) -> u8{
         match file_pijuna_koji_se_pomerio_2_polja {
-            None => bez_en_passant(polje),
-            Some(file) => sa_en_passant(polje, file)
+            None => bez_en_passant(polje, beli),
+            Some(file) => sa_en_passant(polje, file, beli)
         }
        }
 
-       fn bez_en_passant(polje: u8) -> u8{
-
+       fn bez_en_passant(polje: u8, beli: bool) -> u8{
+            
        }
 
-       fn sa_en_passant(polje: u8, fajl_pijuna_koji_se_pomerio_2_polje: u8) -> u8{
+       fn sa_en_passant(polje: u8, fajl_pijuna_koji_se_pomerio_2_polje: u8, beli: bool) -> u8{
 
        }
 
