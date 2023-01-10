@@ -175,7 +175,7 @@ impl Ima_podatke_o_tabli for Tabla {
         }
 
         let target_polje: u8 = Tabla::file_rank_to_broj(file, rank);
-        for figure in figure {
+        for figura in figure {
             if Tabla::polja_se_slazu(*figura, target_polje) {
                 return true
             }
