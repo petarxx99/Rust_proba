@@ -30,7 +30,7 @@ pub mod test_kralj{
             let polje: u8 = Tabla::file_rank_to_broj(file_belog_kralja, rank_crnog_kralja);
             assert_eq!(
                 lovac_napada_kralja,
-                 crate::tabla::kretanje_figura::lovac::lovac_napada_kralja(&tabla, polje));
+                 crate::tabla::kretanje_figura::kralj::kralj_napada_kralja(&tabla, polje));
         }
 
         #[test]
