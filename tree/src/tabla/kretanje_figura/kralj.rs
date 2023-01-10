@@ -17,7 +17,9 @@ where T:Ima_podatke_o_tabli{
 
 #[cfg(test)]
 pub mod test_kralj{
-    use crate::tabla::{Tabla, E_FILE,A_FILE, B_FILE, C_FILE, D_FILE, F_FILE, G_FILE, H_FILE};
+    use crate::tabla::{Tabla, E_FILE,A_FILE, B_FILE, C_FILE, D_FILE, F_FILE, G_FILE, H_FILE, Rokada};
+
+    use super::prirodno_kretanje_kralja;
 
 
     fn test_kralj_napada_kralja(file_belog_kralja: u8, rank_belog_kralja: u8,
@@ -76,5 +78,27 @@ pub mod test_kralj{
         #[test]
         fn na_c5_e6_ne_napada(){
             test_kralj_napada_kralja(C_FILE, 5, E_FILE, 6, false);
+        }
+
+        fn obe_rokade_mogu() -> Tabla{
+             Tabla::pocetna_pozicija().odigraj_validan_potez_bez_promocije (F_FILE, 1, F_FILE, 3)
+            .odigraj_validan_potez_bez_promocije(F_FILE, 8, F_FILE, 6)
+            .odigraj_validan_potez_bez_promocije (G_FILE, 1, G_FILE, 8)
+            .odigraj_validan_potez_bez_promocije(G_FILE, 8, G_FILE, 6)
+        }
+
+        fn broj_kraljevih_poteza(file: u8, rank: u8, rokada: &Rokada, ja_sam_beli: bool) -> usize {
+            prirodno_kretanje_kralja(Tabla::file_rank_to_broj(file, rank), rokada, None, ja_sam_beli).len()
+        }
+
+        #[test]
+        fn oba_kralja_mogu_na_po_4_polja_zbog_rokada(){
+            let tabla: Tabla = obe_rokade_mogu();
+            assert_eq!(4, broj_kraljevih_poteza(E_FILE, 1, &tabla.rokada(), true));
+            let tabla_2: Tabla = tabla.odigraj_validan_potez_bez_promocije(E_FILE, 1,G_FILE, 1);
+            assert_eq!(true, tabla_2.rokada().bela_kraljeva_rokada_vise_nije_moguca);
+            assert_eq!(4, broj_kraljevih_poteza(E_FILE, 8, &tabla_2.rokada(), tabla_2.beli_je_na_potezu()));
+            let tabla_nakon_obe_rokade: Tabla = tabla_2.odigraj_validan_potez_bez_promocije(E_FILE, 8, D_FILE, 8);
+            assert_eq!(true, tabla_nakon_obe_rokade.rokada().crna_kraljicina_rokada_vise_nije_moguca);
         }
 }
