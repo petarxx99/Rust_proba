@@ -186,11 +186,7 @@ impl Tabla {
         let mut bitfield: i32 = self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu;
        
         let mut potez_info: Potez_info = Potez_info::new();
-        potez_info.beli_je_odigrao_potez = false;
-
-        if self.beli_je_na_potezu() {
-            potez_info.beli_je_odigrao_potez = true; /* self se odnosi na bivse stanje table */
-        } 
+        potez_info.beli_je_odigrao_potez = self.beli_je_na_potezu();
 
         potez_info.updejtuj_figure_nakon_odigranog_poteza(& mut bele_figure, &mut crne_figure, potez, potez_info.beli_je_odigrao_potez);
         bitfield = potez_info.updejtuj_bitfield_nakon_odigranog_poteza(bitfield);
