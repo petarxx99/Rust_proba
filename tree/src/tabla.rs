@@ -153,6 +153,7 @@ pub trait Ima_podatke_o_tabli{
     fn da_li_su_polja_prazna(&self, polja: &[u8]) -> bool;
     fn pozicija_kralja(&self, kralj_je_bele_boje: bool) -> u8;
     fn polja_nisu_napadnuta(&self, polja: &Vec<u8>, bele_ne_crne_figure_napadaju: bool) -> bool;
+    fn da_li_je_figura_boje_na_polju(&self, figura_je_bele_boje: bool, rank: u8, file: u8) -> bool;
 }
 
 impl Ima_podatke_o_tabli for Tabla {
@@ -164,6 +165,24 @@ impl Ima_podatke_o_tabli for Tabla {
         }
         true
     }
+
+    fn da_li_je_figura_boje_na_polju(&self, figura_je_bele_boje: bool, rank: u8, file: u8) -> bool{
+        let mut figure: &[u8;16];
+        if figura_je_bele_boje {
+            figure = &self.bele_figure;
+        } else {
+            figure = &self.crne_figure;
+        }
+
+        let target_polje: u8 = Tabla::file_rank_to_broj(file, rank);
+        for figure in figure {
+            if Tabla::polja_se_slazu(*figura, target_polje) {
+                return true
+            }
+        }
+        false
+    }
+
 
     fn pozicija_kralja(&self, kralj_je_bele_boje: bool) -> u8 {
         if !kralj_je_bele_boje {
