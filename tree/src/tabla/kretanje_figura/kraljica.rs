@@ -10,7 +10,7 @@ where T:Ima_podatke_o_tabli{
 
 #[cfg(test)]
 pub mod test_kraljica{
-    use crate::tabla::{Tabla, E_FILE, D_FILE, H_FILE, C_FILE, B_FILE, F_FILE, A_FILE, kretanje_figura::kraljica::kraljica_napada_kralja};
+    use crate::tabla::{Tabla, E_FILE, D_FILE, H_FILE, C_FILE, B_FILE, F_FILE, A_FILE, kretanje_figura::kraljica::kraljica_napada_kralja, G_FILE};
 
 
     fn testiraj_kraljica_na_kralj_na(
@@ -32,7 +32,7 @@ pub mod test_kraljica{
 
     #[test]
     fn kraljica_sa_h4_napada_kralja_na_f6(){
-        testiraj_kraljica_na_kralj_na(H_FILE, 4, F_FILE, 6);
+        testiraj_kraljica_na_kralj_na(H_FILE, 4, F_FILE, 6, true);
     }
 
     #[test]
