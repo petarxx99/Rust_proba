@@ -33,10 +33,16 @@ pub fn prirodno_kretanje_konja(
     }
 
 
-    pub fn konj_napada_kralja<T>(tabla: &T, polje_na_kom_se_nalazim: u8) -> bool
+    pub fn konj_napada_kralja<T>(tabla: &T, polje_na_kom_se_nalazim: u8, kralj_je_beli: bool) -> bool
     where T: Ima_podatke_o_tabli{
         let polje_kralja = tabla.pozicija_protivnickog_kralja();
-        let (rank, file) = Tabla::broj_to_rank_file(polje_kralja);
+        konj_napada_polje(polje_kralja, tabla, polje_na_kom_se_nalazim, !kralj_je_beli)
+    }
+
+    pub fn konj_napada_polje<T>(polje: u8, tabla: &T, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool)->bool
+    where T:Ima_podatke_o_tabli
+    {
+        let (rank, file) = Tabla::broj_to_rank_file(polje);
         let (moj_rank, moj_file) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
 
         if abs(rank as i32 - moj_rank as i32) == 2 &&
@@ -50,6 +56,7 @@ pub fn prirodno_kretanje_konja(
         }
         false
     }
+
 
     fn abs(broj: i32) -> u32 {
         if broj<0 {
@@ -111,20 +118,20 @@ pub fn prirodno_kretanje_konja(
         fn beli_konj_sa_B4_napada_kralja_na_C6(){
             let polje: u8 = Tabla::file_rank_to_broj(B_FILE, 4);
             let tabla: Tabla = beli_konj(B_FILE, 4, C_FILE, 6);
-            assert_eq!(true, konj_napada_kralja(&tabla, polje));
+            assert_eq!(true, konj_napada_kralja(&tabla, polje, false));
         }
 
         #[test]
         fn crni_konj_sa_F4_napada_kralja_na_E2(){
             let polje: u8 = Tabla::file_rank_to_broj(F_FILE, 4);
             let tabla: Tabla = crni_konj(F_FILE, 4, E_FILE, 2);
-            assert_eq!(true, konj_napada_kralja(&tabla, polje));
+            assert_eq!(true, konj_napada_kralja(&tabla, polje, true));
         }
 
         #[test]
         fn beli_konj_sa_e5_ne_napada_kralja_na_g7(){
             let polje: u8 = Tabla::file_rank_to_broj(E_FILE, 5);
             let tabla:Tabla = beli_konj(E_FILE, 5, G_FILE, 7);
-            assert_eq!(false, konj_napada_kralja(&tabla, polje));
+            assert_eq!(false, konj_napada_kralja(&tabla, polje, false));
         }
     }

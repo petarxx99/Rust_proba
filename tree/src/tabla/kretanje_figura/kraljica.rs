@@ -7,7 +7,12 @@ pub fn prirodno_kretanje_kraljice(
         Vec::new()
     }
 
-pub fn kraljica_napada_kralja<T>(tabla: &T, polje_kraljice: u8) -> bool 
+pub fn kraljica_napada_kralja<T>(tabla: &T, polje_kraljice: u8, kralj_je_beli: bool) -> bool 
+where T:Ima_podatke_o_tabli{
+    false
+}
+
+pub fn kraljica_napada_polje<T>(polje: u8, tabla: &T, polje_kraljice: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
     false
 }
@@ -28,7 +33,7 @@ pub mod test_kraljica{
         .odigraj_validan_potez_bez_promocije(E_FILE, 8, file_kralja, rank_kralja);
         
         let polje: u8 = Tabla::file_rank_to_broj(file_kraljice, rank_kraljice);
-        assert_eq!(kraljica_treba_da_napada_kralja, kraljica_napada_kralja(&tabla, polje));
+        assert_eq!(kraljica_treba_da_napada_kralja, kraljica_napada_kralja(&tabla, polje, false));
     }
 
     #[test]

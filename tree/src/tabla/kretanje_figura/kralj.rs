@@ -8,12 +8,15 @@ pub fn prirodno_kretanje_kralja(
         Vec::new()
     }
 
-pub fn kralj_napada_kralja<T>(tabla: &T, polje_kralja: u8) -> bool 
+pub fn kralj_napada_kralja<T>(tabla: &T, polje_kralja: u8, kralj_je_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
     false
 }
 
-
+pub fn kralj_napada_polje<T>(polje: u8, tabla: &T, polje_kralja: u8, ja_sam_beli: bool) -> bool 
+where T:Ima_podatke_o_tabli{
+    false
+}
 
 #[cfg(test)]
 pub mod test_kralj{
@@ -32,7 +35,7 @@ pub mod test_kralj{
             let polje: u8 = Tabla::file_rank_to_broj(file_belog_kralja, rank_crnog_kralja);
             assert_eq!(
                 lovac_napada_kralja,
-                 crate::tabla::kretanje_figura::kralj::kralj_napada_kralja(&tabla, polje));
+                 crate::tabla::kretanje_figura::kralj::kralj_napada_kralja(&tabla, polje, false));
         }
 
         #[test]

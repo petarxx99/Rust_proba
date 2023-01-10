@@ -10,7 +10,12 @@ pub fn prirodno_kretanje_pijuna(
         Vec::new()
     }
 
-pub fn pijun_napada_kralja<T>(tabla: &T, polje_pijuna: u8) -> bool 
+pub fn pijun_napada_kralja<T>(tabla: &T, polje_pijuna: u8, kralj_je_beli: bool) -> bool 
+where T:Ima_podatke_o_tabli{
+    false
+}
+
+pub fn pijun_napada_polje<T>(polje: u8, tabla: &T, polje_pijuna: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
     false
 }
@@ -34,7 +39,7 @@ pub mod test_pijun{
             let polje: u8 = Tabla::file_rank_to_broj(file_belog_pijuna, rank_kralja);
             assert_eq!(
                 pijun_napada_kralja,
-                 crate::tabla::kretanje_figura::pijun::pijun_napada_kralja(&tabla, polje));
+                 crate::tabla::kretanje_figura::pijun::pijun_napada_kralja(&tabla, polje, false));
         }
 
         fn crni_pijun_napada_kralja(file_belog_pijuna: u8, rank_belog_pijuna: u8,
@@ -48,7 +53,7 @@ pub mod test_pijun{
                let polje: u8 = Tabla::file_rank_to_broj(file_belog_pijuna, rank_kralja);
                assert_eq!(
                    pijun_napada_kralja,
-                    crate::tabla::kretanje_figura::pijun::pijun_napada_kralja(&tabla, polje));
+                    crate::tabla::kretanje_figura::pijun::pijun_napada_kralja(&tabla, polje, true));
         }
 
         

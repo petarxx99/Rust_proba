@@ -1,5 +1,7 @@
 use std::{fs::File, env::VarError};
 
+use self::kretanje_figura::Figura_interfejs;
+
 pub(crate) mod normalna_tabla;
 pub(crate) mod potez;
 pub(crate) mod kretanje_figura;
@@ -150,6 +152,7 @@ pub fn print_size_of_Tabla(){
 pub trait Ima_podatke_o_tabli{
     fn da_li_su_polja_prazna(&self, polja: &[u8]) -> bool;
     fn pozicija_protivnickog_kralja(&self) -> u8;
+    fn polja_nisu_napadnuta(&self, polja: &Vec<u8>, bele_ne_crne_figure_napadaju: bool) -> bool;
 }
 
 impl Ima_podatke_o_tabli for Tabla {
@@ -168,6 +171,40 @@ impl Ima_podatke_o_tabli for Tabla {
         } else {
             self.bele_figure[KRALJ]
         }
+    }
+
+   fn polja_nisu_napadnuta(&self, polja: &Vec<u8>, bele_ne_crne_figure_napadaju: bool) -> bool {
+
+        if bele_ne_crne_figure_napadaju {
+            for i in 0..self.bele_figure.len(){
+                match Figura::iz_niza_u_figure_interfejs(&self.bele_figure, i) {
+                    None => {},
+                    Some(figura) => {
+                        for polje in polja {
+                            if (figura.napadam_polje)(*polje, self, self.bele_figure[i], bele_ne_crne_figure_napadaju){
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            for i in 0..self.crne_figure.len(){
+                match Figura::iz_niza_u_figure_interfejs(&self.crne_figure, i) {
+                    None => {},
+                    Some(figura) => {
+                        for polje in polja {
+                            if (figura.napadam_polje)(*polje, self, self.crne_figure[i], bele_ne_crne_figure_napadaju){
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        
+        return true;
     }
 }
     /* Prvih 8 bajtova cuvaju informacije o tome gde se figure nalaze. 
@@ -614,7 +651,7 @@ mod tabla_tests{
         assert_eq!(false, rokada2.crna_kraljicina_rokada_vise_nije_moguca);
     }
 
-    
+
 }
 
     

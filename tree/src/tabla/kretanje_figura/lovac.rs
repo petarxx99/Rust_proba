@@ -7,10 +7,16 @@ pub fn prirodno_kretanje_lovca(
         Vec::new()
     }
 
-pub fn lovac_napada_kralja<T>(tabla: &T, polje_lovca: u8) -> bool 
+pub fn lovac_napada_kralja<T>(tabla: &T, polje_lovca: u8, kralj_je_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
     false
 }
+
+pub fn lovac_napada_polje<T>(polje: u8, tabla: &T, polje_lovca: u8, ja_sam_beli: bool) -> bool 
+where T:Ima_podatke_o_tabli{
+    false
+}
+
 
 #[cfg(test)]
 pub mod test_lovac{
@@ -47,7 +53,7 @@ pub mod test_lovac{
         let polje: u8 = Tabla::file_rank_to_broj(file_lovca, rank_lovca);
         assert_eq!(
             lovac_napada_kralja,
-             crate::tabla::kretanje_figura::lovac::lovac_napada_kralja(&tabla, polje));
+             crate::tabla::kretanje_figura::lovac::lovac_napada_kralja(&tabla, polje, false));
     }
 
     #[test]
