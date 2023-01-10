@@ -83,6 +83,7 @@ where T:Ima_podatke_o_tabli{
     if ja_sam_beli && (rank_destinacije as i8 - moj_rank as i8) == 1 {
         return true
     }
+  
     moj_rank as i8 - rank_destinacije as i8 == 1
 }
 
@@ -102,7 +103,7 @@ pub mod test_pijun{
             .odigraj_validan_potez_bez_promocije(E_FILE, 2, file_belog_pijuna, rank_belog_pijuna)
             .odigraj_validan_potez_bez_promocije(E_FILE, 8, file_kralja, rank_kralja);
             
-            let polje: u8 = Tabla::file_rank_to_broj(file_belog_pijuna, rank_kralja);
+            let polje: u8 = Tabla::file_rank_to_broj(file_belog_pijuna, rank_belog_pijuna);
             assert_eq!(
                 pijun_napada_kralja,
                  crate::tabla::kretanje_figura::pijun::pijun_napada_kralja(&tabla, polje, false));
@@ -116,7 +117,7 @@ pub mod test_pijun{
                .odigraj_validan_potez_bez_promocije(E_FILE, 7, file_belog_pijuna, rank_belog_pijuna)
                ;
                
-               let polje: u8 = Tabla::file_rank_to_broj(file_belog_pijuna, rank_kralja);
+               let polje: u8 = Tabla::file_rank_to_broj(file_belog_pijuna, rank_belog_pijuna);
                assert_eq!(
                    pijun_napada_kralja,
                     crate::tabla::kretanje_figura::pijun::pijun_napada_kralja(&tabla, polje, true));
