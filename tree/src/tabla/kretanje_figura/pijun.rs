@@ -14,9 +14,43 @@ pub fn prirodno_kretanje_pijuna<T>(
     {
         let polja: Vec<u8> = Vec::new();
         let (rank, file) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
-        
+        let pocetni_rank: u8;
+        let napred_jedno_polje: i8;
+        let en_passant_rank: u8;
+    
+        if ja_sam_beli {
+            pocetni_rank = 2;
+            napred_jedno_polje = 1;
+            en_passant_rank = 4;
+        }  else {
+            pocetni_rank = 7;
+            napred_jedno_polje = -1;
+            en_passant_rank = 5;
+        }
+        polja.push(Tabla::file_rank_to_broj(file, (rank as i8+ napred_jedno_polje) as u8));
+        if rank == pocetni_rank {
+            polja.push(Tabla::file_rank_to_broj(file, (rank as i8 + 2 * napred_jedno_polje) as u8));
+        }
+
+        let rank_ispred = (rank as i8 + napred_jedno_polje) as u8;
+        if (file as i32) - 1 >= A_FILE as i32{
+             if tabla.da_li_je_figura_boje_na_polju(!ja_sam_beli, rank_ispred, file-1){
+                    polja.push(Tabla::file_rank_to_broj(file-1, rank_ispred));
+            }    
+        }
+
+        if file + 1 <= H_FILE {
+            if tabla.da_li_je_figura_boje_na_polju(!ja_sam_beli, rank_ispred, file+1){
+                polja.push(Tabla::file_rank_to_broj(file+1, rank_ispred));
+            }
+        }
+
         polja
     }
+
+
+    
+
 
 pub fn pijun_napada_kralja<T>(tabla: &T, polje_pijuna: u8, kralj_je_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
@@ -119,7 +153,7 @@ pub mod test_pijun{
 
        fn broj_polja(start_file: u8, start_rank: u8, en_passant_file: Option<u8>, ja_sam_beli: bool) -> usize{
             let start_polje = Tabla::file_rank_to_broj(start_file, start_rank);
-            prirodno_kretanje_pijuna(start_polje, &Rokada::new_sve_rokade_moguce(), en_passant_file, ja_sam_beli).len()
+            prirodno_kretanje_pijuna(&Tabla::pocetna_pozicija(), start_polje, &Rokada::new_sve_rokade_moguce(), en_passant_file, ja_sam_beli).len()
        }
 
        #[test]
