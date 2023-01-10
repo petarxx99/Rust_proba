@@ -1,5 +1,7 @@
 use crate::tabla::{Rokada, Tabla, File_rank, H_FILE, A_FILE, G_FILE, Ima_podatke_o_tabli};
 
+use super::figure::abs;
+
 
 
 
@@ -12,12 +14,23 @@ pub fn prirodno_kretanje_pijuna(
 
 pub fn pijun_napada_kralja<T>(tabla: &T, polje_pijuna: u8, kralj_je_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
-    false
+    let polje_kralja: u8 = tabla.pozicija_kralja(kralj_je_beli);
+    pijun_napada_polje(polje_kralja, tabla, polje_pijuna, kralj_je_beli)
 }
 
 pub fn pijun_napada_polje<T>(polje: u8, tabla: &T, polje_pijuna: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
-    false
+    let (moj_rank, moj_file) = Tabla::broj_to_rank_file(polje_pijuna);
+    let (rank_destinacije, file_destinacije) = Tabla::broj_to_rank_file(polje);
+
+    if abs(file_destinacije as i32 - moj_file as i32) != 1 {
+        return false
+    }
+
+    if ja_sam_beli && (rank_destinacije as i8 - moj_rank as i8) == 1 {
+        return true
+    }
+    moj_rank as i8 - rank_destinacije as i8 == 1
 }
 
 
