@@ -2,6 +2,7 @@ use std::{fs::File, env::VarError};
 
 mod normalna_tabla;
 mod potez;
+mod kretanje_figura;
 
 pub static BELI: u8 = 0;
 pub static CRNI: u8 = 1;
