@@ -1,20 +1,63 @@
 use crate::tabla::{Rokada, Tabla, File_rank, H_FILE, A_FILE, G_FILE, Ima_podatke_o_tabli};
 
+use super::figure::abs;
+
 pub fn prirodno_kretanje_lovca(
     polje_na_kom_se_nalazim: u8,
     rokada: &Rokada, 
     fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>{
-        Vec::new()
+        
     }
 
 pub fn lovac_napada_kralja<T>(tabla: &T, polje_lovca: u8, kralj_je_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
-    false
+
+    let meta: u8 = tabla.pozicija_kralja(kralj_je_beli);
+    lovac_napada_polje(meta, tabla, polje_lovca, !kralj_je_beli)
 }
 
 pub fn lovac_napada_polje<T>(polje: u8, tabla: &T, polje_lovca: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
-    false
+    let (rank, file) = Tabla::broj_to_rank_file(polje);
+    let (moj_rank, moj_file) = Tabla::broj_to_rank_file(polje_lovca);
+
+    if rank == moj_rank || file == moj_file {
+        return false
+    }
+    if abs(moj_file as i32 - file as i32) != abs(moj_rank as i32 - rank as i32){
+        return false
+    }
+
+    let min_file: u8;
+    let max_file: u8;
+    let min_rank: u8;
+    let max_rank: u8;
+    if file < moj_file{
+        min_file = file;
+        max_file = moj_file;
+    } else {
+        max_file = file;
+        min_file = moj_file;
+    }
+    if rank < moj_rank {
+        min_rank = rank;
+        max_rank = moj_rank;
+    } else {
+        max_rank = rank;
+        min_rank = moj_rank;
+    }
+
+    let mut polja_izmedju: Vec<u8> = Vec::new();
+/* y=kx+n, n=y-kx */  /* k = (y1-y2) / (x1-x2) */
+    let k: i8 = (rank as i8 - moj_rank as i8) / (file as i8 - moj_file as i8);
+    let n: i8 = rank as i8 - k * (file as i8);
+    for i in (min_file+1)..file {
+        let x: i8 = i as i8;
+        let y = k*x + n;
+        polja_izmedju.push(Tabla::file_rank_to_broj(x, y as u8));
+    }
+
+    tabla.da_li_su_polja_prazna(&polja_izmedju)
 }
 
 
