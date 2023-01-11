@@ -140,7 +140,7 @@ pub mod test_kralj{
             .odigraj_validan_potez_bez_promocije(E_FILE, 1, file_belog_kralja, rank_belog_kralja)
             .odigraj_validan_potez_bez_promocije(E_FILE, 8, file_crnog_kralja, rank_crnog_kralja);
             
-            let polje: u8 = Tabla::file_rank_to_broj(file_belog_kralja, rank_crnog_kralja);
+            let polje: u8 = Tabla::file_rank_to_broj(file_belog_kralja, rank_belog_kralja);
             assert_eq!(
                 napadam_kralja,
                  crate::tabla::kretanje_figura::kralj::kralj_napada_kralja(&tabla, polje, false));
