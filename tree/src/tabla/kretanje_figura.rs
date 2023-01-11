@@ -23,7 +23,9 @@ pub(crate) mod figure;
 1) Figura mora da moze da se krece onako kako je igrac pokusao odigrati.
 2) Ne sme da bude figure izmedju pocetnog polja i polje destinacije (ovo ne vazi za konja)
 3) Ne smem da jedem sopstvenu figuru
-4) Kralj igraca koji odigrava potez ne sme da bude u sahu nakon odigranog poteza. */
+4) Kralj igraca koji odigrava potez ne sme da bude u sahu nakon odigranog poteza.
+Funkcija figura_moze_doci_na_polje kombinuje prva 2.
+Zasebna funkcija za 1) postoji da bi se brze nasli legalni potezi. */
 
 pub struct Figura_interfejs<T> 
 where T: Ima_podatke_o_tabli
