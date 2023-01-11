@@ -30,7 +30,11 @@ where T:Ima_podatke_o_tabli{
     top_napada_polje(tabla, polje, polje_kraljice, ja_sam_beli)
 }
 
-
+pub fn nema_nista_izmedju_polja_i_kraljice<T>(tabla: &T, moje_polje: u8, polje_na_koje_dolazim: u8, ja_sam_beli: bool) -> bool
+    where T:Ima_podatke_o_tabli
+    {
+        kraljica_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli)   
+    }
 
 #[cfg(test)]
 pub mod test_kraljica{

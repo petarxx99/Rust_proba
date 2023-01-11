@@ -102,6 +102,36 @@ where T:Ima_podatke_o_tabli{
 }
 
 
+pub fn nema_nista_izmedju_polja_i_pijuna<T>(tabla: &T, moje_polje: u8, polje_na_koje_dolazim: u8, ja_sam_beli: bool) -> bool
+    where T:Ima_podatke_o_tabli
+    {
+        let polja_prirodnog_kretanja: Vec<u8> =  prirodno_kretanje_pijuna(
+            tabla, 
+            moje_polje, 
+            &tabla.get_rokada(), 
+            tabla.get_file_pijuna_koji_se_pomerio_2_polja(), 
+            ja_sam_beli);
+        
+        if !polja_prirodnog_kretanja.contains(&polje_na_koje_dolazim){
+            return false;
+        }    
+
+        let (rank_destinacije, _) = Tabla::broj_to_rank_file(polje_na_koje_dolazim);
+        let (rank_pijuna,file_pijuna) = Tabla::broj_to_rank_file(moje_polje);
+        if abs(rank_destinacije as i32 - rank_pijuna as i32) != 2 {
+            return true
+        } 
+
+        let rank_polja_izmedju:u8;
+        if rank_destinacije > rank_pijuna {
+            rank_polja_izmedju = rank_pijuna + 1;
+        } else {
+            rank_polja_izmedju = rank_pijuna - 1;
+        }
+
+        let polje_izmedju = Tabla::file_rank_to_broj(file_pijuna, rank_polja_izmedju);
+        tabla.da_li_su_polja_prazna(&vec![polje_izmedju])
+    }
 
 #[cfg(test)]
 pub mod test_pijun{
