@@ -19,6 +19,12 @@ mod kralj;
 mod pijun;
 pub(crate) mod figure;
 
+/* Da bi potez bio legalan, 4 stavke moraju da se ispune:
+1) Figura mora da moze da se krece onako kako je igrac pokusao odigrati.
+2) Ne sme da bude figure izmedju pocetnog polja i polje destinacije (ovo ne vazi za konja)
+3) Ne smem da jedem sopstvenu figuru
+4) Kralj igraca koji odigrava potez ne sme da bude u sahu nakon odigranog poteza. */
+
 pub struct Figura_interfejs<T> 
 where T: Ima_podatke_o_tabli
 {
