@@ -69,11 +69,11 @@ pub fn prirodno_kretanje_pijuna<T>(
         if ja_sam_beli {
             pocetni_rank = 2;
             napred_jedno_polje = 1;
-            en_passant_rank = 4;
+            en_passant_rank = 5;
         }  else {
             pocetni_rank = 7;
             napred_jedno_polje = -1;
-            en_passant_rank = 5;
+            en_passant_rank = 4;
         }
         (pocetni_rank, napred_jedno_polje, en_passant_rank)
     }
