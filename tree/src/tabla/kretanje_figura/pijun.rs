@@ -82,10 +82,10 @@ pub fn prirodno_kretanje_pijuna<T>(
 pub fn pijun_napada_kralja<T>(tabla: &T, polje_pijuna: u8, kralj_je_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
     let polje_kralja: u8 = tabla.pozicija_kralja(kralj_je_beli);
-    pijun_napada_polje(polje_kralja, tabla, polje_pijuna, !kralj_je_beli)
+    pijun_napada_polje(tabla, polje_kralja,polje_pijuna, !kralj_je_beli)
 }
 
-pub fn pijun_napada_polje<T>(polje: u8, tabla: &T, polje_pijuna: u8, ja_sam_beli: bool) -> bool 
+pub fn pijun_napada_polje<T>(tabla: &T, polje: u8, polje_pijuna: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
     let (moj_rank, moj_file) = Tabla::broj_to_rank_file(polje_pijuna);
     let (rank_destinacije, file_destinacije) = Tabla::broj_to_rank_file(polje);

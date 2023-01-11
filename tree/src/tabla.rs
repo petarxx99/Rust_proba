@@ -216,7 +216,7 @@ impl Ima_podatke_o_tabli for Tabla {
                     None => {},
                     Some(figura) => {
                         for polje in polja {
-                            if (figura.napadam_polje)(*polje, self, self.bele_figure[i], bele_ne_crne_figure_napadaju){
+                            if (figura.napadam_polje)(self, *polje, self.bele_figure[i], bele_ne_crne_figure_napadaju){
                                 return false;
                             }
                         }
@@ -229,7 +229,7 @@ impl Ima_podatke_o_tabli for Tabla {
                     None => {},
                     Some(figura) => {
                         for polje in polja {
-                            if (figura.napadam_polje)(*polje, self, self.crne_figure[i], bele_ne_crne_figure_napadaju){
+                            if (figura.napadam_polje)(self, *polje, self.crne_figure[i], bele_ne_crne_figure_napadaju){
                                 return false;
                             }
                         }

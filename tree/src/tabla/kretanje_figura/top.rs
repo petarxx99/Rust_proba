@@ -33,10 +33,10 @@ pub fn top_napada_kralja<T>(tabla: &T, polje_na_kom_se_nalazim: u8, kralj_je_beo
 where T: Ima_podatke_o_tabli
 {
     let polje_kralja: u8 = tabla.pozicija_kralja(kralj_je_beo);
-    top_napada_polje(polje_kralja, tabla, polje_na_kom_se_nalazim, !kralj_je_beo)
+    top_napada_polje(tabla, polje_kralja, polje_na_kom_se_nalazim, !kralj_je_beo)
 }
 
-pub fn top_napada_polje<T>(polje: u8, tabla: &T, polje_na_kom_se_nalazim: u8, ja_sam_beo: bool) -> bool
+pub fn top_napada_polje<T>(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beo: bool) -> bool
 where T: Ima_podatke_o_tabli
 {
     let (rank, file) = Tabla::broj_to_rank_file(polje);
@@ -89,6 +89,11 @@ where T: Ima_podatke_o_tabli
 }
 
 
+pub fn top_moze_da_dodje_do_polja<T>(tabla: &T, moje_polje: u8, polje_na_koje_dolazim: u8, ja_sam_beli: bool) -> bool
+    where T:Ima_podatke_o_tabli
+    {
+        top_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli)   
+    }
 
 #[cfg(test)]
 mod top_test{

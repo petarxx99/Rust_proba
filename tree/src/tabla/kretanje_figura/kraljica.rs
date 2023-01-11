@@ -20,14 +20,14 @@ pub fn prirodno_kretanje_kraljice<T>(
 pub fn kraljica_napada_kralja<T>(tabla: &T, polje_kraljice: u8, kralj_je_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
     let polje_kralja: u8 = tabla.pozicija_kralja(kralj_je_beli);
-    kraljica_napada_polje(polje_kralja, tabla, polje_kraljice, !kralj_je_beli)
+    kraljica_napada_polje(tabla, polje_kralja, polje_kraljice, !kralj_je_beli)
 }
 
-pub fn kraljica_napada_polje<T>(polje: u8, tabla: &T, polje_kraljice: u8, ja_sam_beli: bool) -> bool 
+pub fn kraljica_napada_polje<T>(tabla: &T, polje: u8, polje_kraljice: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
-    lovac_napada_polje(polje, tabla, polje_kraljice, ja_sam_beli)
+    lovac_napada_polje(tabla, polje, polje_kraljice, ja_sam_beli)
     ||
-    top_napada_polje(polje, tabla, polje_kraljice, ja_sam_beli)
+    top_napada_polje(tabla, polje, polje_kraljice, ja_sam_beli)
 }
 
 

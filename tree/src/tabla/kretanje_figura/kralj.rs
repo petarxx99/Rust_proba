@@ -105,12 +105,12 @@ pub fn prirodno_kretanje_kralja<T>(
 pub fn kralj_napada_kralja<T>(tabla: &T, polje_kralja: u8, kralj_je_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
     let polje_protivnickog_kralja: u8 = tabla.pozicija_kralja(kralj_je_beli);
-    kralj_napada_polje(polje_protivnickog_kralja, tabla, polje_kralja, !kralj_je_beli)
+    kralj_napada_polje(tabla, polje_protivnickog_kralja,  polje_kralja, !kralj_je_beli)
 }
 
 
 
-pub fn kralj_napada_polje<T>(polje: u8, tabla: &T, polje_kralja: u8, ja_sam_beli: bool) -> bool 
+pub fn kralj_napada_polje<T>(tabla: &T, polje: u8, polje_kralja: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
     let (rank, file) = Tabla::broj_to_rank_file(polje);
     let (moj_rank, moj_file) = Tabla::broj_to_rank_file(polje_kralja);

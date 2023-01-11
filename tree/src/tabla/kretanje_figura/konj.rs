@@ -38,10 +38,10 @@ pub fn prirodno_kretanje_konja<T>(
     pub fn konj_napada_kralja<T>(tabla: &T, polje_na_kom_se_nalazim: u8, kralj_je_beli: bool) -> bool
     where T: Ima_podatke_o_tabli{
         let polje_kralja = tabla.pozicija_kralja(kralj_je_beli);
-        konj_napada_polje(polje_kralja, tabla, polje_na_kom_se_nalazim, !kralj_je_beli)
+        konj_napada_polje(tabla, polje_kralja,  polje_na_kom_se_nalazim, !kralj_je_beli)
     }
 
-    pub fn konj_napada_polje<T>(polje: u8, tabla: &T, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool)->bool
+    pub fn konj_napada_polje<T>(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool)->bool
     where T:Ima_podatke_o_tabli
     {
         let (rank, file) = Tabla::broj_to_rank_file(polje);

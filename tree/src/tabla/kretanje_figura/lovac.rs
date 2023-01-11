@@ -50,10 +50,10 @@ pub fn lovac_napada_kralja<T>(tabla: &T, polje_lovca: u8, kralj_je_beli: bool) -
 where T:Ima_podatke_o_tabli{
 
     let meta: u8 = tabla.pozicija_kralja(kralj_je_beli);
-    lovac_napada_polje(meta, tabla, polje_lovca, !kralj_je_beli)
+    lovac_napada_polje(tabla, meta, polje_lovca, !kralj_je_beli)
 }
 
-pub fn lovac_napada_polje<T>(polje: u8, tabla: &T, polje_lovca: u8, ja_sam_beli: bool) -> bool 
+pub fn lovac_napada_polje<T>(tabla: &T, polje: u8, polje_lovca: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
     let (rank, file) = Tabla::broj_to_rank_file(polje);
     let (moj_rank, moj_file) = Tabla::broj_to_rank_file(polje_lovca);
@@ -90,6 +90,11 @@ where T:Ima_podatke_o_tabli{
     tabla.da_li_su_polja_prazna(&polja_izmedju)
 }
 
+pub fn lovac_moze_da_dodje_do_polja<T>(tabla: &T, moje_polje: u8, polje_na_koje_dolazim: u8, ja_sam_beli: bool) -> bool
+    where T:Ima_podatke_o_tabli
+    {
+        lovac_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli)   
+    }
 
 #[cfg(test)]
 pub mod test_lovac{
