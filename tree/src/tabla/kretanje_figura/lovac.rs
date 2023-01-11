@@ -10,18 +10,19 @@ pub fn prirodno_kretanje_lovca<T>(
     where T:Ima_podatke_o_tabli{
         
         let mut polja: Vec<u8> = Vec::new();
-        let (rank_lovca, file_lovca) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
-        
+        let (rank_lovca_u8, file_lovca_u8) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
+        let rank_lovca: i8 = rank_lovca_u8 as i8;
+        let file_lovca: i8 = file_lovca_u8 as i8;
         
         let mut rank: i8 = rank_lovca as i8  - 1;
-        let mut file_razlika: u8 = 1;
+        let mut file_razlika: i8 = 1;
 
         while rank>=1 {
-            if (file_lovca - file_razlika) >= A_FILE {
-                polja.push(Tabla::file_rank_to_broj(file_lovca - file_razlika, rank as u8));
+            if (file_lovca - file_razlika) >= A_FILE as i8 {
+                polja.push(Tabla::file_rank_to_broj((file_lovca - file_razlika) as u8, rank as u8));
             } 
-            if (file_lovca + file_razlika) <= H_FILE {
-                polja.push(Tabla::file_rank_to_broj(file_lovca + file_razlika, rank as u8));
+            if (file_lovca + file_razlika) <= H_FILE as i8{
+                polja.push(Tabla::file_rank_to_broj((file_lovca + file_razlika) as u8, rank as u8));
             }
             rank -=1;
             file_razlika += 1;
@@ -30,11 +31,11 @@ pub fn prirodno_kretanje_lovca<T>(
         file_razlika = 1;
         rank = 1+ rank_lovca as i8;
         while rank <=8 {
-            if (file_lovca - file_razlika) >= A_FILE {
-                polja.push(Tabla::file_rank_to_broj(file_lovca - file_razlika, rank as u8));
+            if (file_lovca - file_razlika) >= A_FILE as i8{
+                polja.push(Tabla::file_rank_to_broj((file_lovca - file_razlika) as u8, rank as u8));
             }
-            if (file_lovca + file_razlika) <= H_FILE {
-                polja.push(Tabla::file_rank_to_broj(file_lovca + file_razlika, rank as u8));
+            if (file_lovca + file_razlika) <= H_FILE as i8{
+                polja.push(Tabla::file_rank_to_broj((file_lovca + file_razlika) as u8, rank as u8));
             }
             rank += 1;
             file_razlika += 1;
@@ -66,8 +67,7 @@ where T:Ima_podatke_o_tabli{
 
     let min_file: u8;
     let max_file: u8;
-    let min_rank: u8;
-    let max_rank: u8;
+  
     if file < moj_file{
         min_file = file;
         max_file = moj_file;
@@ -75,17 +75,11 @@ where T:Ima_podatke_o_tabli{
         max_file = file;
         min_file = moj_file;
     }
-    if rank < moj_rank {
-        min_rank = rank;
-        max_rank = moj_rank;
-    } else {
-        max_rank = rank;
-        min_rank = moj_rank;
-    }
-
+    
     let mut polja_izmedju: Vec<u8> = Vec::new();
-/* y=kx+n, n=y-kx */  /* k = (y1-y2) / (x1-x2) */
+/* y=kx+n, n=y-kx ---- k = (y1-y2) / (x1-x2) */
     let k: i8 = (rank as i8 - moj_rank as i8) / (file as i8 - moj_file as i8);
+    /* n = y - kx */
     let n: i8 = rank as i8 - k * (file as i8);
     for i in (min_file+1)..max_file {
         let x: i8 = i as i8;
