@@ -24,12 +24,12 @@ impl Figura {
 
     pub fn napravi_figure_interfejs(figura: Figura) -> Figura_interfejs<Tabla>{
         match figura {
-            Figura::KONJ => Figura_interfejs::new(prirodno_kretanje_konja, konj_napada_kralja, konj_napada_polje, konj_moze_doci_na_polje),
-            Figura::KRALJ => Figura_interfejs::new(prirodno_kretanje_kralja, kralj_napada_kralja, kralj_napada_polje, kralj_moze_doci_na_polje),
-            Figura::LOVAC => Figura_interfejs::new(prirodno_kretanje_lovca, lovac_napada_kralja, lovac_napada_polje, lovac_moze_doci_na_polje),
-            Figura::KRALJICA => Figura_interfejs::new(prirodno_kretanje_kraljice, kraljica_napada_kralja, kraljica_napada_polje, kraljica_moze_doci_na_polje),
-            Figura::TOP => Figura_interfejs::new(polja_na_koja_ide_top, top_napada_kralja, top_napada_polje, kralj_moze_doci_na_polje),
-            Figura::PIJUN => Figura_interfejs::new(prirodno_kretanje_pijuna, pijun_napada_kralja, pijun_napada_polje, pijun_moze_doci_na_polje)
+            Figura::KONJ => Figura_interfejs::new(prirodno_kretanje_konja, konj_napada_polje, konj_moze_doci_na_polje),
+            Figura::KRALJ => Figura_interfejs::new(prirodno_kretanje_kralja, kralj_napada_polje, kralj_moze_doci_na_polje),
+            Figura::LOVAC => Figura_interfejs::new(prirodno_kretanje_lovca, lovac_napada_polje, lovac_moze_doci_na_polje),
+            Figura::KRALJICA => Figura_interfejs::new(prirodno_kretanje_kraljice, kraljica_napada_polje, kraljica_moze_doci_na_polje),
+            Figura::TOP => Figura_interfejs::new(polja_na_koja_ide_top, top_napada_polje, kralj_moze_doci_na_polje),
+            Figura::PIJUN => Figura_interfejs::new(prirodno_kretanje_pijuna, pijun_napada_polje, pijun_moze_doci_na_polje)
         }
     }
 
