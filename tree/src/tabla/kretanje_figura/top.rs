@@ -16,7 +16,11 @@ pub fn polja_na_koja_ide_top<T>(
          for i in A_FILE..(H_FILE+1){
             for j in 1..9 {
                 if i == file_u8 && j==rank_u8{
-                    continue;
+                    continue; /* Nijedna figura ne moze da ode na polje na kom se vec nalazi. */
+                }
+                if i != file_u8 && j != rank_u8 {
+                    continue; /* Top se krece ili po istom fajlu, ili po istom ranku. 
+                    Ako polje destinacije nije ni isti fajl, ni isti rank, na to polje top ne moze da ode. */
                 }
                 
                 polja.push(Tabla::file_rank_to_broj(i, j))
