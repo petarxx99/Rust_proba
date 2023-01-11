@@ -25,7 +25,10 @@ pub(crate) mod figure;
 3) Ne smem da jedem sopstvenu figuru
 4) Kralj igraca koji odigrava potez ne sme da bude u sahu nakon odigranog poteza.
 Funkcija figura_moze_doci_na_polje kombinuje prva 2.
-Zasebna funkcija za 1) postoji da bi se brze nasli legalni potezi. */
+Zasebna funkcija za 1) postoji da bi se brze nasli legalni potezi.
+Funkcija napadam_polje je potrebna prilikom utvrdjivanja stavke da li ce igrac biti u sahu
+nakon odigranog poteza. Zovem tu funkciju nad svim nepojedenim figurama protivnika da vidim da li 
+napadaju polje na kojem se nalazi kralj. */
 
 pub struct Figura_interfejs<T> 
 where T: Ima_podatke_o_tabli
