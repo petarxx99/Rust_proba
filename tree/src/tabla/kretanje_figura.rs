@@ -32,7 +32,7 @@ where T: Ima_podatke_o_tabli
 
     pub napadam_kralja: fn(tabla: &T, polje_na_kom_se_nalazim: u8, kralj_je_beo: bool) -> bool,
     pub napadam_polje: fn(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool) -> bool,
-    pub nema_nista_izmedju_polja_i_figure: fn(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool) -> bool,
+    pub figura_moze_doci_na_polje: fn(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool) -> bool,
 }
 
 
@@ -47,9 +47,9 @@ where T: Ima_podatke_o_tabli
        
         napadam_kralja: fn(tabla: &T, polje_na_kom_se_nalazim: u8, kralj_je_beo: bool) -> bool,
         napadam_polje: fn(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, kralj_je_beli: bool) -> bool,
-        nema_nista_izmedju_polja_i_figure: fn(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool) -> bool,
+        figura_moze_doci_na_polje: fn(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool) -> bool,
     ) -> Figura_interfejs<T>{
-        Figura_interfejs{prirodno_kretanje, napadam_kralja, napadam_polje, nema_nista_izmedju_polja_i_figure}
+        Figura_interfejs{prirodno_kretanje, napadam_kralja, napadam_polje, figura_moze_doci_na_polje}
     }
 
 

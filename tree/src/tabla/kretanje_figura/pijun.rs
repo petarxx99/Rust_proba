@@ -102,7 +102,7 @@ where T:Ima_podatke_o_tabli{
 }
 
 
-pub fn nema_nista_izmedju_polja_i_pijuna<T>(tabla: &T, moje_polje: u8, polje_na_koje_dolazim: u8, ja_sam_beli: bool) -> bool
+pub fn pijun_moze_doci_na_polje<T>(tabla: &T, moje_polje: u8, polje_na_koje_dolazim: u8, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
         let polja_prirodnog_kretanja: Vec<u8> =  prirodno_kretanje_pijuna(

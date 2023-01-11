@@ -124,7 +124,7 @@ where T:Ima_podatke_o_tabli{
     moj_file == file && abs(rank as i32 - moj_rank as i32) == 1
 }
 
-pub fn nema_nista_izmedju_polja_i_kralja<T>(tabla: &T, moje_polje: u8, polje_na_koje_dolazim: u8, ja_sam_beli: bool) -> bool
+pub fn kralj_moze_doci_na_polje<T>(tabla: &T, moje_polje: u8, polje_na_koje_dolazim: u8, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
         kralj_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli)   

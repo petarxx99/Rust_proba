@@ -89,7 +89,7 @@ where T: Ima_podatke_o_tabli
 }
 
 
-pub fn nema_nista_izmedju_polja_i_topa<T>(tabla: &T, moje_polje: u8, polje_na_koje_dolazim: u8, ja_sam_beli: bool) -> bool
+pub fn top_moze_doci_na_polje<T>(tabla: &T, moje_polje: u8, polje_na_koje_dolazim: u8, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
         top_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli)   
