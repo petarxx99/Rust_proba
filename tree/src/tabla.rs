@@ -154,9 +154,25 @@ pub trait Ima_podatke_o_tabli{
     fn pozicija_kralja(&self, kralj_je_bele_boje: bool) -> u8;
     fn polja_nisu_napadnuta(&self, polja: &Vec<u8>, bele_ne_crne_figure_napadaju: bool) -> bool;
     fn da_li_je_figura_boje_na_polju(&self, figura_je_bele_boje: bool, rank: u8, file: u8) -> bool;
+    fn get_rokada(&self) -> Rokada;
+    fn get_file_pijuna_koji_se_pomerio_2_polja(&self) -> Option<u8>;
+    fn get_beli_je_na_potezu(&self) -> bool;
 }
 
 impl Ima_podatke_o_tabli for Tabla {
+
+    fn get_beli_je_na_potezu(&self) -> bool {
+        self.beli_je_na_potezu()
+    }
+
+    fn get_rokada(&self) -> Rokada {
+        self.rokada()
+    }
+
+    fn get_file_pijuna_koji_se_pomerio_2_polja(&self) -> Option<u8> {
+        self.fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu()
+    }
+
     fn da_li_su_polja_prazna(&self, polja: &[u8]) -> bool {
         for polje in polja {
             if !self.polje_je_prazno_preko_broja(*polje){

@@ -18,6 +18,7 @@ pub fn polja_na_koja_ide_top<T>(
                 if i == file_u8 && j==rank_u8{
                     continue;
                 }
+                
                 polja.push(Tabla::file_rank_to_broj(i, j))
             }
          }
@@ -97,14 +98,16 @@ mod top_test{
         tabla1.odigraj_validan_potez_bez_promocije(E_FILE, 8, file_kralja, rank_kralja)
     }
 
-    fn na_koliko_polja(file: u8, rank: u8) -> usize{
-        let polje_na_koje_idem: u8= Tabla::file_rank_to_broj(file, rank);
-        polja_na_koja_ide_top(&Tabla::pocetna_pozicija(), polje_na_koje_idem, &Rokada::new_sve_rokade_moguce(), None, true).len()
+    fn na_koliko_polja<T>(file: u8, rank: u8, tabla: &T) -> usize
+    where T:Ima_podatke_o_tabli
+    {
+        let polje_na_kom_se_nalazim: u8= Tabla::file_rank_to_broj(file, rank);
+        polja_na_koja_ide_top(tabla, polje_na_kom_se_nalazim, &tabla.get_rokada(), tabla.get_file_pijuna_koji_se_pomerio_2_polja(), tabla.get_beli_je_na_potezu()).len()
     }
     #[test]
     fn top_sa_a4_vidi_14_polja(){
         let tabla: Tabla = top_na_polje_kralj_na_polje(A_FILE, 4, G_FILE, 8);
-        assert_eq!(14, na_koliko_polja(A_FILE, 4));
+        assert_eq!(14, na_koliko_polja(A_FILE, 4, &tabla));
 
     }
 
