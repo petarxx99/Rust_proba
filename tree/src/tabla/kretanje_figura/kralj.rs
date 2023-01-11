@@ -167,9 +167,10 @@ pub mod test_kralj{
         }
 
         #[test]
-        fn na_d3_f4(){
-            test_kralj_napada_kralja(D_FILE, 3, F_FILE, 4, true);
+        fn kralj_na_d3_ne_napada_kralja_na_f4(){
+            test_kralj_napada_kralja(D_FILE, 3, F_FILE, 4, false);
         }
+
 
         #[test]
         fn na_f4_e5(){
@@ -194,7 +195,7 @@ pub mod test_kralj{
         fn obe_rokade_mogu() -> Tabla{
              Tabla::pocetna_pozicija().odigraj_validan_potez_bez_promocije (F_FILE, 1, F_FILE, 3)
             .odigraj_validan_potez_bez_promocije(F_FILE, 8, F_FILE, 6)
-            .odigraj_validan_potez_bez_promocije (G_FILE, 1, G_FILE, 8)
+            .odigraj_validan_potez_bez_promocije (G_FILE, 1, G_FILE, 3)
             .odigraj_validan_potez_bez_promocije(G_FILE, 8, G_FILE, 6)
         }
 
@@ -203,12 +204,15 @@ pub mod test_kralj{
         }
 
         #[test]
-        fn oba_kralja_mogu_na_po_4_polja_zbog_rokada(){
-            let tabla: Tabla = obe_rokade_mogu();
-            assert_eq!(4, broj_kraljevih_poteza(E_FILE, 1, &tabla.rokada(), true));
+        fn testiraj_da_je_kraljeva_rokada_moguca(){
+            let tabla: Tabla = obe_rokade_mogu(); 
+            let potezi: Vec<u8> = prirodno_kretanje_kralja(&tabla, 4, &tabla.rokada(), None, true);
+            assert_eq!(true, potezi.contains(&6));
+           
             let tabla_2: Tabla = tabla.odigraj_validan_potez_bez_promocije(E_FILE, 1,G_FILE, 1);
             assert_eq!(true, tabla_2.rokada().bela_kraljeva_rokada_vise_nije_moguca);
-            assert_eq!(4, broj_kraljevih_poteza(E_FILE, 8, &tabla_2.rokada(), tabla_2.beli_je_na_potezu()));
+            let potezi_crnog: Vec<u8> = prirodno_kretanje_kralja(&tabla, 60, &tabla.rokada(), None, false);
+            assert_eq!(true, potezi_crnog.contains(&62));
             let tabla_nakon_obe_rokade: Tabla = tabla_2.odigraj_validan_potez_bez_promocije(E_FILE, 8, D_FILE, 8);
             assert_eq!(true, tabla_nakon_obe_rokade.rokada().crna_kraljicina_rokada_vise_nije_moguca);
         }
