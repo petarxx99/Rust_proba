@@ -31,10 +31,10 @@ pub fn polja_na_koja_ide_top<T>(
 
 
 
-pub fn top_napada_polje<T>(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beo: bool) -> bool
+pub fn top_napada_polje<T>(tabla: &T, polje_meta: u8, polje_na_kom_se_nalazim: u8,  ja_sam_beo: bool) -> bool
 where T: Ima_podatke_o_tabli
 {
-    let (rank, file) = crate::broj_to_rank_file(polje);
+    let (rank, file) = crate::broj_to_rank_file(polje_meta);
     let (moj_rank, moj_file) = crate::broj_to_rank_file(polje_na_kom_se_nalazim);
     if moj_rank == rank && moj_file == file {
         return false /* Figura ne moze da napada polje na kom se nalazi. */
@@ -84,7 +84,7 @@ where T: Ima_podatke_o_tabli
 }
 
 
-pub fn top_moze_doci_na_polje<T>(tabla: &T, moje_polje: u8, polje_na_koje_dolazim: u8, ja_sam_beli: bool) -> bool
+pub fn top_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
         top_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli)   

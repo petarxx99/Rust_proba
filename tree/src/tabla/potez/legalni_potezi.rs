@@ -2,15 +2,6 @@ use crate::tabla::{Tabla, kretanje_figura::Figura_interfejs, Figura, Rokada, Pro
 
 use super::{Potez_bits, Potez};
 
-impl PartialEq for Potez_bits{
-    fn eq(&self, other: &Self) -> bool {
-        if !(self.broj_figure == other.broj_figure && self.file == other.file && self.rank == other.rank) {
-            return false
-        }
-    
-        (&self.promocija).copy() as usize == (&other.promocija).copy() as usize
-    }
-}
 
 
 impl Tabla {
@@ -20,8 +11,8 @@ impl Tabla {
 
         if !(figura.figura_moze_doci_na_polje)(
                 self,
-                trenutno_polje_figure,
                 polje_destinacije,
+                trenutno_polje_figure,
                 beli_je_na_potezu
         ){
                 return false
@@ -51,6 +42,7 @@ impl Tabla {
                         let potez: Potez_bits = Potez_bits{broj_figure: i as u8, file, rank, promocija: Promocija::None};
 
                         if self.potez_je_legalan(figure, i as u8,polje, potez.copy(), &figura, beli_je_na_potezu){
+                            println!("{}", potez);
                             Tabla::ubaci_poteze_u_listu(&mut legalni_potezi, potez.copy(), figure, i, rank);                            
                         }   
                     }
@@ -142,7 +134,7 @@ mod test_legalni_potezi{
     }
 
     #[test]
-    fn ima__legalnih_poteza_posle_e4_e5_Nf3_Nc6_Bc4_Bc5_d4_Nf6(){
+    fn ima_43_legalna_poteza_posle_e4_e5_Nf3_Nc6_Bc4_Bc5_d4_Nf6(){
         let tabla: Tabla = Tabla::pocetna_pozicija()
         .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
         .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)

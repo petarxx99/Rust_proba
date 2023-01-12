@@ -46,10 +46,10 @@ pub fn prirodno_kretanje_lovca<T>(
 
 
 
-pub fn lovac_napada_polje<T>(tabla: &T, polje: u8, polje_lovca: u8, ja_sam_beli: bool) -> bool 
+pub fn lovac_napada_polje<T>(tabla: &T, polje_meta: u8, moje_polje: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
-    let (rank, file) = crate::broj_to_rank_file(polje);
-    let (moj_rank, moj_file) = crate::broj_to_rank_file(polje_lovca);
+    let (rank, file) = crate::broj_to_rank_file(polje_meta);
+    let (moj_rank, moj_file) = crate::broj_to_rank_file(moje_polje);
 
     if rank == moj_rank || file == moj_file {
         return false
@@ -83,7 +83,7 @@ where T:Ima_podatke_o_tabli{
     tabla.da_li_su_polja_prazna(&polja_izmedju)
 }
 
-pub fn lovac_moze_doci_na_polje<T>(tabla: &T, moje_polje: u8, polje_na_koje_dolazim: u8, ja_sam_beli: bool) -> bool
+pub fn lovac_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
         lovac_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli)   

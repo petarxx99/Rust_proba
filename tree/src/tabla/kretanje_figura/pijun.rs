@@ -80,10 +80,10 @@ pub fn prirodno_kretanje_pijuna<T>(
 
 
 
-pub fn pijun_napada_polje<T>(tabla: &T, polje: u8, polje_pijuna: u8, ja_sam_beli: bool) -> bool 
+pub fn pijun_napada_polje<T>(tabla: &T, polje_meta: u8, moje_polje: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
-    let (moj_rank, moj_file) = crate::broj_to_rank_file(polje_pijuna);
-    let (rank_destinacije, file_destinacije) = crate::broj_to_rank_file(polje);
+    let (moj_rank, moj_file) = crate::broj_to_rank_file(moje_polje);
+    let (rank_destinacije, file_destinacije) = crate::broj_to_rank_file(polje_meta);
    
     if abs(file_destinacije as i32 - moj_file as i32) != 1 {
         return false
@@ -97,7 +97,7 @@ where T:Ima_podatke_o_tabli{
 }
 
 
-pub fn pijun_moze_doci_na_polje<T>(tabla: &T, moje_polje: u8, polje_na_koje_dolazim: u8, ja_sam_beli: bool) -> bool
+pub fn pijun_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
         let polja_prirodnog_kretanja: Vec<u8> =  prirodno_kretanje_pijuna(

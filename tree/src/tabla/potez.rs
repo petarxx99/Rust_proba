@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use super::{Rokada, Promocija, Tabla, KRALJ, File_rank, DESNI_TOP, F_FILE, LEVI_TOP, D_FILE, Figura};
 mod provera_legalnosti;
 mod legalni_potezi;
@@ -147,6 +149,21 @@ pub struct Potez_bits {
 }
 pub fn print_size_of_Potez_bits(){
     println!("{}", std::mem::size_of::<Potez_bits>());
+}
+impl PartialEq for Potez_bits{
+    fn eq(&self, other: &Self) -> bool {
+        if !(self.broj_figure == other.broj_figure && self.file == other.file && self.rank == other.rank) {
+            return false
+        }
+    
+        (&self.promocija).copy() as usize == (&other.promocija).copy() as usize
+    }
+}
+
+impl Display for Potez_bits {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {        
+        write!(formatter, "potez: \nredni broj figure: {}, rank: {}, file: {}", self.broj_figure, self.rank, self.file)
+    }
 }
 
 impl Potez_bits {

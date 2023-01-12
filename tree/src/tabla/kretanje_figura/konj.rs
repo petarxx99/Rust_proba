@@ -34,11 +34,11 @@ pub fn prirodno_kretanje_konja<T>(
          }
     }
 
-    pub fn konj_napada_polje<T>(tabla: &T, moje_polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool)->bool
+    pub fn konj_napada_polje<T>(tabla: &T, polje_meta: u8, moje_polje: u8, ja_sam_beli: bool)->bool
     where T:Ima_podatke_o_tabli
     {
         let (rank, file) = crate::broj_to_rank_file(moje_polje);
-        let (moj_rank, moj_file) = crate::broj_to_rank_file(polje_na_kom_se_nalazim);
+        let (moj_rank, moj_file) = crate::broj_to_rank_file(polje_meta);
 
         if abs(rank as i32 - moj_rank as i32) == 2 &&
         abs(file as i32 - moj_file as i32) == 1{
@@ -52,7 +52,7 @@ pub fn prirodno_kretanje_konja<T>(
         false
     }
 
-    pub fn konj_moze_doci_na_polje<T>(tabla: &T, moje_polje: u8, polje_na_koje_dolazim: u8, ja_sam_beli: bool) -> bool
+    pub fn konj_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
         konj_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli)   
