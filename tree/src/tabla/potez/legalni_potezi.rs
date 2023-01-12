@@ -144,5 +144,32 @@ mod test_legalni_potezi{
         .odigraj_validan_potez_bez_promocije(G_FILE, 8, F_FILE, 6);
         assert_eq!(43, tabla.svi_legalni_potezi().len());
     }
+
+    #[test] 
+    fn ima_53_legalnih_poteza_posle_e4_d5_exd5_c6_dxc6_Nf6_cxb7_e6_Nf3_Bc5_Bc4_Qc7_Nc3_Qd8_d3_Qd7_Bd2_Qd8_Qe7_Qc7(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 7, D_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 4, D_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(C_FILE, 7, C_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 5, C_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(G_FILE, 8, F_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(C_FILE, 6, B_FILE, 7)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(G_FILE, 1, F_FILE, 3)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 8, C_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 1, C_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 8, C_FILE, 7)
+        .odigraj_validan_potez_bez_promocije(B_FILE, 1, C_FILE, 3)
+        .odigraj_validan_potez_bez_promocije(C_FILE, 7, D_FILE, 8)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 2, D_FILE, 3)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 8, C_FILE, 7)
+        .odigraj_validan_potez_bez_promocije(C_FILE, 1, D_FILE, 2)
+        .odigraj_validan_potez_bez_promocije(C_FILE, 7, D_FILE, 8)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 1, E_FILE, 2)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 8, C_FILE, 7);
+
+        assert_eq!(53, tabla.svi_legalni_potezi().len());
+    }
 }
 
