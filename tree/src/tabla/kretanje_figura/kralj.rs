@@ -102,10 +102,10 @@ pub fn prirodno_kretanje_kralja<T>(
         }
     
 
-pub fn kralj_napada_polje<T>(tabla: &T, polje: u8, polje_kralja: u8, ja_sam_beli: bool) -> bool 
+pub fn kralj_napada_polje<T>(tabla: &T, moje_polje: u8, protivnikovo_polje: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
-    let (rank, file) = crate::broj_to_rank_file(polje);
-    let (moj_rank, moj_file) = crate::broj_to_rank_file(polje_kralja);
+    let (rank, file) = crate::broj_to_rank_file(protivnikovo_polje);
+    let (moj_rank, moj_file) = crate::broj_to_rank_file(moje_polje);
 
     if moj_rank == rank && abs(file as i32 - moj_file as i32) == 1 {
         return true;
@@ -119,7 +119,7 @@ where T:Ima_podatke_o_tabli{
 pub fn kralj_moze_doci_na_polje<T>(tabla: &T, moje_polje: u8, polje_na_koje_dolazim: u8, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
-        kralj_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli)   
+        kralj_napada_polje(tabla, moje_polje, polje_na_koje_dolazim, ja_sam_beli)   
     }
 
 #[cfg(test)]

@@ -1,5 +1,6 @@
 use super::{Rokada, Promocija, Tabla, KRALJ, File_rank, DESNI_TOP, F_FILE, LEVI_TOP, D_FILE, Figura};
 mod provera_legalnosti;
+mod legalni_potezi;
 
 pub struct Potez_info {
     pub rokada_onemogucena: Rokada,
@@ -115,6 +116,19 @@ su sklonjene sa table. */
 
 }
 
+pub struct Potez_polje{
+    pub start_file: u8,
+    pub start_rank: u8,
+    pub end_file: u8,
+    pub end_rank: u8,
+}
+
+impl Potez_polje{
+    pub fn new(start_file: u8, start_rank: u8, end_file: u8, end_rank: u8) -> Potez_polje {
+        Potez_polje { start_file, start_rank, end_file, end_rank}
+    }
+}
+
 pub struct Potez{
     pub start_file: u8,
     pub start_rank: u8,
@@ -135,6 +149,27 @@ pub fn print_size_of_Potez_bits(){
     println!("{}", std::mem::size_of::<Potez_bits>());
 }
 
+impl Potez_bits {
+    pub fn copy(&self) -> Potez_bits{
+        Potez_bits {
+            broj_figure: self.broj_figure,
+            file: self.file,
+            rank: self.rank,
+            promocija: self.promocija.copy()
+        }
+    }
+
+    pub fn new(broj_figure: u8, file: u8, rank: u8, promocija: Promocija) -> Potez_bits{
+        Potez_bits {
+            broj_figure, rank, file, promocija
+        }
+    }
+
+    pub fn to_Potez_polje(&self, figure: &[u8;16]) -> Potez_polje{
+        let (start_rank, start_file) = crate::broj_to_rank_file(figure[self.broj_figure as usize]);
+        Potez_polje { start_file, start_rank, end_file: self.file, end_rank:self.rank }
+    }
+}
 
 impl Potez {
 
@@ -166,10 +201,18 @@ impl Potez {
         }
         None
     }
+
+    pub fn to_Potez_polje(&self)->Potez_polje{
+        Potez_polje { start_file: self.start_file, start_rank: self.start_rank, end_file: self.file_destinacije, end_rank:self.rank_destinacije }
+    }
 }
 
 
 impl Tabla {
+    pub fn odigraj_potez_bez_promocije_unsafe(&self, potez: &Potez_polje) -> Tabla{
+        self.tabla_nakon_validnog_poteza(&Potez{start_file: potez.start_file, start_rank: potez.start_rank, file_destinacije: potez.end_file, rank_destinacije: potez.end_rank, promocija: Promocija::None})
+    }
+
     pub fn odigraj_validan_potez_bez_promocije(&self, start_file: u8, start_rank: u8, file_destinacije: u8, rank_destinacije: u8) -> Tabla {
         self.tabla_nakon_validnog_poteza(&Potez{start_file, start_rank, file_destinacije, rank_destinacije, promocija: Promocija::None})
     }
@@ -590,4 +633,5 @@ mod potez_tests{
         let tabla3: Tabla = tabla.odigraj_validan_potez_bez_promocije(H_FILE, 1, H_FILE, 8);
         assert_eq!(true, tabla3.rokada().bela_kraljeva_rokada_vise_nije_moguca);   
     }
+
 }

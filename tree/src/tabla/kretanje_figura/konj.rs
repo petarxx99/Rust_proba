@@ -34,10 +34,10 @@ pub fn prirodno_kretanje_konja<T>(
          }
     }
 
-    pub fn konj_napada_polje<T>(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool)->bool
+    pub fn konj_napada_polje<T>(tabla: &T, moje_polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool)->bool
     where T:Ima_podatke_o_tabli
     {
-        let (rank, file) = crate::broj_to_rank_file(polje);
+        let (rank, file) = crate::broj_to_rank_file(moje_polje);
         let (moj_rank, moj_file) = crate::broj_to_rank_file(polje_na_kom_se_nalazim);
 
         if abs(rank as i32 - moj_rank as i32) == 2 &&

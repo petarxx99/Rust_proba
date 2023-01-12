@@ -5,6 +5,7 @@ use self::kretanje_figura::Figura_interfejs;
 pub(crate) mod normalna_tabla;
 pub(crate) mod potez;
 pub(crate) mod kretanje_figura;
+mod promocija;
 
 pub static BELI: u8 = 0;
 pub static CRNI: u8 = 1;
@@ -22,14 +23,14 @@ pub static PROMOVISAN_TOP: u8 = 2;
 pub static PROMOVISAN_LOVAC: u8 = 3;
 pub static PROMOVISAN_KONJ: u8 = 0;
 
-pub static A_FILE: u8 = 0;
-pub static B_FILE: u8 = 1;
-pub static C_FILE: u8 = 2;
-pub static D_FILE: u8 = 3;
-pub static E_FILE: u8 = 4;
-pub static F_FILE: u8 = 5;
-pub static G_FILE: u8 = 6;
-pub static H_FILE: u8 = 7;
+pub static A_FILE: u8 = 1;
+pub static B_FILE: u8 = 2;
+pub static C_FILE: u8 = 3;
+pub static D_FILE: u8 = 4;
+pub static E_FILE: u8 = 5;
+pub static F_FILE: u8 = 6;
+pub static G_FILE: u8 = 7;
+pub static H_FILE: u8 = 8;
 
 pub enum Figura {
     KRALJ=0, KRALJICA=1, TOP=2, LOVAC=3, KONJ=4, PIJUN=5
@@ -612,6 +613,16 @@ impl Tabla {
         } else {
             &self.crne_figure
         }
+    }
+
+    pub fn figura_je_pijun(figure: &[u8;16], redni_broj_figure: usize) -> bool{
+        if redni_broj_figure < 8 {
+            return false
+        }
+        if Tabla::pijun_je_promovisan(figure[redni_broj_figure]){
+            return false
+        }
+        true
     }
 
 }

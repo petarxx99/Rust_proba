@@ -72,10 +72,10 @@ where T:Ima_podatke_o_tabli{
     let mut polja_izmedju: Vec<u8> = Vec::new();
 /* y=kx+n, n=y-kx ---- k = (y1-y2) / (x1-x2) */
     let k: i8 = (rank as i8 - moj_rank as i8) / (file as i8 - moj_file as i8);
-    /* n = y - kx */
+    /*     n = y - kx */
     let n: i8 = rank as i8 - k * (file as i8);
     for i in (min_file+1)..max_file {
-        let x: i8 = i as i8;
+        let x: i8 = i as i8; 
         let y = k*x + n;
         polja_izmedju.push(crate::file_rank_to_broj(i, y as u8));
     }
