@@ -163,6 +163,7 @@ mod top_test{
         assert_eq!(true, top_moze_doci_na_polje(&tabla, crate::file_rank_to_broj(F_FILE, 1), tabla.bele_figure[DESNI_TOP], tabla.beli_je_na_potezu()));
         assert_eq!(true, top_moze_doci_na_polje(&tabla, crate::file_rank_to_broj(G_FILE, 1), tabla.bele_figure[DESNI_TOP], tabla.beli_je_na_potezu()));
         assert_eq!(false, top_moze_doci_na_polje(&tabla, crate::file_rank_to_broj(F_FILE, 1), tabla.bele_figure[LEVI_TOP], tabla.beli_je_na_potezu()));
+        assert_eq!(14, polja_na_koja_ide_top(&tabla, tabla.bele_figure[DESNI_TOP], &tabla.rokada(), None, tabla.beli_je_na_potezu()).len());
     }
 }
 

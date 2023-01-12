@@ -42,7 +42,6 @@ impl Tabla {
                         let potez: Potez_bits = Potez_bits{broj_figure: i as u8, file, rank, promocija: Promocija::None};
 
                         if self.potez_je_legalan(figure, i as u8,polje, potez.copy(), &figura, beli_je_na_potezu){
-                            println!("{}", potez);
                             Tabla::ubaci_poteze_u_listu(&mut legalni_potezi, potez.copy(), figure, i, rank);                            
                         }   
                     }
