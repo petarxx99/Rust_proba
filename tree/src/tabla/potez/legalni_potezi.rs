@@ -17,11 +17,8 @@ impl Tabla {
         ){
                 return false
         }
-        
-        /* Ne mogu da jedem sopstvenu figuru. */
-        if self.da_li_je_figura_boje_na_polju(!beli_je_na_potezu, potez.rank, potez.file){
-            return false;
-        }
+
+       
         self.potez_je_legalan_podrazumeva_se_da_figura_moze_doci_do_polja(&potez.to_Potez_polje(figure))
     }
 
