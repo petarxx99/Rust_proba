@@ -87,7 +87,7 @@ impl Tabla {
 
 impl PartialEq for Potez_bits{
     fn eq(&self, other: &Self) -> bool {
-        if !self.broj_figure == other.broj_figure && self.file == other.file && self.rank == other.rank {
+        if !(self.broj_figure == other.broj_figure && self.file == other.file && self.rank == other.rank) {
             return false
         }
     
