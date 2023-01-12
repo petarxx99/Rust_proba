@@ -52,7 +52,7 @@ impl Tabla {
 
             match figura  {
                 Some(f) => {
-                    let (rank, file) = Tabla::broj_to_rank_file(figure[i]);
+                    let (rank, file) = crate::broj_to_rank_file(figure[i]);
 
                     if bela_boja{
                         nove_figure.push(Some(Figura_info::new(f, file, rank, Boja::BELA, true)));
@@ -94,7 +94,7 @@ impl Tabla {
             let figura_info: &Option<Figura_info> = &figure[i];
             match figura_info {
                 Some(f) => {
-                    napravljene_figure[i] = Tabla::file_rank_to_broj(f.file, f.rank);
+                    napravljene_figure[i] = crate::file_rank_to_broj(f.file, f.rank);
                     if i>=8{
                         match f.tip {
                             Figura::KRALJICA => {  
@@ -127,7 +127,7 @@ impl Tabla {
             match figura_optional {
                 Some(figura) => {  
                     match figura.tip {
-                        Figura::KRALJ => {pozicija_kralja = Tabla::file_rank_to_broj(figura.file, figura.rank);},
+                        Figura::KRALJ => {pozicija_kralja = crate::file_rank_to_broj(figura.file, figura.rank);},
                          _ => {}
                     }
                 },

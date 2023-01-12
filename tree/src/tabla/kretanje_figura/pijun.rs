@@ -14,14 +14,14 @@ pub fn prirodno_kretanje_pijuna<T>(
 
     {
         let mut polja: Vec<u8> = Vec::new();
-        let (rank, file) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
+        let (rank, file) = crate::broj_to_rank_file(polje_na_kom_se_nalazim);
         let (pocetni_rank, napred_jedno_polje, en_passant_rank) = pocetni_rank_napred_jedno_polje_en_passant_rank(ja_sam_beli);
 /* Pijun moze da ide jedno polje napred. */
-        polja.push(Tabla::file_rank_to_broj(file, ((rank as i8) + napred_jedno_polje) as u8));
+        polja.push(crate::file_rank_to_broj(file, ((rank as i8) + napred_jedno_polje) as u8));
 
        /*  ako_nisam_pomerao_pijuna_mogu_ga_pomeriti_dvaput*/
         if rank == pocetni_rank {
-            polja.push(Tabla::file_rank_to_broj(file, ((rank as i8) + 2 * napred_jedno_polje) as u8));
+            polja.push(crate::file_rank_to_broj(file, ((rank as i8) + 2 * napred_jedno_polje) as u8));
         }
 
 /* Pijun jede ukoso, drugacije nego sto ide. Zato moram posebno da obradjujem ovaj slucaj. */
@@ -39,7 +39,7 @@ pub fn prirodno_kretanje_pijuna<T>(
             &None => {},
             &Some(en_passant_file) => {
                 if abs(file as i32 - en_passant_file as i32) == 1{
-                    polja.push(Tabla::file_rank_to_broj(en_passant_file, rank_ispred));
+                    polja.push(crate::file_rank_to_broj(en_passant_file, rank_ispred));
                 }
             }
         }
@@ -50,13 +50,13 @@ pub fn prirodno_kretanje_pijuna<T>(
 
           if (file as i32) - 1 >= A_FILE as i32{
              if tabla.da_li_je_figura_boje_na_polju(!ja_sam_beli, rank_ispred, file-1){
-                    polja.push(Tabla::file_rank_to_broj(file-1, rank_ispred));
+                    polja.push(crate::file_rank_to_broj(file-1, rank_ispred));
             }    
         }
 
         if file + 1 <= H_FILE {
             if tabla.da_li_je_figura_boje_na_polju(!ja_sam_beli, rank_ispred, file+1){
-                polja.push(Tabla::file_rank_to_broj(file+1, rank_ispred));
+                polja.push(crate::file_rank_to_broj(file+1, rank_ispred));
             }
         }
     }
@@ -82,8 +82,8 @@ pub fn prirodno_kretanje_pijuna<T>(
 
 pub fn pijun_napada_polje<T>(tabla: &T, polje: u8, polje_pijuna: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
-    let (moj_rank, moj_file) = Tabla::broj_to_rank_file(polje_pijuna);
-    let (rank_destinacije, file_destinacije) = Tabla::broj_to_rank_file(polje);
+    let (moj_rank, moj_file) = crate::broj_to_rank_file(polje_pijuna);
+    let (rank_destinacije, file_destinacije) = crate::broj_to_rank_file(polje);
    
     if abs(file_destinacije as i32 - moj_file as i32) != 1 {
         return false
@@ -111,8 +111,8 @@ pub fn pijun_moze_doci_na_polje<T>(tabla: &T, moje_polje: u8, polje_na_koje_dola
             return false;
         }    
 
-        let (rank_destinacije, _) = Tabla::broj_to_rank_file(polje_na_koje_dolazim);
-        let (rank_pijuna,file_pijuna) = Tabla::broj_to_rank_file(moje_polje);
+        let (rank_destinacije, _) = crate::broj_to_rank_file(polje_na_koje_dolazim);
+        let (rank_pijuna,file_pijuna) = crate::broj_to_rank_file(moje_polje);
         if abs(rank_destinacije as i32 - rank_pijuna as i32) != 2 {
             return true
         } 
@@ -124,7 +124,7 @@ pub fn pijun_moze_doci_na_polje<T>(tabla: &T, moje_polje: u8, polje_na_koje_dola
             rank_polja_izmedju = rank_pijuna - 1;
         }
 
-        let polje_izmedju = Tabla::file_rank_to_broj(file_pijuna, rank_polja_izmedju);
+        let polje_izmedju = crate::file_rank_to_broj(file_pijuna, rank_polja_izmedju);
         tabla.da_li_su_polja_prazna(&vec![polje_izmedju])
     }
 
@@ -142,8 +142,8 @@ pub mod test_pijun{
             .odigraj_validan_potez_bez_promocije(E_FILE, 2, file_belog_pijuna, rank_belog_pijuna)
             .odigraj_validan_potez_bez_promocije(E_FILE, 8, file_kralja, rank_kralja);
  
-            let polje_pijuna: u8 = Tabla::file_rank_to_broj(file_belog_pijuna, rank_belog_pijuna);
-            let polje_koje_napada: u8 = Tabla::file_rank_to_broj(file_kralja, rank_kralja);
+            let polje_pijuna: u8 = crate::file_rank_to_broj(file_belog_pijuna, rank_belog_pijuna);
+            let polje_koje_napada: u8 = crate::file_rank_to_broj(file_kralja, rank_kralja);
             assert_eq!(
                 pijun_napada_polje,
                  crate::tabla::kretanje_figura::pijun::pijun_napada_polje(&tabla, polje_koje_napada, polje_pijuna, true));
@@ -157,8 +157,8 @@ pub mod test_pijun{
                .odigraj_validan_potez_bez_promocije(E_FILE, 7, file_belog_pijuna, rank_belog_pijuna)
                ;
                
-               let polje_pijuna: u8 = Tabla::file_rank_to_broj(file_belog_pijuna, rank_belog_pijuna);
-               let polje_koje_napadam: u8 = Tabla::file_rank_to_broj(file_kralja, rank_kralja);
+               let polje_pijuna: u8 = crate::file_rank_to_broj(file_belog_pijuna, rank_belog_pijuna);
+               let polje_koje_napadam: u8 = crate::file_rank_to_broj(file_kralja, rank_kralja);
                assert_eq!(
                    pijun_napada_polje,
                     crate::tabla::kretanje_figura::pijun::pijun_napada_polje(&tabla, polje_koje_napadam, polje_pijuna, false));
@@ -207,7 +207,7 @@ pub mod test_pijun{
        }
 
        fn broj_polja(start_file: u8, start_rank: u8, en_passant_file: Option<u8>, ja_sam_beli: bool) -> usize{
-            let start_polje = Tabla::file_rank_to_broj(start_file, start_rank);
+            let start_polje = crate::file_rank_to_broj(start_file, start_rank);
             prirodno_kretanje_pijuna(&Tabla::pocetna_pozicija(), start_polje, &Rokada::new_sve_rokade_moguce(), en_passant_file, ja_sam_beli).len()
        }
 

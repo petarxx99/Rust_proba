@@ -57,6 +57,6 @@ pub fn abs(broj: i32) -> u32 {
 
 pub fn ako_su_validni_dodaj_u_vektor(vektor: &mut Vec<u8>, rank: i32, file: i32){
     if rank >= 1 && rank <=8 && file>=A_FILE as i32 && file <=H_FILE as i32{
-       vektor.push(Tabla::file_rank_to_broj(file as u8, rank as u8));
+       vektor.push(crate::file_rank_to_broj(file as u8, rank as u8));
     }
 }

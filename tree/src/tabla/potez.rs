@@ -20,7 +20,7 @@ impl Potez_info {
     pub fn zapisi_info_ako_je_pomeren_pijun(&mut self, figure: &[u8;16], potez: &Potez_bits) {
         if Tabla::proveri_da_li_je_pomeren_pijun(figure, potez.broj_figure as usize) {
             self.pijun_pomeren_ili_figura_pojedena = true;
-            let (start_rank, start_file) = Tabla::broj_to_rank_file(figure[potez.broj_figure as usize]);
+            let (start_rank, start_file) = crate::broj_to_rank_file(figure[potez.broj_figure as usize]);
            
             if (start_rank as i32 - potez.rank as i32 == 2) || (potez.rank as i32 - start_rank as i32 == 2) {
                 self.file_pijuna_pomerenog_2_polja = Some(potez.file as u32);
@@ -87,7 +87,7 @@ su sklonjene sa table. */
     https://stackoverflow.com/questions/36590549/what-is-the-syntax-to-match-on-a-reference-to-an-enum */
 
     fn updejtuj_figure_protiv_kojih_je_odigran_potez(&mut self, figure: &mut[u8;16], potez: &Potez_bits){
-        let polje_destinacije: u8 = Tabla::file_rank_to_broj(potez.file, potez.rank);
+        let polje_destinacije: u8 = crate::file_rank_to_broj(potez.file, potez.rank);
         for i in 0..figure.len() {
             if Tabla::polja_se_slazu(polje_destinacije, figure[i]){
                 self.pijun_pomeren_ili_figura_pojedena = true;
@@ -201,7 +201,7 @@ impl Tabla {
 
     fn prati_polozaj_kralja(figure: &mut[u8;16], broj_figure: usize){
 
-        let (rank, file) = Tabla::broj_to_rank_file(figure[KRALJ]);
+        let (rank, file) = crate::broj_to_rank_file(figure[KRALJ]);
         Tabla::updejtuj_polozaj_figure_unsafe(figure, broj_figure, &File_rank{file, rank});
     }
 
@@ -213,7 +213,7 @@ impl Tabla {
              &File_rank{file, rank});
 
       /* Sledi kod koji se brine za rokadu. */       
-        let (start_rank, start_file) = Tabla::broj_to_rank_file(polozaj_kralja);
+        let (start_rank, start_file) = crate::broj_to_rank_file(polozaj_kralja);
 
         if file as i32 - start_file as i32 == 2 { /* kraljeva rokada */
             Tabla::updejtuj_polozaj_figure_unsafe(figure, DESNI_TOP, &File_rank{file: F_FILE, rank});
@@ -300,13 +300,13 @@ impl Tabla {
     -> Option<Figura> {
         for i in 0..8{           
             /* Ako se figura nalazi na polju koje trazim onda vracam tu figuru. */
-            if Tabla::polja_se_slazu(figure[i], Tabla::file_rank_to_broj(file_rank_polja.file, file_rank_polja.rank)){
+            if Tabla::polja_se_slazu(figure[i], crate::file_rank_to_broj(file_rank_polja.file, file_rank_polja.rank)){
                 return Some(Figura::map_redni_broj_to_figure_unsafe(i).unwrap());
             }
         }
 
         for i in 8..16 {
-            if !Tabla::polja_se_slazu(figure[i], Tabla::file_rank_to_broj(file_rank_polja.file, file_rank_polja.rank)){
+            if !Tabla::polja_se_slazu(figure[i], crate::file_rank_to_broj(file_rank_polja.file, file_rank_polja.rank)){
                 continue; /* Ako se ova figura ne nalazi na polju koje trazim onda preskacem iteraciju. */
             }
 
@@ -319,7 +319,7 @@ impl Tabla {
     }
 
     pub fn polje_je_prazno_preko_broja(&self, polje: u8) -> bool {
-        let (rank, file) = Tabla::broj_to_rank_file(polje);
+        let (rank, file) = crate::broj_to_rank_file(polje);
         self.polje_je_prazno(&File_rank{file, rank})
     }
 
@@ -389,7 +389,7 @@ mod potez_tests{
         let tabla: Tabla = Tabla::pocetna_pozicija();
         let potez: Potez = Potez::new(E_FILE, 1, G_FILE, 1, Promocija::None);
         let tabla_nakon_poteza = tabla.tabla_nakon_validnog_poteza(&potez);
-        let (_, file_topa) = Tabla::broj_to_rank_file(tabla_nakon_poteza.bele_figure[DESNI_TOP]);
+        let (_, file_topa) = crate::broj_to_rank_file(tabla_nakon_poteza.bele_figure[DESNI_TOP]);
         assert_eq!(F_FILE, file_topa);
     }
 
@@ -545,7 +545,7 @@ mod potez_tests{
     #[test]
     fn testiraj_koja_figura_se_nalazi_u_polju(){
         let tabla: Tabla = Tabla::pocetna_pozicija();
-        let polje:u8 = Tabla::file_rank_to_broj(H_FILE, 1);
+        let polje:u8 = crate::file_rank_to_broj(H_FILE, 1);
         Tabla::koja_figura_se_figura_nalazi_na_polju(&File_rank{file: H_FILE, rank:1}, &tabla.bele_figure);
     }
     #[test]
@@ -558,8 +558,8 @@ mod potez_tests{
         .odigraj_validan_potez_bez_promocije(D_FILE, 8, D_FILE, 6)
         .odigraj_validan_potez_bez_promocije(A_FILE, 2, A_FILE, 2)
    /* promocija */     .odigraj_validan_potez_bez_promocije(E_FILE, 8, C_FILE, 8);
-        assert_eq!(Tabla::file_rank_to_broj(F_FILE, 1), tabla.bele_figure[DESNI_TOP]);
-        assert_eq!(Tabla::file_rank_to_broj(D_FILE, 8), tabla.crne_figure[LEVI_TOP]);
+        assert_eq!(crate::file_rank_to_broj(F_FILE, 1), tabla.bele_figure[DESNI_TOP]);
+        assert_eq!(crate::file_rank_to_broj(D_FILE, 8), tabla.crne_figure[LEVI_TOP]);
         assert_eq!(true, tabla.rokada().nijedna_rokada_nije_moguca());
     }
 

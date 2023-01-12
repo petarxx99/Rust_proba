@@ -11,7 +11,7 @@ pub fn polja_na_koja_ide_top<T>(
     where T:Ima_podatke_o_tabli{
 
          let mut polja: Vec<u8> = Vec::new();
-         let (rank_u8, file_u8) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
+         let (rank_u8, file_u8) = crate::broj_to_rank_file(polje_na_kom_se_nalazim);
 
          for i in A_FILE..(H_FILE+1){
             for j in 1..9 {
@@ -23,7 +23,7 @@ pub fn polja_na_koja_ide_top<T>(
                     Ako polje destinacije nije ni isti fajl, ni isti rank, na to polje top ne moze da ode. */
                 }
                 
-                polja.push(Tabla::file_rank_to_broj(i, j))
+                polja.push(crate::file_rank_to_broj(i, j))
             }
          }
          polja
@@ -34,8 +34,8 @@ pub fn polja_na_koja_ide_top<T>(
 pub fn top_napada_polje<T>(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beo: bool) -> bool
 where T: Ima_podatke_o_tabli
 {
-    let (rank, file) = Tabla::broj_to_rank_file(polje);
-    let (moj_rank, moj_file) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
+    let (rank, file) = crate::broj_to_rank_file(polje);
+    let (moj_rank, moj_file) = crate::broj_to_rank_file(polje_na_kom_se_nalazim);
     if moj_rank == rank && moj_file == file {
         return false /* Figura ne moze da napada polje na kom se nalazi. */
     }
@@ -62,7 +62,7 @@ where T: Ima_podatke_o_tabli
             max_file = moj_file;
         }        
         for i in (min_file+1)..max_file{
-            polja.push(Tabla::file_rank_to_broj(i, rank));
+            polja.push(crate::file_rank_to_broj(i, rank));
         }
         return tabla.da_li_su_polja_prazna(&polja)
     }
@@ -70,12 +70,12 @@ where T: Ima_podatke_o_tabli
     /* Slucaj kad je isti fajl, a razlicit rank. */
     if moj_rank < rank {
         for i in (moj_rank+1)..rank{
-            polja.push(Tabla::file_rank_to_broj(file, i));
+            polja.push(crate::file_rank_to_broj(file, i));
         }
         tabla.da_li_su_polja_prazna(&polja)
     } else{
         for i in (rank+1)..moj_rank{
-            polja.push(Tabla::file_rank_to_broj(file, i));
+            polja.push(crate::file_rank_to_broj(file, i));
         }
         tabla.da_li_su_polja_prazna(&polja)
     }
@@ -105,7 +105,7 @@ mod top_test{
     fn na_koliko_polja<T>(file: u8, rank: u8, tabla: &T) -> usize
     where T:Ima_podatke_o_tabli
     {
-        let polje_na_kom_se_nalazim: u8= Tabla::file_rank_to_broj(file, rank);
+        let polje_na_kom_se_nalazim: u8= crate::file_rank_to_broj(file, rank);
         polja_na_koja_ide_top(tabla, polje_na_kom_se_nalazim, &tabla.get_rokada(), tabla.get_file_pijuna_koji_se_pomerio_2_polja(), tabla.get_beli_je_na_potezu()).len()
     }
     #[test]
@@ -119,8 +119,8 @@ mod top_test{
  
     {
         let tabla: Tabla = top_na_polje_kralj_na_polje(file_topa, rank_topa, file_destinacije, rank_destinacije);
-        let polje: u8 = Tabla::file_rank_to_broj(file_topa, rank_topa);
-        let polje_koje_napadam: u8 = Tabla::file_rank_to_broj(file_destinacije, rank_destinacije);
+        let polje: u8 = crate::file_rank_to_broj(file_topa, rank_topa);
+        let polje_koje_napadam: u8 = crate::file_rank_to_broj(file_destinacije, rank_destinacije);
         top_napada_polje(&tabla, polje_koje_napadam, polje, true)
     }
 

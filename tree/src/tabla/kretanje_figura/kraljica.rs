@@ -45,8 +45,8 @@ pub mod test_kraljica{
         .odigraj_validan_potez_bez_promocije(D_FILE, 1, file_kraljice, rank_kraljice)
         .odigraj_validan_potez_bez_promocije(E_FILE, 8, file_kralja, rank_kralja);
         
-        let polje_kraljice: u8 = Tabla::file_rank_to_broj(file_kraljice, rank_kraljice);
-        let polje_napada: u8 = Tabla::file_rank_to_broj(file_kralja, rank_kralja);
+        let polje_kraljice: u8 = crate::file_rank_to_broj(file_kraljice, rank_kraljice);
+        let polje_napada: u8 = crate::file_rank_to_broj(file_kralja, rank_kralja);
         assert_eq!(kraljica_treba_da_napada_kralja, kraljica_napada_polje(&tabla, polje_napada, polje_kraljice, true));
     }
 

@@ -190,7 +190,7 @@ impl Ima_podatke_o_tabli for Tabla {
             figure = &self.crne_figure;
         }
 
-        let target_polje: u8 = Tabla::file_rank_to_broj(file, rank);
+        let target_polje: u8 = crate::file_rank_to_broj(file, rank);
         for figura in figure {
             if Tabla::polja_se_slazu(*figura, target_polje) {
                 return true
@@ -520,7 +520,7 @@ pojedene. */
         let mut sacuvaj_sedmi_osmi_bit: u8 = figure[broj_figure] >> 6;
         sacuvaj_sedmi_osmi_bit <<= 6;
 
-        figure[broj_figure] = Tabla::file_rank_to_broj(file_rank.file, file_rank.rank);
+        figure[broj_figure] = crate::file_rank_to_broj(file_rank.file, file_rank.rank);
         figure[broj_figure] |= sacuvaj_sedmi_osmi_bit;
     }
 
@@ -531,14 +531,7 @@ pojedene. */
 impl Tabla{
    
 
-    pub fn broj_to_rank_file(mut broj: u8) -> (u8, u8){
-        let prvih_6_bitova: u8 = (1<<6) - 1;
-        broj &= prvih_6_bitova;
-
-        let rank = (broj>>3) + 1;
-        let file = broj % 8;
-        (rank, file)
-    }
+  
 
     pub fn polja_se_slazu(mut polje1: u8, mut polje2: u8) -> bool{
         let prvih_6_bitova: u8 = (1<<6) - 1;
@@ -548,7 +541,7 @@ impl Tabla{
     }
 
     pub fn to_je_file_rank_polja(mut polje: u8, file: u8, rank: u8) -> bool {
-        let polje_2: u8 = Tabla::file_rank_to_broj(file, rank);
+        let polje_2: u8 = crate::file_rank_to_broj(file, rank);
         Tabla::polja_se_slazu(polje, polje_2)
     }  
     
@@ -575,18 +568,18 @@ impl Tabla {
         } 
         let mut niz = [0 as u8; 16];
         
-        niz[LEVI_TOP] = Tabla::file_rank_to_broj(A_FILE, rank_figura);
-        niz[LEVI_KONJ] = Tabla::file_rank_to_broj(B_FILE, rank_figura);
-        niz[LEVI_LOVAC] = Tabla::file_rank_to_broj(C_FILE, rank_figura);
-        niz[KRALJICA] = Tabla::file_rank_to_broj(D_FILE, rank_figura); 
-        niz[KRALJ] = Tabla::file_rank_to_broj(E_FILE, rank_figura);
-        niz[DESNI_LOVAC] = Tabla::file_rank_to_broj(F_FILE, rank_figura);
-        niz[DESNI_KONJ] = Tabla::file_rank_to_broj(G_FILE, rank_figura);
-        niz[DESNI_TOP] = Tabla::file_rank_to_broj(H_FILE, rank_figura);
+        niz[LEVI_TOP] = crate::file_rank_to_broj(A_FILE, rank_figura);
+        niz[LEVI_KONJ] = crate::file_rank_to_broj(B_FILE, rank_figura);
+        niz[LEVI_LOVAC] = crate::file_rank_to_broj(C_FILE, rank_figura);
+        niz[KRALJICA] = crate::file_rank_to_broj(D_FILE, rank_figura); 
+        niz[KRALJ] = crate::file_rank_to_broj(E_FILE, rank_figura);
+        niz[DESNI_LOVAC] = crate::file_rank_to_broj(F_FILE, rank_figura);
+        niz[DESNI_KONJ] = crate::file_rank_to_broj(G_FILE, rank_figura);
+        niz[DESNI_TOP] = crate::file_rank_to_broj(H_FILE, rank_figura);
 
         for i in 8..16 as usize{
             let file: u8 = ((i-8) + A_FILE as usize) as u8;
-            niz[i] = Tabla::file_rank_to_broj(file, rank_pijuna);
+            niz[i] = crate::file_rank_to_broj(file, rank_pijuna);
         }
 
         niz
@@ -597,9 +590,7 @@ impl Tabla {
         0
     }
 
-    fn file_rank_to_broj(file: u8, rank: u8) -> u8 {
-        ((rank-1) << 3) + file
-    }
+  
 
     fn polje_kralja(figure: &[u8;16]) -> u8 {
         let polje_kralja:u8 = figure[KRALJ];
@@ -608,7 +599,7 @@ impl Tabla {
     }
 
     fn file_rank_kralja(figure: &[u8;16]) -> (u8,u8){
-        Tabla::broj_to_rank_file(figure[0])
+        crate::broj_to_rank_file(figure[0])
     }
     
     pub fn resetuj_50_move_rule(bitfield: i32) -> i32 {

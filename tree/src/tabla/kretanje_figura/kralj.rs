@@ -10,7 +10,7 @@ pub fn prirodno_kretanje_kralja<T>(
     rokada: &Rokada, 
     fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>
     where T:Ima_podatke_o_tabli{
-        let (rank_u8, file_u8) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
+        let (rank_u8, file_u8) = crate::broj_to_rank_file(polje_na_kom_se_nalazim);
         let rank: i32 = rank_u8 as i32;
         let file: i32 = file_u8 as i32;
 
@@ -38,11 +38,11 @@ pub fn prirodno_kretanje_kralja<T>(
         get_kraljicina_rokada_kraljeva_rokada_kraljev_rank(rokada, ja_sam_beli);
 
         if moze_kraljeva_rokada(kraljev_rank, tabla, kraljeva_rokada, ja_sam_beli){
-            polja.push(Tabla::file_rank_to_broj(G_FILE, kraljev_rank));
+            polja.push(crate::file_rank_to_broj(G_FILE, kraljev_rank));
         }
 
         if moze_kraljicina_rokada(kraljev_rank, tabla, kraljicina_rokada, ja_sam_beli){
-            polja.push(Tabla::file_rank_to_broj(C_FILE, kraljev_rank));
+            polja.push(crate::file_rank_to_broj(C_FILE, kraljev_rank));
         }
     }
 
@@ -50,9 +50,9 @@ pub fn prirodno_kretanje_kralja<T>(
     where T: Ima_podatke_o_tabli
     {
         let mut polja_izmedju_kraljicine_rokade: Vec<u8> = vec![
-            Tabla::file_rank_to_broj(D_FILE, kraljev_rank),
-            Tabla::file_rank_to_broj(C_FILE, kraljev_rank),
-            Tabla::file_rank_to_broj(B_FILE, kraljev_rank),
+            crate::file_rank_to_broj(D_FILE, kraljev_rank),
+            crate::file_rank_to_broj(C_FILE, kraljev_rank),
+            crate::file_rank_to_broj(B_FILE, kraljev_rank),
         ];
         if kraljicina_rokada && tabla.da_li_su_polja_prazna(&polja_izmedju_kraljicine_rokade){
             polja_izmedju_kraljicine_rokade.pop();
@@ -68,8 +68,8 @@ pub fn prirodno_kretanje_kralja<T>(
     where T:Ima_podatke_o_tabli
     {
         let polja_izmedju_kraljeve_rokade: Vec<u8> = vec![
-            Tabla::file_rank_to_broj(F_FILE, kraljev_rank),
-            Tabla::file_rank_to_broj(G_FILE, kraljev_rank)
+            crate::file_rank_to_broj(F_FILE, kraljev_rank),
+            crate::file_rank_to_broj(G_FILE, kraljev_rank)
         ];
         if kraljeva_rokada &&
             tabla.da_li_su_polja_prazna(&polja_izmedju_kraljeve_rokade)
@@ -104,8 +104,8 @@ pub fn prirodno_kretanje_kralja<T>(
 
 pub fn kralj_napada_polje<T>(tabla: &T, polje: u8, polje_kralja: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
-    let (rank, file) = Tabla::broj_to_rank_file(polje);
-    let (moj_rank, moj_file) = Tabla::broj_to_rank_file(polje_kralja);
+    let (rank, file) = crate::broj_to_rank_file(polje);
+    let (moj_rank, moj_file) = crate::broj_to_rank_file(polje_kralja);
 
     if moj_rank == rank && abs(file as i32 - moj_file as i32) == 1 {
         return true;
@@ -136,8 +136,8 @@ pub mod test_kralj{
             .odigraj_validan_potez_bez_promocije(E_FILE, 1, file_belog_kralja, rank_belog_kralja)
             .odigraj_validan_potez_bez_promocije(E_FILE, 8, file_crnog_kralja, rank_crnog_kralja);
             
-            let polje_kralja: u8 = Tabla::file_rank_to_broj(file_belog_kralja, rank_belog_kralja);
-            let polje_koje_napadam: u8 = Tabla::file_rank_to_broj(file_crnog_kralja, rank_crnog_kralja);
+            let polje_kralja: u8 = crate::file_rank_to_broj(file_belog_kralja, rank_belog_kralja);
+            let polje_koje_napadam: u8 = crate::file_rank_to_broj(file_crnog_kralja, rank_crnog_kralja);
             assert_eq!(
                 napadam_kralja,
                  crate::tabla::kretanje_figura::kralj::kralj_napada_polje(&tabla, polje_koje_napadam, polje_kralja, true));
@@ -197,7 +197,7 @@ pub mod test_kralj{
         }
 
         fn broj_kraljevih_poteza(file: u8, rank: u8, rokada: &Rokada, ja_sam_beli: bool) -> usize {
-            prirodno_kretanje_kralja(&Tabla::pocetna_pozicija(),Tabla::file_rank_to_broj(file, rank), rokada, None, ja_sam_beli).len()
+            prirodno_kretanje_kralja(&Tabla::pocetna_pozicija(),crate::file_rank_to_broj(file, rank), rokada, None, ja_sam_beli).len()
         }
 
         #[test]

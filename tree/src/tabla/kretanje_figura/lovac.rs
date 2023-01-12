@@ -10,7 +10,7 @@ pub fn prirodno_kretanje_lovca<T>(
     where T:Ima_podatke_o_tabli{
         
         let mut polja: Vec<u8> = Vec::new();
-        let (rank_lovca_u8, file_lovca_u8) = Tabla::broj_to_rank_file(polje_na_kom_se_nalazim);
+        let (rank_lovca_u8, file_lovca_u8) = crate::broj_to_rank_file(polje_na_kom_se_nalazim);
         let rank_lovca: i8 = rank_lovca_u8 as i8;
         let file_lovca: i8 = file_lovca_u8 as i8;
         
@@ -19,10 +19,10 @@ pub fn prirodno_kretanje_lovca<T>(
 
         while rank>=1 {
             if (file_lovca - file_razlika) >= A_FILE as i8 {
-                polja.push(Tabla::file_rank_to_broj((file_lovca - file_razlika) as u8, rank as u8));
+                polja.push(crate::file_rank_to_broj((file_lovca - file_razlika) as u8, rank as u8));
             } 
             if (file_lovca + file_razlika) <= H_FILE as i8{
-                polja.push(Tabla::file_rank_to_broj((file_lovca + file_razlika) as u8, rank as u8));
+                polja.push(crate::file_rank_to_broj((file_lovca + file_razlika) as u8, rank as u8));
             }
             rank -=1;
             file_razlika += 1;
@@ -32,10 +32,10 @@ pub fn prirodno_kretanje_lovca<T>(
         rank = 1+ rank_lovca as i8;
         while rank <=8 {
             if (file_lovca - file_razlika) >= A_FILE as i8{
-                polja.push(Tabla::file_rank_to_broj((file_lovca - file_razlika) as u8, rank as u8));
+                polja.push(crate::file_rank_to_broj((file_lovca - file_razlika) as u8, rank as u8));
             }
             if (file_lovca + file_razlika) <= H_FILE as i8{
-                polja.push(Tabla::file_rank_to_broj((file_lovca + file_razlika) as u8, rank as u8));
+                polja.push(crate::file_rank_to_broj((file_lovca + file_razlika) as u8, rank as u8));
             }
             rank += 1;
             file_razlika += 1;
@@ -48,8 +48,8 @@ pub fn prirodno_kretanje_lovca<T>(
 
 pub fn lovac_napada_polje<T>(tabla: &T, polje: u8, polje_lovca: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
-    let (rank, file) = Tabla::broj_to_rank_file(polje);
-    let (moj_rank, moj_file) = Tabla::broj_to_rank_file(polje_lovca);
+    let (rank, file) = crate::broj_to_rank_file(polje);
+    let (moj_rank, moj_file) = crate::broj_to_rank_file(polje_lovca);
 
     if rank == moj_rank || file == moj_file {
         return false
@@ -77,7 +77,7 @@ where T:Ima_podatke_o_tabli{
     for i in (min_file+1)..max_file {
         let x: i8 = i as i8;
         let y = k*x + n;
-        polja_izmedju.push(Tabla::file_rank_to_broj(i, y as u8));
+        polja_izmedju.push(crate::file_rank_to_broj(i, y as u8));
     }
 
     tabla.da_li_su_polja_prazna(&polja_izmedju)
@@ -95,7 +95,7 @@ pub mod test_lovac{
         kretanje_figura::lovac::lovac_napada_polje, Rokada};
         
         fn test_kretanje_lovca(broj_polja: usize, file_lovca: u8, rank_lovca: u8){
-            let polje: u8 = Tabla::file_rank_to_broj(file_lovca, rank_lovca);
+            let polje: u8 = crate::file_rank_to_broj(file_lovca, rank_lovca);
             assert_eq!(broj_polja, 
                 crate::tabla::kretanje_figura::lovac::prirodno_kretanje_lovca(&Tabla::pocetna_pozicija(), polje, &Rokada::new_sve_rokade_moguce(), None, true).len());
         }
@@ -121,8 +121,8 @@ pub mod test_lovac{
         .odigraj_validan_potez_bez_promocije(C_FILE, 1, file_lovca, rank_lovca)
         .odigraj_validan_potez_bez_promocije(E_FILE, 8, file_kralja, rank_kralja);
         
-        let polje_lovca: u8 = Tabla::file_rank_to_broj(file_lovca, rank_lovca);
-        let polje_koje_napadam: u8 = Tabla::file_rank_to_broj(file_kralja, rank_kralja);
+        let polje_lovca: u8 = crate::file_rank_to_broj(file_lovca, rank_lovca);
+        let polje_koje_napadam: u8 = crate::file_rank_to_broj(file_kralja, rank_kralja);
         assert_eq!(
             lovac_napada_kralja,
              crate::tabla::kretanje_figura::lovac::lovac_napada_polje(&tabla, polje_koje_napadam, polje_lovca, true));
