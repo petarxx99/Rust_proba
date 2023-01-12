@@ -41,7 +41,7 @@ where T: Ima_podatke_o_tabli
         fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>,
         
 
-    pub napadam_polje: fn(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool) -> bool,
+    pub napada_polje: fn(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool) -> bool,
     pub figura_moze_doci_na_polje: fn(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool) -> bool,
 }
 
@@ -55,10 +55,10 @@ where T: Ima_podatke_o_tabli
         rokada: &Rokada, 
         fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>,
        
-        napadam_polje: fn(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, kralj_je_beli: bool) -> bool,
+        napada_polje: fn(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, kralj_je_beli: bool) -> bool,
         figura_moze_doci_na_polje: fn(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool) -> bool,
     ) -> Figura_interfejs<T>{
-        Figura_interfejs{prirodno_kretanje,  napadam_polje, figura_moze_doci_na_polje}
+        Figura_interfejs{prirodno_kretanje,  napada_polje, figura_moze_doci_na_polje}
     }
 
 

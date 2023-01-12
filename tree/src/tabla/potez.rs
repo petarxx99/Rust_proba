@@ -1,5 +1,5 @@
 use super::{Rokada, Promocija, Tabla, KRALJ, File_rank, DESNI_TOP, F_FILE, LEVI_TOP, D_FILE, Figura};
-
+mod provera_legalnosti;
 
 pub struct Potez_info {
     pub rokada_onemogucena: Rokada,

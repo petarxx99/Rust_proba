@@ -100,7 +100,7 @@ impl Rokada {
             return self.bela_kraljeva_rokada_vise_nije_moguca && self.bela_kraljicina_rokada_vise_nije_moguca;
         } else {
             return self.crna_kraljeva_rokada_vise_nije_moguca && self.crna_kraljicina_rokada_vise_nije_moguca;
-        }
+        } 
     }
     pub fn nijedna_rokada_nije_moguca(&self)->bool{
         self.bela_kraljeva_rokada_vise_nije_moguca
@@ -216,7 +216,7 @@ impl Ima_podatke_o_tabli for Tabla {
                     None => {},
                     Some(figura) => {
                         for polje in polja {
-                            if (figura.napadam_polje)(self, *polje, self.bele_figure[i], bele_ne_crne_figure_napadaju){
+                            if (figura.napada_polje)(self, *polje, self.bele_figure[i], bele_ne_crne_figure_napadaju){
                                 return false;
                             }
                         }
@@ -229,7 +229,7 @@ impl Ima_podatke_o_tabli for Tabla {
                     None => {},
                     Some(figura) => {
                         for polje in polja {
-                            if (figura.napadam_polje)(self, *polje, self.crne_figure[i], bele_ne_crne_figure_napadaju){
+                            if (figura.napada_polje)(self, *polje, self.crne_figure[i], bele_ne_crne_figure_napadaju){
                                 return false;
                             }
                         }
@@ -606,6 +606,13 @@ impl Tabla {
         Tabla::sifruj_pre_koliko_poteza_je_50_move_rule_pomeren(bitfield, 0)
     }
 
+    pub fn figure_koje_su_na_potezu(&self) -> &[u8;16]{
+        if self.beli_je_na_potezu() {
+            &self.bele_figure
+        } else {
+            &self.crne_figure
+        }
+    }
 
 }
 
