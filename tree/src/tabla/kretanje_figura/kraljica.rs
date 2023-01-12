@@ -17,11 +17,7 @@ pub fn prirodno_kretanje_kraljice<T>(
         kao_top
     }
 
-pub fn kraljica_napada_kralja<T>(tabla: &T, polje_kraljice: u8, kralj_je_beli: bool) -> bool 
-where T:Ima_podatke_o_tabli{
-    let polje_kralja: u8 = tabla.pozicija_kralja(kralj_je_beli);
-    kraljica_napada_polje(tabla, polje_kralja, polje_kraljice, !kralj_je_beli)
-}
+
 
 pub fn kraljica_napada_polje<T>(tabla: &T, polje: u8, polje_kraljice: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
@@ -38,7 +34,7 @@ pub fn kraljica_moze_doci_na_polje<T>(tabla: &T, moje_polje: u8, polje_na_koje_d
 
 #[cfg(test)]
 pub mod test_kraljica{
-    use crate::tabla::{Tabla, E_FILE, D_FILE, H_FILE, C_FILE, B_FILE, F_FILE, A_FILE, kretanje_figura::kraljica::kraljica_napada_kralja, G_FILE};
+    use crate::tabla::{Tabla, E_FILE, D_FILE, H_FILE, C_FILE, B_FILE, F_FILE, A_FILE, kretanje_figura::kraljica::kraljica_napada_polje, G_FILE};
 
 
     fn testiraj_kraljica_na_kralj_na(
@@ -49,8 +45,9 @@ pub mod test_kraljica{
         .odigraj_validan_potez_bez_promocije(D_FILE, 1, file_kraljice, rank_kraljice)
         .odigraj_validan_potez_bez_promocije(E_FILE, 8, file_kralja, rank_kralja);
         
-        let polje: u8 = Tabla::file_rank_to_broj(file_kraljice, rank_kraljice);
-        assert_eq!(kraljica_treba_da_napada_kralja, kraljica_napada_kralja(&tabla, polje, false));
+        let polje_kraljice: u8 = Tabla::file_rank_to_broj(file_kraljice, rank_kraljice);
+        let polje_napada: u8 = Tabla::file_rank_to_broj(file_kralja, rank_kralja);
+        assert_eq!(kraljica_treba_da_napada_kralja, kraljica_napada_polje(&tabla, polje_napada, polje_kraljice, true));
     }
 
     #[test]

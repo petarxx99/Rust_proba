@@ -102,14 +102,6 @@ pub fn prirodno_kretanje_kralja<T>(
         }
     
 
-pub fn kralj_napada_kralja<T>(tabla: &T, polje_kralja: u8, kralj_je_beli: bool) -> bool 
-where T:Ima_podatke_o_tabli{
-    let polje_protivnickog_kralja: u8 = tabla.pozicija_kralja(kralj_je_beli);
-    kralj_napada_polje(tabla, polje_protivnickog_kralja,  polje_kralja, !kralj_je_beli)
-}
-
-
-
 pub fn kralj_napada_polje<T>(tabla: &T, polje: u8, polje_kralja: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
     let (rank, file) = Tabla::broj_to_rank_file(polje);
@@ -144,10 +136,11 @@ pub mod test_kralj{
             .odigraj_validan_potez_bez_promocije(E_FILE, 1, file_belog_kralja, rank_belog_kralja)
             .odigraj_validan_potez_bez_promocije(E_FILE, 8, file_crnog_kralja, rank_crnog_kralja);
             
-            let polje: u8 = Tabla::file_rank_to_broj(file_belog_kralja, rank_belog_kralja);
+            let polje_kralja: u8 = Tabla::file_rank_to_broj(file_belog_kralja, rank_belog_kralja);
+            let polje_koje_napadam: u8 = Tabla::file_rank_to_broj(file_crnog_kralja, rank_crnog_kralja);
             assert_eq!(
                 napadam_kralja,
-                 crate::tabla::kretanje_figura::kralj::kralj_napada_kralja(&tabla, polje, false));
+                 crate::tabla::kretanje_figura::kralj::kralj_napada_polje(&tabla, polje_koje_napadam, polje_kralja, true));
         }
 
         #[test]

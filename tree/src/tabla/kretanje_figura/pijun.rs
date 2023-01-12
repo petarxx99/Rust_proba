@@ -78,12 +78,7 @@ pub fn prirodno_kretanje_pijuna<T>(
         (pocetni_rank, napred_jedno_polje, en_passant_rank)
     }
 
-  
-pub fn pijun_napada_kralja<T>(tabla: &T, polje_pijuna: u8, kralj_je_beli: bool) -> bool 
-where T:Ima_podatke_o_tabli{
-    let polje_kralja: u8 = tabla.pozicija_kralja(kralj_je_beli);
-    pijun_napada_polje(tabla, polje_kralja,polje_pijuna, !kralj_je_beli)
-}
+
 
 pub fn pijun_napada_polje<T>(tabla: &T, polje: u8, polje_pijuna: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
@@ -142,29 +137,31 @@ pub mod test_pijun{
 
     fn beli_pijun_napada_kralja(file_belog_pijuna: u8, rank_belog_pijuna: u8,
          file_kralja: u8, rank_kralja: u8, 
-        pijun_napada_kralja: bool){
+        pijun_napada_polje: bool){
             let tabla: Tabla = Tabla::pocetna_pozicija()
             .odigraj_validan_potez_bez_promocije(E_FILE, 2, file_belog_pijuna, rank_belog_pijuna)
             .odigraj_validan_potez_bez_promocije(E_FILE, 8, file_kralja, rank_kralja);
  
-            let polje: u8 = Tabla::file_rank_to_broj(file_belog_pijuna, rank_belog_pijuna);
+            let polje_pijuna: u8 = Tabla::file_rank_to_broj(file_belog_pijuna, rank_belog_pijuna);
+            let polje_koje_napada: u8 = Tabla::file_rank_to_broj(file_kralja, rank_kralja);
             assert_eq!(
-                pijun_napada_kralja,
-                 crate::tabla::kretanje_figura::pijun::pijun_napada_kralja(&tabla, polje, false));
+                pijun_napada_polje,
+                 crate::tabla::kretanje_figura::pijun::pijun_napada_polje(&tabla, polje_koje_napada, polje_pijuna, true));
         }
 
         fn crni_pijun_napada_kralja(file_belog_pijuna: u8, rank_belog_pijuna: u8,
             file_kralja: u8, rank_kralja: u8, 
-           pijun_napada_kralja: bool){
+           pijun_napada_polje: bool){
                let tabla: Tabla = Tabla::pocetna_pozicija()
                .odigraj_validan_potez_bez_promocije(E_FILE, 1, file_kralja, rank_kralja)
                .odigraj_validan_potez_bez_promocije(E_FILE, 7, file_belog_pijuna, rank_belog_pijuna)
                ;
                
-               let polje: u8 = Tabla::file_rank_to_broj(file_belog_pijuna, rank_belog_pijuna);
+               let polje_pijuna: u8 = Tabla::file_rank_to_broj(file_belog_pijuna, rank_belog_pijuna);
+               let polje_koje_napadam: u8 = Tabla::file_rank_to_broj(file_kralja, rank_kralja);
                assert_eq!(
-                   pijun_napada_kralja,
-                    crate::tabla::kretanje_figura::pijun::pijun_napada_kralja(&tabla, polje, true));
+                   pijun_napada_polje,
+                    crate::tabla::kretanje_figura::pijun::pijun_napada_polje(&tabla, polje_koje_napadam, polje_pijuna, false));
         }
 
         

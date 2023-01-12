@@ -45,13 +45,6 @@ pub fn prirodno_kretanje_lovca<T>(
     }
 
 
-    
-pub fn lovac_napada_kralja<T>(tabla: &T, polje_lovca: u8, kralj_je_beli: bool) -> bool 
-where T:Ima_podatke_o_tabli{
-
-    let meta: u8 = tabla.pozicija_kralja(kralj_je_beli);
-    lovac_napada_polje(tabla, meta, polje_lovca, !kralj_je_beli)
-}
 
 pub fn lovac_napada_polje<T>(tabla: &T, polje: u8, polje_lovca: u8, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
@@ -99,7 +92,7 @@ pub fn lovac_moze_doci_na_polje<T>(tabla: &T, moje_polje: u8, polje_na_koje_dola
 #[cfg(test)]
 pub mod test_lovac{
     use crate::tabla::{Tabla, self, A_FILE, B_FILE, C_FILE, D_FILE, E_FILE, F_FILE, G_FILE, H_FILE,
-        kretanje_figura::lovac::lovac_napada_kralja, Rokada};
+        kretanje_figura::lovac::lovac_napada_polje, Rokada};
         
         fn test_kretanje_lovca(broj_polja: usize, file_lovca: u8, rank_lovca: u8){
             let polje: u8 = Tabla::file_rank_to_broj(file_lovca, rank_lovca);
@@ -128,10 +121,11 @@ pub mod test_lovac{
         .odigraj_validan_potez_bez_promocije(C_FILE, 1, file_lovca, rank_lovca)
         .odigraj_validan_potez_bez_promocije(E_FILE, 8, file_kralja, rank_kralja);
         
-        let polje: u8 = Tabla::file_rank_to_broj(file_lovca, rank_lovca);
+        let polje_lovca: u8 = Tabla::file_rank_to_broj(file_lovca, rank_lovca);
+        let polje_koje_napadam: u8 = Tabla::file_rank_to_broj(file_kralja, rank_kralja);
         assert_eq!(
             lovac_napada_kralja,
-             crate::tabla::kretanje_figura::lovac::lovac_napada_kralja(&tabla, polje, false));
+             crate::tabla::kretanje_figura::lovac::lovac_napada_polje(&tabla, polje_koje_napadam, polje_lovca, true));
     }
 
     #[test]

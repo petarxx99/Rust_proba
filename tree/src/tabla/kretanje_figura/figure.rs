@@ -1,10 +1,10 @@
 use crate::tabla::{kretanje_figura
-::{konj::{prirodno_kretanje_konja, konj_napada_kralja, konj_napada_polje}, 
-kralj::{prirodno_kretanje_kralja, kralj_napada_kralja, kralj_napada_polje}, 
-lovac::{prirodno_kretanje_lovca,lovac_napada_kralja, lovac_napada_polje},
- kraljica::{prirodno_kretanje_kraljice, kraljica_napada_kralja, kraljica_napada_polje},
-  pijun::{prirodno_kretanje_pijuna, pijun_napada_kralja, pijun_napada_polje},
-   top::{polja_na_koja_ide_top, top_napada_kralja, top_napada_polje}}, Figura, Tabla, A_FILE, H_FILE};
+::{konj::{prirodno_kretanje_konja,  konj_napada_polje}, 
+kralj::{prirodno_kretanje_kralja, kralj_napada_polje}, 
+lovac::{prirodno_kretanje_lovca,lovac_napada_polje},
+ kraljica::{prirodno_kretanje_kraljice,  kraljica_napada_polje},
+  pijun::{prirodno_kretanje_pijuna, pijun_napada_polje},
+   top::{polja_na_koja_ide_top, top_napada_polje}}, Figura, Tabla, A_FILE, H_FILE};
 
 use super::{Figura_interfejs, pijun::pijun_moze_doci_na_polje, kralj::kralj_moze_doci_na_polje, kraljica::kraljica_moze_doci_na_polje, lovac::lovac_moze_doci_na_polje,
 konj::konj_moze_doci_na_polje};

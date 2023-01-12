@@ -29,12 +29,7 @@ pub fn polja_na_koja_ide_top<T>(
          polja
     }
 
-pub fn top_napada_kralja<T>(tabla: &T, polje_na_kom_se_nalazim: u8, kralj_je_beo: bool) -> bool
-where T: Ima_podatke_o_tabli
-{
-    let polje_kralja: u8 = tabla.pozicija_kralja(kralj_je_beo);
-    top_napada_polje(tabla, polje_kralja, polje_na_kom_se_nalazim, !kralj_je_beo)
-}
+
 
 pub fn top_napada_polje<T>(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beo: bool) -> bool
 where T: Ima_podatke_o_tabli
@@ -99,7 +94,7 @@ pub fn top_moze_doci_na_polje<T>(tabla: &T, moje_polje: u8, polje_na_koje_dolazi
 mod top_test{
     use crate::tabla::{Tabla, E_FILE, A_FILE, G_FILE, Rokada, H_FILE, B_FILE, Ima_podatke_o_tabli};
 
-    use super::{polja_na_koja_ide_top, top_napada_kralja};
+    use super::{polja_na_koja_ide_top, top_napada_polje};
 
     fn top_na_polje_kralj_na_polje(file_topa: u8, rank_topa: u8, file_kralja: u8, rank_kralja: u8)->Tabla{
         let tabla0 : Tabla = Tabla::pocetna_pozicija();
@@ -120,36 +115,33 @@ mod top_test{
 
     }
 
-    fn testiraj_top_napada_crnog_kralja<T>(tabla: &T, file_topa: u8, rank_topa: u8) -> bool 
-    where T:Ima_podatke_o_tabli
+    fn testiraj_beli_top_napada_polje(file_topa: u8, rank_topa: u8, file_destinacije: u8, rank_destinacije: u8) -> bool 
+ 
     {
+        let tabla: Tabla = top_na_polje_kralj_na_polje(file_topa, rank_topa, file_destinacije, rank_destinacije);
         let polje: u8 = Tabla::file_rank_to_broj(file_topa, rank_topa);
-        top_napada_kralja(tabla, polje, false)
+        let polje_koje_napadam: u8 = Tabla::file_rank_to_broj(file_destinacije, rank_destinacije);
+        top_napada_polje(&tabla, polje_koje_napadam, polje, true)
     }
 
     #[test]
     fn top_sa_h3_vidi_kralja_na_h6_kad_nema_nista_izmedju(){
-        let tabla: Tabla = top_na_polje_kralj_na_polje(H_FILE, 3, H_FILE, 6);
-        assert_eq!(true, testiraj_top_napada_crnog_kralja(&tabla, H_FILE, 3));
+        assert_eq!(true, testiraj_beli_top_napada_polje(H_FILE, 3, H_FILE, 6));
     }
 
     #[test]
-    fn top_sa_b8_ne_vidi_kralja_na_e8_jer_ima_figura_izmedju(){
-        let tabla: Tabla = top_na_polje_kralj_na_polje(B_FILE, 8, E_FILE, 8);
-        assert_eq!(false, testiraj_top_napada_crnog_kralja(&tabla, H_FILE, 8));
+    fn top_sa_b8_ne_vidi_kralja_na_e8_jer_ima_figura_izmedju(){     
+        assert_eq!(false, testiraj_beli_top_napada_polje(B_FILE, 8, H_FILE, 8));
     }
 
     #[test]
     fn top_sa_a3_napada_kralja_na_h3(){
-        let tabla: Tabla = top_na_polje_kralj_na_polje(A_FILE, 3, H_FILE, 3);
-        assert_eq!(true, testiraj_top_napada_crnog_kralja(&tabla, A_FILE, 3));
+        assert_eq!(true, testiraj_beli_top_napada_polje(A_FILE, 3, H_FILE, 3));
     }
 
     #[test]
     fn top_sa_b4_ne_napada_kralja_na_g6(){
-        let polje: u8 = Tabla::file_rank_to_broj(B_FILE, 4);
-        let tabla: Tabla = top_na_polje_kralj_na_polje(B_FILE, 4, G_FILE, 6);
-        assert_eq!(false, testiraj_top_napada_crnog_kralja(&tabla, B_FILE, 4));
+        assert_eq!(false, testiraj_beli_top_napada_polje(B_FILE, 4, G_FILE, 6));
     }
 
 }

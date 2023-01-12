@@ -34,13 +34,6 @@ pub fn prirodno_kretanje_konja<T>(
          }
     }
 
-
-    pub fn konj_napada_kralja<T>(tabla: &T, polje_na_kom_se_nalazim: u8, kralj_je_beli: bool) -> bool
-    where T: Ima_podatke_o_tabli{
-        let polje_kralja = tabla.pozicija_kralja(kralj_je_beli);
-        konj_napada_polje(tabla, polje_kralja,  polje_na_kom_se_nalazim, !kralj_je_beli)
-    }
-
     pub fn konj_napada_polje<T>(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool)->bool
     where T:Ima_podatke_o_tabli
     {
@@ -76,7 +69,7 @@ pub fn prirodno_kretanje_konja<T>(
     mod konj_test{
         use crate::tabla::{Tabla, Rokada, A_FILE, G_FILE, E_FILE, B_FILE, C_FILE, F_FILE};
 
-        use super::{prirodno_kretanje_konja, konj_napada_kralja};
+        use super::{prirodno_kretanje_konja, konj_napada_polje};
 
         fn gde_moze_konj(file: u8, rank: u8) -> Vec<u8> {
             prirodno_kretanje_konja(&Tabla::pocetna_pozicija(), Tabla::file_rank_to_broj(file, rank), &Rokada::new_sve_rokade_moguce(), None, true)
@@ -121,24 +114,32 @@ pub fn prirodno_kretanje_konja<T>(
             tabla2.odigraj_validan_potez_bez_promocije(E_FILE, 1, file_kralja, rank_kralja)
         }
 
+        fn test_konj_napada_polje(file_belog_konja: u8, rank_belog_konja: u8,
+            file_crnog_kralja: u8, rank_crnog_kralja: u8, 
+           napadam_polje: bool){
+               let tabla: Tabla = Tabla::pocetna_pozicija()
+               .odigraj_validan_potez_bez_promocije(E_FILE, 1, file_belog_konja, rank_belog_konja)
+               .odigraj_validan_potez_bez_promocije(E_FILE, 8, file_crnog_kralja, rank_crnog_kralja);
+               
+               let polje_konja: u8 = Tabla::file_rank_to_broj(file_belog_konja, rank_belog_konja);
+               let polje_koje_napadam: u8 = Tabla::file_rank_to_broj(file_crnog_kralja, rank_crnog_kralja);
+               assert_eq!(
+                   napadam_polje,
+                    crate::tabla::kretanje_figura::konj::konj_napada_polje(&tabla, polje_koje_napadam, polje_konja, true));
+           }
+
         #[test]
-        fn beli_konj_sa_B4_napada_kralja_na_C6(){
-            let polje: u8 = Tabla::file_rank_to_broj(B_FILE, 4);
-            let tabla: Tabla = beli_konj(B_FILE, 4, C_FILE, 6);
-            assert_eq!(true, konj_napada_kralja(&tabla, polje, false));
+        fn konj_sa_B4_napada_kralja_na_C6(){
+            test_konj_napada_polje(B_FILE, 4, C_FILE, 6, true);
         }
 
         #[test]
-        fn crni_konj_sa_F4_napada_kralja_na_E2(){
-            let polje: u8 = Tabla::file_rank_to_broj(F_FILE, 4);
-            let tabla: Tabla = crni_konj(F_FILE, 4, E_FILE, 2);
-            assert_eq!(true, konj_napada_kralja(&tabla, polje, true));
+        fn konj_sa_F4_napada_kralja_na_E2(){
+            test_konj_napada_polje(F_FILE, 4, E_FILE, 2, true);
         }
 
         #[test]
         fn beli_konj_sa_e5_ne_napada_kralja_na_g7(){
-            let polje: u8 = Tabla::file_rank_to_broj(E_FILE, 5);
-            let tabla:Tabla = beli_konj(E_FILE, 5, G_FILE, 7);
-            assert_eq!(false, konj_napada_kralja(&tabla, polje, false));
+            test_konj_napada_polje(E_FILE, 5, G_FILE, 7, false);
         }
     }
