@@ -2,6 +2,15 @@ use crate::tabla::{Tabla, kretanje_figura::Figura_interfejs, Figura, Rokada, Pro
 
 use super::{Potez_bits, Potez};
 
+impl PartialEq for Potez_bits{
+    fn eq(&self, other: &Self) -> bool {
+        if !(self.broj_figure == other.broj_figure && self.file == other.file && self.rank == other.rank) {
+            return false
+        }
+    
+        (&self.promocija).copy() as usize == (&other.promocija).copy() as usize
+    }
+}
 
 
 impl Tabla {
@@ -42,7 +51,6 @@ impl Tabla {
                         let potez: Potez_bits = Potez_bits{broj_figure: i as u8, file, rank, promocija: Promocija::None};
 
                         if self.potez_je_legalan(figure, i as u8,polje, potez.copy(), &figura, beli_je_na_potezu){
-                            println!("Legalni potez, figura: {}, rank: {}, file: {}", potez.broj_figure, rank, file);
                             Tabla::ubaci_poteze_u_listu(&mut legalni_potezi, potez.copy(), figure, i, rank);                            
                         }   
                     }
@@ -85,20 +93,11 @@ impl Tabla {
 }
 
 
-impl PartialEq for Potez_bits{
-    fn eq(&self, other: &Self) -> bool {
-        if !(self.broj_figure == other.broj_figure && self.file == other.file && self.rank == other.rank) {
-            return false
-        }
-    
-        (&self.promocija).copy() as usize == (&other.promocija).copy() as usize
-    }
-}
 
 
 #[cfg(test)]
 mod test_legalni_potezi{
-    use crate::tabla::{Tabla, potez::{Potez_bits, Potez}, Promocija, G_FILE, F_FILE, E_FILE, D_FILE, C_FILE};
+    use crate::tabla::{Tabla, potez::{Potez_bits, Potez}, Promocija, G_FILE, F_FILE, E_FILE, D_FILE, C_FILE, B_FILE};
 
 
 
@@ -140,6 +139,20 @@ mod test_legalni_potezi{
         .odigraj_validan_potez_bez_promocije(D_FILE, 7, D_FILE, 5);
 
         assert_eq!(true, tabla_nakon_d4.svi_legalni_potezi().contains(&Bf4.to_Potez_bits(&tabla_nakon_d4).unwrap()));
+    }
+
+    #[test]
+    fn ima__legalnih_poteza_posle_e4_e5_Nf3_Nc6_Bc4_Bc5_d4_Nf6(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(G_FILE, 1, F_FILE, 3)
+        .odigraj_validan_potez_bez_promocije(B_FILE, 8, C_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 1, C_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 8, C_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 2, D_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(G_FILE, 8, F_FILE, 6);
+        assert_eq!(43, tabla.svi_legalni_potezi().len());
     }
 }
 

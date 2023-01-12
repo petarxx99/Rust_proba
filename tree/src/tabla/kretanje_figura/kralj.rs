@@ -119,8 +119,24 @@ where T:Ima_podatke_o_tabli{
 pub fn kralj_moze_doci_na_polje<T>(tabla: &T, moje_polje: u8, polje_na_koje_dolazim: u8, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
-        kralj_napada_polje(tabla, moje_polje, polje_na_koje_dolazim, ja_sam_beli)   
+        if kralj_napada_polje(tabla, moje_polje, polje_na_koje_dolazim, ja_sam_beli) {
+            return true;
+        }
+        
+        let (kraljicina_rokada, kraljeva_rokada, kraljev_rank) = 
+        get_kraljicina_rokada_kraljeva_rokada_kraljev_rank(&tabla.get_rokada(), ja_sam_beli);
+        let (_, file_destinacije) = crate::broj_to_rank_file(polje_na_koje_dolazim);
+
+        if file_destinacije == G_FILE && moze_kraljeva_rokada(kraljev_rank, tabla, kraljeva_rokada, ja_sam_beli){
+            return true
+        }
+
+        if file_destinacije == C_FILE && moze_kraljicina_rokada(kraljev_rank, tabla, kraljicina_rokada, ja_sam_beli){
+            return true
+        }
+        false
     }
+
 
 #[cfg(test)]
 pub mod test_kralj{
