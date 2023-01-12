@@ -83,10 +83,15 @@ where T:Ima_podatke_o_tabli{
     tabla.da_li_su_polja_prazna(&polja_izmedju)
 }
 
-pub fn lovac_moze_doci_do_polja<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
+pub fn lovac_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
-        lovac_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli)   
+        let (rank, file) = crate::broj_to_rank_file(polje_na_koje_dolazim);
+
+        lovac_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli)  
+        &&
+        !tabla.da_li_je_figura_boje_na_polju(ja_sam_beli, rank, file)
+
     }
 
 #[cfg(test)]

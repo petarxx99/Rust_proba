@@ -9,7 +9,7 @@ impl Tabla {
     pub fn potez_je_legalan(&self, figure: &[u8;16], broj_figure: u8, polje_destinacije: u8, potez: Potez_bits, figura: &Figura_interfejs<Tabla>, beli_je_na_potezu: bool) -> bool {
         let trenutno_polje_figure = figure[broj_figure as usize];
 
-        if !(figura.figura_moze_doci_do_polja)(
+        if !(figura.figura_moze_doci_na_polje)(
                 self,
                 polje_destinacije,
                 trenutno_polje_figure,
@@ -18,8 +18,7 @@ impl Tabla {
                 return false
         }
 
-       
-        self.potez_je_legalan_podrazumeva_se_da_figura_moze_doci_do_polja(&potez.to_Potez_polje(figure))
+        self.potez_je_legalan_podrazumeva_se_da_figura_moze_doci_na_polje(&potez.to_Potez_polje(figure))
     }
 
     pub fn svi_legalni_potezi(&self) -> Vec<Potez_bits>{

@@ -26,10 +26,13 @@ where T:Ima_podatke_o_tabli{
     top_napada_polje(tabla, polje_meta, polje_kraljice, ja_sam_beli)
 }
 
-pub fn kraljica_moze_doci_do_polja<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
+pub fn kraljica_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
-        kraljica_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli)   
+        let (rank, file) = crate::broj_to_rank_file(polje_na_koje_dolazim);
+        kraljica_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli)  
+        &&
+        !tabla.da_li_je_figura_boje_na_polju(ja_sam_beli, rank, file) 
     }
 
 #[cfg(test)]

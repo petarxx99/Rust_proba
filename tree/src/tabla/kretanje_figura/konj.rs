@@ -52,10 +52,13 @@ pub fn prirodno_kretanje_konja<T>(
         false
     }
 
-    pub fn konj_moze_doci_do_polja<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
+    pub fn konj_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
+        let (rank, file) = crate::broj_to_rank_file(polje_na_koje_dolazim);
         konj_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli)   
+        &&
+        !tabla.da_li_je_figura_boje_na_polju(ja_sam_beli, rank, file)
     }
 
     fn abs(broj: i32) -> u32 {

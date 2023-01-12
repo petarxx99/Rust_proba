@@ -71,6 +71,7 @@ where T: Ima_podatke_o_tabli
         for i in (moj_rank+1)..rank{
             polja.push(crate::file_rank_to_broj(file, i));
         }
+
         tabla.da_li_su_polja_prazna(&polja)
     } else{
         for i in (rank+1)..moj_rank{
@@ -83,10 +84,14 @@ where T: Ima_podatke_o_tabli
 }
 
 
-pub fn top_moze_doci_do_polja<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
+pub fn top_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
+        let (rank, file) = crate::broj_to_rank_file(polje_na_koje_dolazim);
+
         top_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli)   
+        &&
+        !tabla.da_li_je_figura_boje_na_polju(ja_sam_beli, rank, file)
     }
 
 #[cfg(test)]

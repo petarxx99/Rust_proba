@@ -116,16 +116,20 @@ where T:Ima_podatke_o_tabli{
     moj_file == file && abs(rank as i32 - moj_rank as i32) == 1
 }
 
-pub fn kralj_moze_doci_do_polja<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
+pub fn kralj_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
+        let (rank_destinacije, file_destinacije) = crate::broj_to_rank_file(polje_na_koje_dolazim);
+        if tabla.da_li_je_figura_boje_na_polju(ja_sam_beli, rank_destinacije, file_destinacije){
+            return false
+        }
+
         if kralj_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli) {
             return true;
         }
         
         let (kraljicina_rokada, kraljeva_rokada, kraljev_rank) = 
         get_kraljicina_rokada_kraljeva_rokada_kraljev_rank(&tabla.get_rokada(), ja_sam_beli);
-        let (_, file_destinacije) = crate::broj_to_rank_file(polje_na_koje_dolazim);
 
         if file_destinacije == G_FILE && moze_kraljeva_rokada(kraljev_rank, tabla, kraljeva_rokada, ja_sam_beli){
             return true

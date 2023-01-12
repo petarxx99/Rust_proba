@@ -7,7 +7,7 @@ impl Tabla {
 
     /* Ova metoda ocekuje da joj se preda potez takav da figura moze 
     doci do polja destinacije. Podrazumeva se da je taj uslov ispunjen. */
-    pub fn potez_je_legalan_podrazumeva_se_da_figura_moze_doci_do_polja(&self, potez: &Potez_polje) -> bool {
+    pub fn potez_je_legalan_podrazumeva_se_da_figura_moze_doci_na_polje(&self, potez: &Potez_polje) -> bool {
         
         /* Ne mogu da pojedem sopstvenu figuru. */
         if self.da_li_je_figura_boje_na_polju(self.beli_je_na_potezu(), potez.end_rank, potez.end_file) {
@@ -58,7 +58,7 @@ mod test_provera_legalnosti{
 
    
     fn test_potez_je_legalan(tabla: &Tabla, start_file: u8, start_rank: u8, end_file: u8, end_rank: u8) -> bool{
-        tabla.potez_je_legalan_podrazumeva_se_da_figura_moze_doci_do_polja(&Potez_polje::new(start_file, start_rank, end_file, end_rank))
+        tabla.potez_je_legalan_podrazumeva_se_da_figura_moze_doci_na_polje(&Potez_polje::new(start_file, start_rank, end_file, end_rank))
     }
     fn odigraj_potez(tabla: &Tabla, start_file: u8, start_rank: u8, end_file: u8, end_rank:u8) -> Tabla {
         tabla.odigraj_validan_potez_bez_promocije(start_file, start_rank, end_file, end_rank)

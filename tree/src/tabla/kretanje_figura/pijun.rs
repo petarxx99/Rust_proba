@@ -97,35 +97,35 @@ where T:Ima_podatke_o_tabli{
 }
 
 
-pub fn pijun_moze_doci_do_polja<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
+pub fn pijun_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
-        let polja_prirodnog_kretanja: Vec<u8> =  prirodno_kretanje_pijuna(
-            tabla, 
-            moje_polje, 
-            &tabla.get_rokada(), 
-            tabla.get_file_pijuna_koji_se_pomerio_2_polja(), 
-            ja_sam_beli);
-        
+        let polja_prirodnog_kretanja: Vec<u8> =  prirodno_kretanje_pijuna(tabla,  moje_polje, &tabla.get_rokada(), tabla.get_file_pijuna_koji_se_pomerio_2_polja(), ja_sam_beli);
         if !polja_prirodnog_kretanja.contains(&polje_na_koje_dolazim){
-            return false;
-        }    
-
-        let (rank_destinacije, _) = crate::broj_to_rank_file(polje_na_koje_dolazim);
-        let (rank_pijuna,file_pijuna) = crate::broj_to_rank_file(moje_polje);
-        if abs(rank_destinacije as i32 - rank_pijuna as i32) != 2 {
-            return true
-        } 
-
-        let rank_polja_izmedju:u8;
-        if rank_destinacije > rank_pijuna {
-            rank_polja_izmedju = rank_pijuna + 1;
-        } else {
-            rank_polja_izmedju = rank_pijuna - 1;
+            return false
+        }  /* Sad obradjujem samo polja prirodnog kretanja. Ukoliko pijun ne moze nista da pojede ukoso, 
+        to polje ne bi bilo polje prirodnog kretanja. Zato sledeca linija koda radi. */
+        if pijun_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli){
+            return true;
         }
 
-        let polje_izmedju = crate::file_rank_to_broj(file_pijuna, rank_polja_izmedju);
-        tabla.da_li_su_polja_prazna(&vec![polje_izmedju])
+        let (rank_pijuna,file_pijuna) = crate::broj_to_rank_file(moje_polje);
+        let (rank_destinacije, _) = crate::broj_to_rank_file(polje_na_koje_dolazim);
+
+        if abs(rank_destinacije as i32 - rank_pijuna as i32) == 2 {
+            let rank_polja_izmedju:u8;
+            if rank_destinacije > rank_pijuna {
+                rank_polja_izmedju = rank_pijuna + 1;
+            } else {
+                rank_polja_izmedju = rank_pijuna - 1;
+            }
+            
+            let polje_izmedju = crate::file_rank_to_broj(file_pijuna, rank_polja_izmedju);
+            tabla.da_li_su_polja_prazna(&vec![polje_izmedju, polje_na_koje_dolazim])
+        } else {
+            tabla.da_li_su_polja_prazna(&vec![polje_na_koje_dolazim])
+        }
+
     }
 
 #[cfg(test)]

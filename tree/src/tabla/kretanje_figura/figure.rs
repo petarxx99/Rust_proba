@@ -6,8 +6,8 @@ lovac::{prirodno_kretanje_lovca,lovac_napada_polje},
   pijun::{prirodno_kretanje_pijuna, pijun_napada_polje},
    top::{polja_na_koja_ide_top, top_napada_polje}}, Figura, Tabla, A_FILE, H_FILE};
 
-use super::{Figura_interfejs, pijun::pijun_moze_doci_do_polja, kralj::kralj_moze_doci_do_polja, kraljica::kraljica_moze_doci_do_polja, lovac::lovac_moze_doci_do_polja,
-konj::konj_moze_doci_do_polja};
+use super::{Figura_interfejs, pijun::pijun_moze_doci_na_polje, kralj::kralj_moze_doci_na_polje, kraljica::kraljica_moze_doci_na_polje, lovac::lovac_moze_doci_na_polje,
+konj::konj_moze_doci_na_polje};
 
 
 
@@ -24,12 +24,12 @@ impl Figura {
 
     pub fn napravi_figure_interfejs(figura: Figura) -> Figura_interfejs<Tabla>{
         match figura {
-            Figura::KONJ => Figura_interfejs::new(prirodno_kretanje_konja, konj_napada_polje, konj_moze_doci_do_polja),
-            Figura::KRALJ => Figura_interfejs::new(prirodno_kretanje_kralja, kralj_napada_polje, kralj_moze_doci_do_polja),
-            Figura::LOVAC => Figura_interfejs::new(prirodno_kretanje_lovca, lovac_napada_polje, lovac_moze_doci_do_polja),
-            Figura::KRALJICA => Figura_interfejs::new(prirodno_kretanje_kraljice, kraljica_napada_polje, kraljica_moze_doci_do_polja),
-            Figura::TOP => Figura_interfejs::new(polja_na_koja_ide_top, top_napada_polje, kralj_moze_doci_do_polja),
-            Figura::PIJUN => Figura_interfejs::new(prirodno_kretanje_pijuna, pijun_napada_polje, pijun_moze_doci_do_polja)
+            Figura::KONJ => Figura_interfejs::new(prirodno_kretanje_konja, konj_napada_polje, konj_moze_doci_na_polje),
+            Figura::KRALJ => Figura_interfejs::new(prirodno_kretanje_kralja, kralj_napada_polje, kralj_moze_doci_na_polje),
+            Figura::LOVAC => Figura_interfejs::new(prirodno_kretanje_lovca, lovac_napada_polje, lovac_moze_doci_na_polje),
+            Figura::KRALJICA => Figura_interfejs::new(prirodno_kretanje_kraljice, kraljica_napada_polje, kraljica_moze_doci_na_polje),
+            Figura::TOP => Figura_interfejs::new(polja_na_koja_ide_top, top_napada_polje, kralj_moze_doci_na_polje),
+            Figura::PIJUN => Figura_interfejs::new(prirodno_kretanje_pijuna, pijun_napada_polje, pijun_moze_doci_na_polje)
         }
     }
 
