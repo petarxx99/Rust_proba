@@ -116,7 +116,7 @@ where T:Ima_podatke_o_tabli{
     moj_file == file && abs(rank as i32 - moj_rank as i32) == 1
 }
 
-pub fn kralj_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
+pub fn kralj_moze_doci_do_polja<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
         if kralj_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli) {

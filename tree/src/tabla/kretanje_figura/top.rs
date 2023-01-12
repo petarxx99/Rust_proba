@@ -22,7 +22,6 @@ pub fn polja_na_koja_ide_top<T>(
                     continue; /* Top se krece ili po istom fajlu, ili po istom ranku. 
                     Ako polje destinacije nije ni isti fajl, ni isti rank, na to polje top ne moze da ode. */
                 }
-                
                 polja.push(crate::file_rank_to_broj(i, j))
             }
          }
@@ -84,7 +83,7 @@ where T: Ima_podatke_o_tabli
 }
 
 
-pub fn top_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
+pub fn top_moze_doci_do_polja<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
         top_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli)   

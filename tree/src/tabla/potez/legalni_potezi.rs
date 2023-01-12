@@ -1,4 +1,4 @@
-use crate::tabla::{Tabla, kretanje_figura::Figura_interfejs, Figura, Rokada, Promocija};
+use crate::tabla::{Tabla, kretanje_figura::Figura_interfejs, Figura, Rokada, Promocija, Ima_podatke_o_tabli};
 
 use super::{Potez_bits, Potez};
 
@@ -9,7 +9,7 @@ impl Tabla {
     pub fn potez_je_legalan(&self, figure: &[u8;16], broj_figure: u8, polje_destinacije: u8, potez: Potez_bits, figura: &Figura_interfejs<Tabla>, beli_je_na_potezu: bool) -> bool {
         let trenutno_polje_figure = figure[broj_figure as usize];
 
-        if !(figura.figura_moze_doci_na_polje)(
+        if !(figura.figura_moze_doci_do_polja)(
                 self,
                 polje_destinacije,
                 trenutno_polje_figure,
@@ -17,8 +17,12 @@ impl Tabla {
         ){
                 return false
         }
-           
-        self.potez_je_legalan_podrazumeva_se_da_figura_moze_doci_na_polje(&potez.to_Potez_polje(figure))
+        
+        /* Ne mogu da jedem sopstvenu figuru. */
+        if self.da_li_je_figura_boje_na_polju(!beli_je_na_potezu, potez.rank, potez.file){
+            return false;
+        }
+        self.potez_je_legalan_podrazumeva_se_da_figura_moze_doci_do_polja(&potez.to_Potez_polje(figure))
     }
 
     pub fn svi_legalni_potezi(&self) -> Vec<Potez_bits>{
