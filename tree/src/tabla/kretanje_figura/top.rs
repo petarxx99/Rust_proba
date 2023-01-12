@@ -96,7 +96,7 @@ pub fn top_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polj
 
 #[cfg(test)]
 mod top_test{
-    use crate::tabla::{Tabla, E_FILE, A_FILE, G_FILE, Rokada, H_FILE, B_FILE, Ima_podatke_o_tabli};
+    use crate::tabla::{Tabla, E_FILE, A_FILE, G_FILE, Rokada, H_FILE, B_FILE, Ima_podatke_o_tabli, F_FILE, D_FILE, C_FILE, DESNI_TOP, LEVI_TOP, kretanje_figura::top::top_moze_doci_na_polje};
 
     use super::{polja_na_koja_ide_top, top_napada_polje};
 
@@ -148,5 +148,21 @@ mod top_test{
         assert_eq!(false, testiraj_beli_top_napada_polje(B_FILE, 4, G_FILE, 6));
     }
 
+    #[test]
+    fn desni_top_moze_na_2_polja_levi_top_ni_na_jedno_posle_e4_e5_Nf3_Nc6_Bc4_Bc5_d4_Nf6(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(G_FILE, 1, F_FILE, 3)
+        .odigraj_validan_potez_bez_promocije(B_FILE, 8, C_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 1, C_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 8, C_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 2, D_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(G_FILE, 8, F_FILE, 6);
+           
+        assert_eq!(true, top_moze_doci_na_polje(&tabla, crate::file_rank_to_broj(F_FILE, 1), tabla.bele_figure[DESNI_TOP], tabla.beli_je_na_potezu()));
+        assert_eq!(true, top_moze_doci_na_polje(&tabla, crate::file_rank_to_broj(G_FILE, 1), tabla.bele_figure[DESNI_TOP], tabla.beli_je_na_potezu()));
+        assert_eq!(false, top_moze_doci_na_polje(&tabla, crate::file_rank_to_broj(F_FILE, 1), tabla.bele_figure[LEVI_TOP], tabla.beli_je_na_potezu()));
+    }
 }
 
