@@ -107,7 +107,7 @@ pub fn pijun_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_po
         to polje ne bi bilo polje prirodnog kretanja. Zato sledeca linija koda radi. */
         if pijun_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli){
             return true;
-        }
+        } /* Sad preostaju samo pravolinijska kretanja koja su prirodna kretanja pijuna. */
 
         let (rank_pijuna,file_pijuna) = crate::broj_to_rank_file(moje_polje);
         let (rank_destinacije, _) = crate::broj_to_rank_file(polje_na_koje_dolazim);
@@ -119,7 +119,7 @@ pub fn pijun_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_po
             } else {
                 rank_polja_izmedju = rank_pijuna - 1;
             }
-            
+
             let polje_izmedju = crate::file_rank_to_broj(file_pijuna, rank_polja_izmedju);
             tabla.da_li_su_polja_prazna(&vec![polje_izmedju, polje_na_koje_dolazim])
         } else {
