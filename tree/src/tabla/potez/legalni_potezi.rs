@@ -1,12 +1,12 @@
 use crate::tabla::{Tabla, kretanje_figura::Figura_interfejs, Figura, Rokada, Promocija, Ima_podatke_o_tabli};
 
-use super::{Potez_bits, Potez};
+use super::{Potez_bits, Potez, Potez_polje};
 
 
 
 impl Tabla {
 
-    pub fn potez_je_legalan(&self, figure: &[u8;16], broj_figure: u8, polje_destinacije: u8, potez: Potez_bits, figura: &Figura_interfejs<Tabla>, beli_je_na_potezu: bool) -> bool {
+    pub fn potez_je_legalan(&self, figure: &[u8;16], broj_figure: u8, polje_destinacije: u8, potez: &Potez_polje, figura: &Figura_interfejs<Tabla>, beli_je_na_potezu: bool) -> bool {
         let trenutno_polje_figure = figure[broj_figure as usize];
 
         if !(figura.figura_moze_doci_na_polje)(
@@ -18,7 +18,7 @@ impl Tabla {
                 return false
         }
 
-        self.potez_je_legalan_podrazumeva_se_da_figura_moze_doci_na_polje(&potez.to_Potez_polje(figure))
+        self.potez_je_legalan_podrazumeva_se_da_figura_moze_doci_na_polje(potez)
     }
 
     pub fn svi_legalni_potezi(&self) -> Vec<Potez_bits>{
@@ -41,14 +41,13 @@ impl Tabla {
                        
                         let potez: Potez_bits = Potez_bits{broj_figure: i as u8, file, rank, promocija: Promocija::None};
 
-                        if self.potez_je_legalan(figure, i as u8,polje, potez.copy(), &figura, beli_je_na_potezu){
-                            Tabla::ubaci_poteze_u_listu(&mut legalni_potezi, potez.copy(), figure, i, rank);                            
+                        if self.potez_je_legalan(figure, i as u8,polje, &potez.to_Potez_polje(figure), &figura, beli_je_na_potezu){
+                            Tabla::ubaci_poteze_u_listu(&mut legalni_potezi, potez, figure, i, rank);                            
                         }   
                     }
                 }    
             }
         }
-
 
 
         legalni_potezi
