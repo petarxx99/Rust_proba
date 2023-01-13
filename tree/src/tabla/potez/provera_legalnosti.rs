@@ -24,7 +24,7 @@ impl Tabla {
         let protivnikove_figure: &[u8;16] = tabla_nakon_odigranog_poteza.figure_koje_su_na_potezu();
         let protivnik_ima_bele_figure: bool = tabla_nakon_odigranog_poteza.beli_je_na_potezu();
 
-        tabla_nakon_odigranog_poteza.figure_napadaju_polje(
+        !tabla_nakon_odigranog_poteza.figure_napadaju_polje(
             polje_mog_kralja,
             protivnikove_figure, 
             protivnik_ima_bele_figure,    
@@ -43,13 +43,13 @@ impl Tabla {
                     polje_meta,
                     polje_figure,
                     boja_figura_je_bela){
-                        return false
+                        return true
                     }
                 }
             }
         }
 
-        true  
+        false 
     }
         
 }
