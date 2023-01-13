@@ -615,6 +615,14 @@ impl Tabla {
         }
     }
 
+    pub fn figure_koje_nisu_na_potezu(&self) -> &[u8;16]  {
+        if self.beli_je_na_potezu(){
+            &self.crne_figure
+        } else {
+            &self.bele_figure
+        }
+    }
+
     pub fn figura_je_pijun(figure: &[u8;16], redni_broj_figure: usize) -> bool{
         if redni_broj_figure < 8 {
             return false

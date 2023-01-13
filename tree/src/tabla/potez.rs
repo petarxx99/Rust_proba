@@ -3,6 +3,7 @@ use std::fmt::Display;
 use super::{Rokada, Promocija, Tabla, KRALJ, File_rank, DESNI_TOP, F_FILE, LEVI_TOP, D_FILE, Figura};
 mod provera_legalnosti;
 mod legalni_potezi;
+mod obrada_legalnih_poteza;
 
 pub struct Potez_info {
     pub rokada_onemogucena: Rokada,
