@@ -46,6 +46,27 @@ impl Tabla {
 
         true    
     }
+
+    pub fn figure_napadaju_polje(&self, figure: &[u8;16], boja_figura_je_bela: bool, polje_meta: u8) -> bool {
+        for i in 0..figure.len(){
+            let polje_figure: u8 = figure[i];
+            match Figura::iz_niza_u_figure_interfejs(figure, i){
+                None => {},
+                Some(figura) =>
+                 {
+                    if (figura.napada_polje)(
+                    self,
+                    polje_meta,
+                    polje_figure,
+                    boja_figura_je_bela){
+                        return false
+                    }
+                }
+            }
+        }
+
+        true  
+    }
         
 }
 
