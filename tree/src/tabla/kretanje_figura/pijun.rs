@@ -29,15 +29,15 @@ pub fn prirodno_kretanje_pijuna<T>(
         za_slucaj_da_pijun_moze_da_jede_drugu_figuru(&mut polja, tabla, ja_sam_beli, file, rank_ispred);
 
         if en_passant_rank == rank {
-            probaj_da_dodas_en_passant(&mut polja, &fajl_pijuna_2_polja, file, rank);
+            probaj_da_dodas_en_passant(&mut polja, fajl_pijuna_2_polja, file, rank_ispred);
         }
         polja
     }
 
-    fn probaj_da_dodas_en_passant(polja: &mut Vec<u8>, file_pijun_za_en_passant: &Option<u8>, file: u8, rank_ispred: u8){
+    fn probaj_da_dodas_en_passant(polja: &mut Vec<u8>, file_pijun_za_en_passant: Option<u8>, file: u8, rank_ispred: u8){
         match file_pijun_za_en_passant{
-            &None => {},
-            &Some(en_passant_file) => {
+            None => {},
+            Some(en_passant_file) => {
                 if abs(file as i32 - en_passant_file as i32) == 1{
                     polja.push(crate::file_rank_to_broj(en_passant_file, rank_ispred));
                 }
@@ -130,9 +130,9 @@ pub fn pijun_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_po
 
 #[cfg(test)]
 pub mod test_pijun{
-    use crate::tabla::{Tabla, E_FILE,A_FILE, B_FILE, C_FILE, D_FILE, F_FILE, G_FILE, H_FILE, Rokada};
+    use crate::tabla::{Tabla, E_FILE,A_FILE, B_FILE, C_FILE, D_FILE, F_FILE, G_FILE, H_FILE, Rokada, potez::Potez, Promocija};
 
-    use super::prirodno_kretanje_pijuna;
+    use super::{prirodno_kretanje_pijuna, pijun_moze_doci_na_polje};
 
 
     fn beli_pijun_napada_kralja(file_belog_pijuna: u8, rank_belog_pijuna: u8,
@@ -245,5 +245,22 @@ pub mod test_pijun{
        fn crni_moze_sa_g7_na_2_polja(){
             assert_eq!(2, broj_polja(G_FILE, 7, None, false));
        }
+
+       #[test]
+       fn en_passant_je_validan_potez_posle_d4_h5_d5_e5(){
+            let tabla: Tabla = Tabla::pocetna_pozicija()
+            .odigraj_validan_potez_bez_promocije(D_FILE, 2, D_FILE, 4)
+            .odigraj_validan_potez_bez_promocije(H_FILE, 7, H_FILE, 5)
+            .odigraj_validan_potez_bez_promocije(D_FILE, 4, D_FILE, 5)
+            .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5);
+
+            let en_passant_polje: u8 = crate::file_rank_to_broj(E_FILE, 6);
+            let moje_polje: u8 = crate::file_rank_to_broj(D_FILE, 5);
+            let en_passant_potez: Potez = Potez::new(D_FILE, 5, E_FILE, 6, Promocija::None);
+            let polja_pijuna: Vec<u8> = prirodno_kretanje_pijuna(&tabla, moje_polje, &tabla.rokada(), tabla.fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu(), tabla.beli_je_na_potezu());
+            assert_eq!(E_FILE, tabla.fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu().unwrap());
+            assert_eq!(true, polja_pijuna.contains(&en_passant_polje));
+            assert_eq!(true, pijun_moze_doci_na_polje(&tabla, en_passant_polje, moje_polje, tabla.beli_je_na_potezu()));
+        }
 
 }

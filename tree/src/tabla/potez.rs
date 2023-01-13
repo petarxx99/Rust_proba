@@ -194,7 +194,7 @@ impl Potez {
         Potez{start_file, start_rank, file_destinacije, rank_destinacije, promocija}
     }
 
-    fn to_Potez_bits(&self, tabla: &Tabla) -> Option<Potez_bits> {
+    pub fn to_Potez_bits(&self, tabla: &Tabla) -> Option<Potez_bits> {
         let mut figure: &[u8;16];
      /* Potez se kombinuje sa tablom (tj. pozicijom) nad kojom se potez igra, tako da je boja igraca
      koji odigrao potez ista ona koju ima tabla nad kojom potez treba da se odigra. */
@@ -647,4 +647,14 @@ mod potez_tests{
         assert_eq!(true, tabla3.rokada().bela_kraljeva_rokada_vise_nije_moguca);   
     }
 
+
+    #[test]
+    fn e_file_je_en_passant_file_nakon_d4_h5_d5_e5(){
+         let tabla: Tabla = Tabla::pocetna_pozicija()
+         .odigraj_validan_potez_bez_promocije(D_FILE, 2, D_FILE, 4)
+         .odigraj_validan_potez_bez_promocije(H_FILE, 7, H_FILE, 5)
+         .odigraj_validan_potez_bez_promocije(D_FILE, 4, D_FILE, 5)
+         .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5);
+         assert_eq!(E_FILE, tabla.fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu().unwrap());
+    }
 }

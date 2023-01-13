@@ -171,5 +171,16 @@ mod test_legalni_potezi{
 
         assert_eq!(53, tabla.svi_legalni_potezi().len());
     }
+
+    #[test]
+    fn treba_da_ima_23_legalna_poteza_posle_c4_e5_c5_b5_zbog_en_passant(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(C_FILE, 2, C_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(C_FILE, 4, C_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(B_FILE, 7, B_FILE, 5);
+
+        assert_eq!(23, tabla.svi_legalni_potezi().len());
+    }
 }
 
