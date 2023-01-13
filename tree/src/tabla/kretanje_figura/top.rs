@@ -49,14 +49,18 @@ where T: Ima_podatke_o_tabli
 
     let mut polja_izmedju: Vec<u8> = Vec::new();
     if moj_rank == rank {    
-        let (min_file, max_file) = crate::min_max_broj(moj_file, file);       
-        for i in (min_file+1)..max_file{
+        let (min_file, max_file) = crate::min_max_broj(moj_file, file);  
+        let mut i: u8 = min_file + 1;
+        while i < max_file{
             polja_izmedju.push(crate::file_rank_to_broj(i, rank));
-        }
+            i += 1;
+        }     
     } else {  /* Slucaj kad je isti fajl, a razlicit rank. */
         let (min_rank, max_rank) = crate::min_max_broj(moj_rank, rank);
-        for i in (min_rank+1)..max_rank{
+        let mut i: u8 = min_rank + 1;
+        while i < max_rank {
             polja_izmedju.push(crate::file_rank_to_broj(file, i));
+            i += 1;
         }
     }
 

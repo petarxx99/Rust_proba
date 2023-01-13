@@ -58,18 +58,9 @@ where T:Ima_podatke_o_tabli{
         return false
     }
 
-    let min_file: u8;
-    let max_file: u8;
-  
-    if file < moj_file{
-        min_file = file;
-        max_file = moj_file;
-    } else {
-        max_file = file;
-        min_file = moj_file;
-    }
-    
+    let (min_file, max_file) = crate::min_max_broj(file, moj_file);
     let mut polja_izmedju: Vec<u8> = Vec::new();
+    
 /* y=kx+n, n=y-kx ---- k = (y1-y2) / (x1-x2) */
     let k: i8 = (rank as i8 - moj_rank as i8) / (file as i8 - moj_file as i8);
     /*     n = y - kx */
