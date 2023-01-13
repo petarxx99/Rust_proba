@@ -6,7 +6,8 @@ use super::{Potez_bits, Potez, Potez_polje};
 
 impl Tabla {
 
-    pub fn potez_je_legalan(&self, figure: &[u8;16], broj_figure: u8, polje_destinacije: u8, potez: &Potez_polje, figura: &Figura_interfejs<Tabla>, beli_je_na_potezu: bool) -> bool {
+    
+    fn potez_je_legalan(&self, figure: &[u8;16], broj_figure: u8, polje_destinacije: u8, potez: &Potez_polje, figura: &Figura_interfejs<Tabla>, beli_je_na_potezu: bool) -> bool {
         let trenutno_polje_figure = figure[broj_figure as usize];
 
         if !(figura.figura_moze_doci_na_polje)(
