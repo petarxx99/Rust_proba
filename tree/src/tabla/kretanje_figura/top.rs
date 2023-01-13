@@ -43,45 +43,26 @@ where T: Ima_podatke_o_tabli
     }
     /* Posle ovih uslova je ustanovljeno da se top nalazi vodoravno ili horizontalno u odnosu
     na polje koje napada. */
-
     if abs(moj_rank as i32 - rank as i32) == 1 || abs(moj_file as i32 - file as i32) == 1 {
         return true; /* Ako je top odmah pored mete, onda ne moze da bude nista izmedju topa i mete. */
     }
 
-    let mut polja: Vec<u8> = Vec::new();
-
+    let mut polja_izmedju: Vec<u8> = Vec::new();
     if moj_rank == rank {    
-        let min_file: u8;
-        let max_file: u8;
-        if moj_file < file {
-            min_file = moj_file;
-            max_file = file;
-        } else {
-            min_file = file;
-            max_file = moj_file;
-        }        
+        let (min_file, max_file) = crate::min_max_broj(moj_file, file);       
         for i in (min_file+1)..max_file{
-            polja.push(crate::file_rank_to_broj(i, rank));
+            polja_izmedju.push(crate::file_rank_to_broj(i, rank));
         }
-        return tabla.da_li_su_polja_prazna(&polja)
+    } else {  /* Slucaj kad je isti fajl, a razlicit rank. */
+        let (min_rank, max_rank) = crate::min_max_broj(moj_rank, rank);
+        for i in (min_rank+1)..max_rank{
+            polja_izmedju.push(crate::file_rank_to_broj(file, i));
+        }
     }
 
-    /* Slucaj kad je isti fajl, a razlicit rank. */
-    if moj_rank < rank {
-        for i in (moj_rank+1)..rank{
-            polja.push(crate::file_rank_to_broj(file, i));
-        }
-
-        tabla.da_li_su_polja_prazna(&polja)
-    } else{
-        for i in (rank+1)..moj_rank{
-            polja.push(crate::file_rank_to_broj(file, i));
-        }
-        tabla.da_li_su_polja_prazna(&polja)
-    }
-
-    
+    tabla.da_li_su_polja_prazna(&polja_izmedju)
 }
+
 
 
 pub fn top_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool

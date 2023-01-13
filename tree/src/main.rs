@@ -16,6 +16,13 @@ pub fn broj_to_rank_file(mut broj: u8) -> (u8, u8){
     let file = broj - (broj_sa_8 << 3) + 1;
     (rank, file)
 }
+fn min_max_broj(broj1: u8, broj2: u8) -> (u8, u8) {
+    if broj1 < broj2 {
+        (broj1, broj2)
+    } else {
+        (broj2, broj1)
+    }
+}
 
 
 fn main() {
