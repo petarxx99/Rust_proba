@@ -22,32 +22,16 @@ impl Tabla {
         let polje_mog_kralja: u8 = self.figure_koje_su_na_potezu()[KRALJ];
         let tabla_nakon_odigranog_poteza: Tabla = self.odigraj_potez_bez_promocije_unsafe(potez);
         let protivnikove_figure: &[u8;16] = tabla_nakon_odigranog_poteza.figure_koje_su_na_potezu();
+        let protivnik_ima_bele_figure: bool = tabla_nakon_odigranog_poteza.beli_je_na_potezu();
 
-        for i in 0..protivnikove_figure.len(){
-            let figura_optional:Option<Figura_interfejs<Tabla>> = Figura::iz_niza_u_figure_interfejs(protivnikove_figure, i);
-            let polje_protivnikove_figure: u8 = protivnikove_figure[i];
-
-            match figura_optional {
-                None => {},
-                Some(protivnikova_figura) =>
-                 {
-                    let figura_napada_mog_kralja: bool = (protivnikova_figura.napada_polje)(
-                    &tabla_nakon_odigranog_poteza,
-                    polje_mog_kralja,
-                    polje_protivnikove_figure,
-                    tabla_nakon_odigranog_poteza.beli_je_na_potezu());
-
-                    if figura_napada_mog_kralja {
-                        return false
-                    }
-                }
-            }
-        }
-
-        true    
+        tabla_nakon_odigranog_poteza.figure_napadaju_polje(
+            polje_mog_kralja,
+            protivnikove_figure, 
+            protivnik_ima_bele_figure,    
+        )   
     }
 
-    pub fn figure_napadaju_polje(&self, figure: &[u8;16], boja_figura_je_bela: bool, polje_meta: u8) -> bool {
+    pub fn figure_napadaju_polje(&self, polje_meta: u8, figure: &[u8;16], boja_figura_je_bela: bool) -> bool {
         for i in 0..figure.len(){
             let polje_figure: u8 = figure[i];
             match Figura::iz_niza_u_figure_interfejs(figure, i){
