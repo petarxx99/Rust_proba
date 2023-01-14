@@ -514,6 +514,25 @@ ova funkcija ce poceti da menja memoriju koja joj ne pripada. */
         }
     }
 
+    pub fn nek_je_obrnuta_boja_je_na_potezu(&mut self){
+        self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu =
+        Tabla::obrni_ko_je_na_potezu(self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu);
+    }
+
+   pub fn suprotna_boja_je_na_potezu(&self) -> Tabla {
+        let mut tabla: Tabla = Tabla{bele_figure: [0 as u8; 16], crne_figure: [0 as u8; 16], sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu: self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu};
+        tabla.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu = 
+        Tabla::obrni_ko_je_na_potezu(tabla.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu);
+        
+        let mut i=0;
+        while i<16 {
+            tabla.bele_figure[i] = self.bele_figure[i];
+            tabla.crne_figure[i] = self.crne_figure[i];
+            i += 1;
+        }
+        tabla
+   }
+
 /* unsafe je zato sto mora uvek da se pazi da li se pomera kralj, jer kad se pomera kralj, figure
 koje su pojedene moraju da prate novu poziciju kralja, jer na taj nacin cuvam informaciju da su
 pojedene. */
@@ -704,6 +723,25 @@ mod tabla_tests{
     }
 
 
+    #[test]
+    fn test_suprotna_boja_je_na_potezu(){
+        let tabla: Tabla = Tabla::pocetna_pozicija();
+        let tabla2: Tabla = tabla.suprotna_boja_je_na_potezu();
+        assert_eq!(false, tabla2.beli_je_na_potezu());
+        let mut i=0;
+        while i<16 {
+            assert_eq!(tabla2.bele_figure[i], tabla.bele_figure[i]);
+            assert_eq!(tabla2.crne_figure[i], tabla.crne_figure[i]);
+            i += 1;
+        }
+    }
+
+    #[test]
+    fn test_nek_je_obrnuta_boja_na_potezu(){
+        let mut tabla: Tabla = Tabla::pocetna_pozicija();
+        tabla.nek_je_obrnuta_boja_je_na_potezu();
+        assert_eq!(false, tabla.beli_je_na_potezu());
+    }
 }
 
     

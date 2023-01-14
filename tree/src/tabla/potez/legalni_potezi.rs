@@ -88,7 +88,7 @@ impl Tabla {
 
 #[cfg(test)]
 mod test_legalni_potezi{
-    use crate::tabla::{Tabla, potez::{Potez_bits, Potez}, Promocija, G_FILE, F_FILE, E_FILE, D_FILE, C_FILE, B_FILE};
+    use crate::tabla::{Tabla, potez::{Potez_bits, Potez}, Promocija, G_FILE, F_FILE, E_FILE, D_FILE, C_FILE, B_FILE, H_FILE};
 
 
 
@@ -182,6 +182,21 @@ mod test_legalni_potezi{
         .odigraj_validan_potez_bez_promocije(B_FILE, 7, B_FILE, 5);
 
         assert_eq!(23, tabla.svi_legalni_potezi().len());
+    }
+
+    #[test]
+    fn posle_e4_e5_Qh5_Nc6_Bc4_Nf6_Qxf7_nema_legalnih_poteza(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 1, H_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(B_FILE, 8, C_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 1, C_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(G_FILE, 8, F_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(H_FILE, 5, F_FILE, 7);
+
+        let legalni_potezi: Vec<Potez_bits> = tabla.svi_legalni_potezi();
+        assert_eq!(0, legalni_potezi.len());
     }
 }
 

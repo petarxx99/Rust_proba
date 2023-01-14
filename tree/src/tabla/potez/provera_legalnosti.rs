@@ -19,8 +19,8 @@ impl Tabla {
 
   
     fn nisam_u_sahu_nakon_poteza(&self, potez: &Potez_polje) -> bool{
-        let polje_mog_kralja: u8 = self.figure_koje_su_na_potezu()[KRALJ];
         let tabla_nakon_odigranog_poteza: Tabla = self.odigraj_potez_bez_promocije_unsafe(potez);
+        let polje_mog_kralja: u8 = tabla_nakon_odigranog_poteza.figure_koje_nisu_na_potezu()[KRALJ];
         let protivnikove_figure: &[u8;16] = tabla_nakon_odigranog_poteza.figure_koje_su_na_potezu();
         let protivnik_ima_bele_figure: bool = tabla_nakon_odigranog_poteza.beli_je_na_potezu();
 
