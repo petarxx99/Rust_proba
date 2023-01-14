@@ -6,6 +6,17 @@ use super::{Potez_bits, Potez, Potez_polje};
 
 impl Tabla {
 
+    pub fn table_nakon_svih_legalnih_poteza(&self) -> Vec<Tabla>{
+        let mut table_nakon_legalnih_poteza: Vec<Tabla> = Vec::new();
+
+        let svi_legalni_potezi: Vec<Potez_bits> = self.svi_legalni_potezi();
+        for legalan_potez in svi_legalni_potezi {
+            let tabla: Tabla = self.tabla_nakon_poteza_bits(&legalan_potez);
+            table_nakon_legalnih_poteza.push(tabla);
+        }
+
+        table_nakon_legalnih_poteza
+    }
     
     fn potez_je_legalan(&self, figure: &[u8;16], broj_figure: u8, polje_destinacije: u8, potez: &Potez_polje, figura: &Figura_interfejs<Tabla>, beli_je_na_potezu: bool) -> bool {
         let trenutno_polje_figure = figure[broj_figure as usize];
@@ -146,6 +157,8 @@ mod test_legalni_potezi{
         assert_eq!(43, tabla.svi_legalni_potezi().len());
     }
 
+
+
     #[test] 
     fn ima_53_legalnih_poteza_posle_e4_d5_exd5_c6_dxc6_Nf6_cxb7_e6_Nf3_Bc5_Bc4_Qc7_Nc3_Qd8_d3_Qd7_Bd2_Qd8_Qe7_Qc7(){
         let tabla: Tabla = Tabla::pocetna_pozicija()
@@ -198,5 +211,22 @@ mod test_legalni_potezi{
         let legalni_potezi: Vec<Potez_bits> = tabla.svi_legalni_potezi();
         assert_eq!(0, legalni_potezi.len());
     }
+
+
+    /* Testiranje table_posle_svih_legalnih_poteza */
+    #[test]
+    fn test_table_posle_svih_legalnih_poteza_treba_da_ima_43_poteza(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(G_FILE, 1, F_FILE, 3)
+        .odigraj_validan_potez_bez_promocije(B_FILE, 8, C_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 1, C_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 8, C_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 2, D_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(G_FILE, 8, F_FILE, 6);
+        assert_eq!(43, tabla.table_nakon_svih_legalnih_poteza().len());
+    }
+
 }
 
