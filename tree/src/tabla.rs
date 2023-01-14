@@ -6,6 +6,7 @@ pub(crate) mod normalna_tabla;
 pub(crate) mod potez;
 pub(crate) mod kretanje_figura;
 mod promocija;
+mod evaluacija_table;
 
 pub static BELI: u8 = 0;
 pub static CRNI: u8 = 1;
