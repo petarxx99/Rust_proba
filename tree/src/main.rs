@@ -28,9 +28,10 @@ fn min_max_broj(broj1: u8, broj2: u8) -> (u8, u8) {
 fn main() {
     drvo_eval::proba();
     crate::tabla::potez::print_size_of_Potez_bits();
-    let tabla: Tabla = Tabla::pocetna_pozicija();
+    let tabla: Tabla = Tabla::pocetna_pozicija(); 
     tabla.svi_legalni_potezi();
 }
+
 
 #[cfg(test)]
 mod main_test{
