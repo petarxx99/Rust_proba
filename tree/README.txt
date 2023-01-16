@@ -35,3 +35,4 @@ sahovskom programu neophodno da nadje sve legalne poteze i izabere najbolji.
 Ovo mi je prvi projekat u programskom jeziku Rust. Tek sam krenuo da ucim ovaj programski jezik.
 
 
+https://stackoverflow.com/questions/7036193/how-to-push-my-changes-back-to-the-source-code-in-git
