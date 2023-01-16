@@ -130,6 +130,10 @@ impl Potez_polje{
     pub fn new(start_file: u8, start_rank: u8, end_file: u8, end_rank: u8) -> Potez_polje {
         Potez_polje { start_file, start_rank, end_file, end_rank}
     }
+    pub fn new_iz_broja(start_polje: u8, end_file: u8, end_rank: u8) -> Potez_polje {
+        let (start_rank, start_file) = crate::broj_to_rank_file(start_polje);
+        Potez_polje{start_file, start_rank, end_file, end_rank}
+    }
 }
 
 pub struct Potez{

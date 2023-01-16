@@ -19,7 +19,7 @@ impl Tabla {
 
   
  
-    fn nisam_u_sahu_nakon_poteza(&self, potez: &Potez_polje) -> bool{
+    pub fn nisam_u_sahu_nakon_poteza(&self, potez: &Potez_polje) -> bool{
             let tabla_nakon_odigranog_poteza: Tabla = self.odigraj_potez_bez_promocije_unsafe(potez);
             let polje_mog_kralja: File_rank = File_rank::new_iz_broja(tabla_nakon_odigranog_poteza.figure_koje_nisu_na_potezu()[KRALJ]);
             let protivnikove_figure: &[u8;16] = tabla_nakon_odigranog_poteza.figure_koje_su_na_potezu();
