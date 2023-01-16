@@ -1,18 +1,19 @@
 use crate::tabla::{Rokada, Tabla, File_rank, H_FILE, A_FILE, G_FILE, Ima_podatke_o_tabli};
 use std::boxed::Box;
 
+use super::figure::ako_su_validni_dodaj_u_vektor;
+
 
 pub fn prirodno_kretanje_konja<T>(
     tabla: &T,
-    polje_na_kom_se_nalazim: u8,
+    polje_na_kom_se_nalazim: &File_rank,
     rokada: &Rokada, 
-    fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>
+    fajl_pijuna_2_polja: &Option<u8>, ja_sam_beli: bool) -> Vec<File_rank>
     where T:Ima_podatke_o_tabli{
-
-        let (rank_u8, file_u8) = crate::broj_to_rank_file(polje_na_kom_se_nalazim);
-        let rank: i32 = rank_u8 as i32;
-        let file: i32 = file_u8 as i32;
-        let mut polja: Vec<u8> = Vec::new();
+ 
+        let rank: i32 = polje_na_kom_se_nalazim.rank as i32;
+        let file: i32 = polje_na_kom_se_nalazim.file as i32;
+        let mut polja: Vec<File_rank> = Vec::new();
         ako_su_validni_dodaj_u_vektor(&mut polja, rank+1, file+2);
         ako_su_validni_dodaj_u_vektor(&mut polja, rank+1, file-2);
         ako_su_validni_dodaj_u_vektor(&mut polja, rank-1, file+2);
@@ -27,18 +28,14 @@ pub fn prirodno_kretanje_konja<T>(
 
     
 
-
-    fn ako_su_validni_dodaj_u_vektor(vektor: &mut Vec<u8>, rank: i32, file: i32){
-         if rank >= 1 && rank <=8 && file>=A_FILE as i32 && file <=H_FILE as i32{
-            vektor.push(crate::file_rank_to_broj(file as u8, rank as u8));
-         }
-    }
-
-    pub fn konj_napada_polje<T>(tabla: &T, polje_meta: u8, moje_polje: u8, ja_sam_beli: bool)->bool
+    pub fn konj_napada_polje<T>(tabla: &T, polje_meta: &File_rank, moje_polje: &File_rank, ja_sam_beli: bool)->bool
     where T:Ima_podatke_o_tabli
     {
-        let (rank, file) = crate::broj_to_rank_file(moje_polje);
-        let (moj_rank, moj_file) = crate::broj_to_rank_file(polje_meta);
+        let moj_rank: u8 = moje_polje.rank;
+        let moj_file: u8 = moje_polje.file;
+        let rank: u8 = polje_meta.rank;
+        let file: u8 = polje_meta.file;
+
 
         if abs(rank as i32 - moj_rank as i32) == 2 &&
         abs(file as i32 - moj_file as i32) == 1{
@@ -52,13 +49,13 @@ pub fn prirodno_kretanje_konja<T>(
         false
     }
 
-    pub fn konj_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
+    pub fn konj_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: &File_rank, moje_polje: &File_rank, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
-        let (rank, file) = crate::broj_to_rank_file(polje_na_koje_dolazim);
+        
         konj_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli)   
         &&
-        !tabla.da_li_je_figura_boje_na_polju(ja_sam_beli, rank, file)
+        !tabla.da_li_je_figura_boje_na_polju(ja_sam_beli, polje_na_koje_dolazim.rank, polje_na_koje_dolazim.file)
     }
 
     fn abs(broj: i32) -> u32 {
@@ -68,14 +65,30 @@ pub fn prirodno_kretanje_konja<T>(
         broj as u32
     }
 
+pub fn potezi_konja<T>  (
+    tabla: &T,
+    polje_na_kom_se_nalazim: &File_rank,
+    rokada: &Rokada, 
+    fajl_pijuna_2_polja: &Option<u8>, ja_sam_beli: bool) -> Vec<File_rank>
+    where T:Ima_podatke_o_tabli{
+        let polja_prirodnog_kretanja: Vec<File_rank> = prirodno_kretanje_konja(tabla, polje_na_kom_se_nalazim, rokada, fajl_pijuna_2_polja, ja_sam_beli);
+        let mut potezi_konja: Vec<File_rank> = Vec::new();
+        for polje in polja_prirodnog_kretanja {
+            if konj_moze_doci_na_polje(tabla, &polje, polje_na_kom_se_nalazim, ja_sam_beli){
+                potezi_konja.push(polje);
+            }
+        }
+        potezi_konja
+}  
+
     #[cfg(test)]
     mod konj_test{
-        use crate::tabla::{Tabla, Rokada, A_FILE, G_FILE, E_FILE, B_FILE, C_FILE, F_FILE};
+        use crate::tabla::{Tabla, Rokada, A_FILE, G_FILE, E_FILE, B_FILE, C_FILE, F_FILE, File_rank, kretanje_figura::konj::potezi_konja};
 
         use super::{prirodno_kretanje_konja, konj_napada_polje};
 
-        fn gde_moze_konj(file: u8, rank: u8) -> Vec<u8> {
-            prirodno_kretanje_konja(&Tabla::pocetna_pozicija(), crate::file_rank_to_broj(file, rank), &Rokada::new_sve_rokade_moguce(), None, true)
+        fn gde_moze_konj(file: u8, rank: u8) -> Vec<File_rank> {
+            prirodno_kretanje_konja(&Tabla::pocetna_pozicija(), &File_rank{file, rank}, &Rokada::new_sve_rokade_moguce(), &None, true)
         }
 
         #[test]
@@ -124,11 +137,11 @@ pub fn prirodno_kretanje_konja<T>(
                .odigraj_validan_potez_bez_promocije(E_FILE, 1, file_belog_konja, rank_belog_konja)
                .odigraj_validan_potez_bez_promocije(E_FILE, 8, file_crnog_kralja, rank_crnog_kralja);
                
-               let polje_konja: u8 = crate::file_rank_to_broj(file_belog_konja, rank_belog_konja);
-               let polje_koje_napadam: u8 = crate::file_rank_to_broj(file_crnog_kralja, rank_crnog_kralja);
+               let polje_konja: File_rank = File_rank::new(file_belog_konja, rank_belog_konja);
+               let polje_koje_napadam: File_rank = File_rank::new(file_crnog_kralja, rank_crnog_kralja);
                assert_eq!(
                    napadam_polje,
-                    crate::tabla::kretanje_figura::konj::konj_napada_polje(&tabla, polje_koje_napadam, polje_konja, true));
+                    crate::tabla::kretanje_figura::konj::konj_napada_polje(&tabla, &polje_koje_napadam, &polje_konja, true));
            }
 
         #[test]
@@ -145,4 +158,18 @@ pub fn prirodno_kretanje_konja<T>(
         fn beli_konj_sa_e5_ne_napada_kralja_na_g7(){
             test_konj_napada_polje(E_FILE, 5, G_FILE, 7, false);
         }
+
+        #[test]
+        fn test_nakon_e4_e5_Nf3_konj_ima_5_poteza(){
+            let tabla: Tabla = Tabla::pocetna_pozicija()
+            .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+            .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)
+            .odigraj_validan_potez_bez_promocije(G_FILE, 1, F_FILE, 3)
+            .odigraj_validan_potez_bez_promocije(A_FILE, 7, A_FILE, 6);
+            
+            let potezi_konja: Vec<File_rank> = potezi_konja(&tabla, &File_rank::new(F_FILE, 3), &tabla.rokada(), &tabla.fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu(), tabla.beli_je_na_potezu());
+            assert_eq!(5, potezi_konja.len());
+            
+        }
+
     }

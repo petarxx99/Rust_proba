@@ -8,7 +8,7 @@ lovac::{prirodno_kretanje_lovca, lovac_napada_polje},
   pijun::{prirodno_kretanje_pijuna, pijun_napada_polje},
    top::{polja_na_koja_ide_top, top_napada_polje}};
 
-use super::{Rokada, Tabla, Ima_podatke_o_tabli, Figura};
+use super::{Rokada, Tabla, Ima_podatke_o_tabli, Figura, File_rank};
 
 
 mod konj;
@@ -33,32 +33,45 @@ napadaju polje na kojem se nalazi kralj. */
 pub struct Figura_interfejs<T> 
 where T: Ima_podatke_o_tabli
 {
+    pub potezi_figure: fn(
+        tabla: &T,
+        polje_na_kom_se_nalazim: &File_rank,
+        rokada: &Rokada, 
+        fajl_pijuna_2_polja: &Option<u8>, ja_sam_beli: bool) -> Vec<File_rank>,
+        
     pub prirodno_kretanje: 
     fn(
         tabla: &T,
-        polje_na_kom_se_nalazim: u8,
+        polje_na_kom_se_nalazim: &File_rank,
         rokada: &Rokada, 
-        fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>,
+        fajl_pijuna_2_polja: &Option<u8>, ja_sam_beli: bool) -> Vec<File_rank>,
         
 
-    pub napada_polje: fn(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool) -> bool,
-    pub figura_moze_doci_na_polje: fn(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool) -> bool,
+    pub napada_polje: fn(tabla: &T, polje: &File_rank, polje_na_kom_se_nalazim: &File_rank, ja_sam_beli: bool) -> bool,
+    pub figura_moze_doci_na_polje: fn(tabla: &T, polje: &File_rank, polje_na_kom_se_nalazim: &File_rank, ja_sam_beli: bool) -> bool,
 }
 
 
 impl<T> Figura_interfejs<T> 
 where T: Ima_podatke_o_tabli
 {
-    pub fn new(prirodno_kretanje: fn(
+    pub fn new(
+        potezi_figure: fn(
+            tabla: &T,
+            polje_na_kom_se_nalazim: &File_rank,
+            rokada: &Rokada, 
+            fajl_pijuna_2_polja: &Option<u8>, ja_sam_beli: bool) -> Vec<File_rank>,
+
+        prirodno_kretanje: fn(
         tabla: &T,
-        polje_na_kom_se_nalazim: u8,
+        polje_na_kom_se_nalazim: &File_rank,
         rokada: &Rokada, 
-        fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>,
+        fajl_pijuna_2_polja: &Option<u8>, ja_sam_beli: bool) -> Vec<File_rank>,
        
-        napada_polje: fn(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, kralj_je_beli: bool) -> bool,
-        figura_moze_doci_na_polje: fn(tabla: &T, polje: u8, polje_na_kom_se_nalazim: u8, ja_sam_beli: bool) -> bool,
+        napada_polje: fn(tabla: &T, polje: &File_rank, polje_na_kom_se_nalazim: &File_rank, kralj_je_beli: bool) -> bool,
+        figura_moze_doci_na_polje: fn(tabla: &T, polje: &File_rank, polje_na_kom_se_nalazim: &File_rank, ja_sam_beli: bool) -> bool,
     ) -> Figura_interfejs<T>{
-        Figura_interfejs{prirodno_kretanje,  napada_polje, figura_moze_doci_na_polje}
+        Figura_interfejs{potezi_figure, prirodno_kretanje,  napada_polje, figura_moze_doci_na_polje}
     }
 
 

@@ -1,12 +1,14 @@
 use std::{fs::File, env::VarError};
 
-use self::kretanje_figura::Figura_interfejs;
+use self::{kretanje_figura::Figura_interfejs, nekompresirana_tabla::Nekompresirana_tabla};
 
 pub(crate) mod normalna_tabla;
 pub(crate) mod potez;
 pub(crate) mod kretanje_figura;
 mod promocija;
 mod evaluacija_table;
+pub(crate) mod partija;
+mod nekompresirana_tabla;
 
 pub static BELI: u8 = 0;
 pub static CRNI: u8 = 1;
@@ -60,6 +62,8 @@ impl Promocija {
         }
     }
 }
+
+#[derive(PartialEq)]
 pub struct File_rank{
     pub file: u8,
     pub rank: u8,
@@ -72,6 +76,13 @@ impl File_rank{
             rank
         }
     }
+    pub fn new_iz_broja(broj: u8) -> File_rank {
+        let (rank, file) = crate::broj_to_rank_file(broj);
+        File_rank {file, rank}
+    }
+    pub fn copy(&self) -> File_rank{
+        File_rank{file: self.file, rank: self.rank}
+    }
 }
 
 pub struct Rokada {
@@ -83,6 +94,15 @@ pub struct Rokada {
 }
 
 impl Rokada {
+    pub fn copy(&self) -> Rokada {
+        Rokada{bela_kraljeva_rokada_vise_nije_moguca:self.bela_kraljeva_rokada_vise_nije_moguca,
+        bela_kraljicina_rokada_vise_nije_moguca: self.bela_kraljicina_rokada_vise_nije_moguca,
+        crna_kraljeva_rokada_vise_nije_moguca: self.crna_kraljeva_rokada_vise_nije_moguca,
+        crna_kraljicina_rokada_vise_nije_moguca: self.crna_kraljicina_rokada_vise_nije_moguca
+        }
+    }
+
+
     pub fn pomeren_kralj(&mut self, beli_je_odigrao: bool){
         if beli_je_odigrao {
             self.bela_kraljeva_rokada_vise_nije_moguca = true;
@@ -139,6 +159,7 @@ impl Figura_info{
 
 
 /*https://doc.rust-lang.org/std/mem/fn.size_of.html */
+#[derive(Eq,Hash,PartialEq)]
 #[repr(C)]
 pub struct Tabla  {
     bele_figure: [u8; 16],
@@ -152,9 +173,10 @@ pub fn print_size_of_Tabla(){
 
 
 pub trait Ima_podatke_o_tabli{
-    fn da_li_su_polja_prazna(&self, polja: &[u8]) -> bool;
-    fn pozicija_kralja(&self, kralj_je_bele_boje: bool) -> u8;
-    fn polja_nisu_napadnuta(&self, polja: &Vec<u8>, bele_ne_crne_figure_napadaju: bool) -> bool;
+    fn da_li_je_polje_prazno(&self, polje: &File_rank) -> bool;
+    fn da_li_su_polja_prazna(&self, polja: &[File_rank]) -> bool;
+    fn pozicija_kralja(&self, kralj_je_bele_boje: bool) -> File_rank;
+    fn polja_nisu_napadnuta(&self, polja: &Vec<File_rank>, bele_ne_crne_figure_napadaju: bool) -> bool;
     fn da_li_je_figura_boje_na_polju(&self, figura_je_bele_boje: bool, rank: u8, file: u8) -> bool;
     fn get_rokada(&self) -> Rokada;
     fn get_file_pijuna_koji_se_pomerio_2_polja(&self) -> Option<u8>;
@@ -175,13 +197,17 @@ impl Ima_podatke_o_tabli for Tabla {
         self.fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu()
     }
 
-    fn da_li_su_polja_prazna(&self, polja: &[u8]) -> bool {
+    fn da_li_su_polja_prazna(&self, polja: &[File_rank]) -> bool {
         for polje in polja {
-            if !self.polje_je_prazno_preko_broja(*polje){
+            if !self.polje_je_prazno(polje){
                 return false
             }
         }
         true
+    }
+
+    fn da_li_je_polje_prazno(&self, polje: &File_rank) -> bool {
+        self.polje_je_prazno(polje)
     }
 
     fn da_li_je_figura_boje_na_polju(&self, figura_je_bele_boje: bool, rank: u8, file: u8) -> bool{
@@ -202,15 +228,19 @@ impl Ima_podatke_o_tabli for Tabla {
     }
 
 
-    fn pozicija_kralja(&self, kralj_je_bele_boje: bool) -> u8 {
+    fn pozicija_kralja(&self, kralj_je_bele_boje: bool) -> File_rank {
+        let rank: u8; 
+        let file: u8;
         if !kralj_je_bele_boje {
-            self.crne_figure[KRALJ]
+            (rank, file) = crate::broj_to_rank_file(self.crne_figure[KRALJ]);
         } else {
-            self.bele_figure[KRALJ]
+            (rank, file) = crate::broj_to_rank_file(self.bele_figure[KRALJ]);
         }
+        File_rank::new(file, rank)
     }
 
-   fn polja_nisu_napadnuta(&self, polja: &Vec<u8>, bele_ne_crne_figure_napadaju: bool) -> bool {
+   fn polja_nisu_napadnuta(&self, polja: &Vec<File_rank>, bele_ne_crne_figure_napadaju: bool) -> bool {
+        let nekompresirana_tabla: Nekompresirana_tabla = self.to_nekompresirana_tabla();
 
         if bele_ne_crne_figure_napadaju {
             for i in 0..self.bele_figure.len(){
@@ -218,7 +248,7 @@ impl Ima_podatke_o_tabli for Tabla {
                     None => {},
                     Some(figura) => {
                         for polje in polja {
-                            if (figura.napada_polje)(self, *polje, self.bele_figure[i], bele_ne_crne_figure_napadaju){
+                            if (figura.napada_polje)(&nekompresirana_tabla, polje, &File_rank::new_iz_broja(self.bele_figure[i]), bele_ne_crne_figure_napadaju){
                                 return false;
                             }
                         }
@@ -231,7 +261,7 @@ impl Ima_podatke_o_tabli for Tabla {
                     None => {},
                     Some(figura) => {
                         for polje in polja {
-                            if (figura.napada_polje)(self, *polje, self.crne_figure[i], bele_ne_crne_figure_napadaju){
+                            if (figura.napada_polje)(&nekompresirana_tabla, polje, &File_rank::new_iz_broja(self.crne_figure[i]), bele_ne_crne_figure_napadaju){
                                 return false;
                             }
                         }
@@ -653,13 +683,30 @@ impl Tabla {
         true
     }
 
+    pub fn copy(&self) -> Tabla {
+        let mut nova_tabla: Tabla = Tabla::pocetna_pozicija();
+        nova_tabla.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu = self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu;
+        let mut i: usize = 0;
+        while i<16 {
+            nova_tabla.bele_figure[i] = self.bele_figure[i];
+            nova_tabla.crne_figure[i] = self.crne_figure[i];
+            i+=1;
+        }
+
+        nova_tabla
+    }
+
+    pub fn povecaj_fifty_move_rule_za_1(&mut self) {
+        self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu = Tabla::povecaj_50_move_rule_brojac_za_1_unsafe(self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu);
+    }
+
 }
 
 
 
 #[cfg(test)]
 mod tabla_tests{
-    use crate::tabla::KRALJICA;
+    use crate::tabla::{KRALJICA, File_rank};
 
     use super::{Tabla, E_FILE, Rokada};
 
@@ -742,6 +789,13 @@ mod tabla_tests{
         let mut tabla: Tabla = Tabla::pocetna_pozicija();
         tabla.nek_je_obrnuta_boja_je_na_potezu();
         assert_eq!(false, tabla.beli_je_na_potezu());
+    }
+
+    #[test]
+    fn test_file_rank_iz_broja(){
+        let fr: File_rank = File_rank::new_iz_broja(4);
+        assert_eq!(E_FILE, fr.file);
+        assert_eq!(1, fr.rank);
     }
 }
 

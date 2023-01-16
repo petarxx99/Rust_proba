@@ -5,36 +5,47 @@ use super::figure::ako_su_validni_dodaj_u_vektor;
 
 pub fn polja_na_koja_ide_top<T>(
     tabla: &T,
-    polje_na_kom_se_nalazim: u8,
+    polje_na_kom_se_nalazim: &File_rank,
     rokada: &Rokada, 
-    fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>
+    fajl_pijuna_2_polja: &Option<u8>, ja_sam_beli: bool) -> Vec<File_rank>
     where T:Ima_podatke_o_tabli{
+         let mut polja: Vec<File_rank> = Vec::new();
+         let rank: u8 = polje_na_kom_se_nalazim.rank;
+         let file: u8 = polje_na_kom_se_nalazim.file;
 
-         let mut polja: Vec<u8> = Vec::new();
-         let (rank_u8, file_u8) = crate::broj_to_rank_file(polje_na_kom_se_nalazim);
-
-         for i in A_FILE..(H_FILE+1){
-            for j in 1..9 {
-                if i == file_u8 && j==rank_u8{
-                    continue; /* Nijedna figura ne moze da ode na polje na kom se vec nalazi. */
-                }
-                if i != file_u8 && j != rank_u8 {
-                    continue; /* Top se krece ili po istom fajlu, ili po istom ranku. 
-                    Ako polje destinacije nije ni isti fajl, ni isti rank, na to polje top ne moze da ode. */
-                }
-                polja.push(crate::file_rank_to_broj(i, j))
-            }
+         let mut i: u8 = rank + 1;
+         while i<= 8 {
+            polja.push(File_rank{file, rank: i});
+            i += 1;
+         }
+         i = rank - 1;
+         while i>=1{
+            polja.push(File_rank{file, rank: i});
+            i -= 1;
+         }
+         i = file + 1;
+         while i<=H_FILE{
+            polja.push(File_rank{file: i, rank});
+            i += 1;
+         }
+         i = file - 1;
+         while i>=A_FILE{
+            polja.push(File_rank{file: i, rank});
+            i -= 1;
          }
          polja
     }
 
 
 
-pub fn top_napada_polje<T>(tabla: &T, polje_meta: u8, polje_na_kom_se_nalazim: u8,  ja_sam_beo: bool) -> bool
+pub fn top_napada_polje<T>(tabla: &T, polje_meta: &File_rank, polje_na_kom_se_nalazim: &File_rank,  ja_sam_beo: bool) -> bool
 where T: Ima_podatke_o_tabli
 {
-    let (rank, file) = crate::broj_to_rank_file(polje_meta);
-    let (moj_rank, moj_file) = crate::broj_to_rank_file(polje_na_kom_se_nalazim);
+    let rank: u8 = polje_meta.rank;
+    let file: u8 = polje_meta.file;
+    let moj_rank: u8 = polje_na_kom_se_nalazim.rank;
+    let moj_file: u8 = polje_na_kom_se_nalazim.file;
+
     if moj_rank == rank && moj_file == file {
         return false /* Figura ne moze da napada polje na kom se nalazi. */
     }
@@ -47,19 +58,19 @@ where T: Ima_podatke_o_tabli
         return true; /* Ako je top odmah pored mete, onda ne moze da bude nista izmedju topa i mete. */
     }
 
-    let mut polja_izmedju: Vec<u8> = Vec::new();
+    let mut polja_izmedju: Vec<File_rank> = Vec::new();
     if moj_rank == rank {    
         let (min_file, max_file) = crate::min_max_broj(moj_file, file);  
         let mut i: u8 = min_file + 1;
         while i < max_file{
-            polja_izmedju.push(crate::file_rank_to_broj(i, rank));
+            polja_izmedju.push(File_rank{file: i, rank});
             i += 1;
         }     
-    } else {  /* Slucaj kad je isti fajl, a razlicit rank. */
+    } else if moj_file == file{  /* Slucaj kad je isti fajl, a razlicit rank. */
         let (min_rank, max_rank) = crate::min_max_broj(moj_rank, rank);
         let mut i: u8 = min_rank + 1;
         while i < max_rank {
-            polja_izmedju.push(crate::file_rank_to_broj(file, i));
+            polja_izmedju.push(File_rank{file, rank: i});
             i += 1;
         }
     }
@@ -69,21 +80,70 @@ where T: Ima_podatke_o_tabli
 
 
 
-pub fn top_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
+pub fn top_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: &File_rank, moje_polje: &File_rank, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
-        let (rank, file) = crate::broj_to_rank_file(polje_na_koje_dolazim);
-
         top_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli)   
         &&
-        !tabla.da_li_je_figura_boje_na_polju(ja_sam_beli, rank, file)
+        !tabla.da_li_je_figura_boje_na_polju(ja_sam_beli, polje_na_koje_dolazim.rank, polje_na_koje_dolazim.file)
     }
 
+
+pub fn potezi_topa<T>(tabla: &T,
+    polje_na_kom_se_nalazim: &File_rank,
+    rokada: &Rokada, 
+    fajl_pijuna_2_polja: &Option<u8>, ja_sam_beli: bool) -> Vec<File_rank>
+    where T:Ima_podatke_o_tabli{
+        let mut polja: Vec<File_rank> = Vec::new();
+         let rank: u8 = polje_na_kom_se_nalazim.rank;
+         let file: u8 = polje_na_kom_se_nalazim.file;
+
+         dodaj_polja_topa_vertikalno(tabla, &mut polja, ja_sam_beli, 1, 9, rank, file);
+         dodaj_polja_topa_vertikalno(tabla, &mut polja, ja_sam_beli, -1, 0, rank, file);
+         dodaj_polja_topa_horizontalno(tabla, &mut polja, ja_sam_beli, 1, H_FILE+1, rank, file);
+         dodaj_polja_topa_horizontalno(tabla, &mut polja, ja_sam_beli, -1, A_FILE-1, rank, file);
+         polja
+    }
+
+    fn dodaj_polja_topa_vertikalno<T>(tabla: &T, polja: &mut Vec<File_rank>, ja_sam_beli: bool, increment: i8,
+    ekskluzivna_granica: u8, rank_topa: u8, file: u8)
+    where T:Ima_podatke_o_tabli {
+        let mut rank: u8 = (rank_topa as i8 + increment) as u8;
+        while rank != ekskluzivna_granica {
+            if tabla.da_li_je_figura_boje_na_polju(ja_sam_beli, rank, file){
+                break;
+            }
+            polja.push(File_rank{file, rank});
+            if !tabla.da_li_je_polje_prazno(&File_rank{file, rank}){
+                break;
+            }
+            rank = (rank as i8 + increment) as u8;
+        }
+    }
+
+
+    fn dodaj_polja_topa_horizontalno<T>(tabla: &T, polja: &mut Vec<File_rank>, ja_sam_beli: bool, increment: i8,
+        ekskluzivna_granica: u8, rank: u8, file_topa: u8)
+        where T:Ima_podatke_o_tabli {
+            let mut file: u8 = (file_topa as i8 + increment) as u8;
+            while file != ekskluzivna_granica {
+                if tabla.da_li_je_figura_boje_na_polju(ja_sam_beli, rank, file){
+                    break;
+                }
+                polja.push(File_rank{file, rank});
+                if !tabla.da_li_je_polje_prazno(&File_rank{file,rank}){
+                    break;
+                }
+                file = (file as i8 + increment) as u8;
+            }
+        }
+ 
+    
 #[cfg(test)]
 mod top_test{
-    use crate::tabla::{Tabla, E_FILE, A_FILE, G_FILE, Rokada, H_FILE, B_FILE, Ima_podatke_o_tabli, F_FILE, D_FILE, C_FILE, DESNI_TOP, LEVI_TOP, kretanje_figura::top::top_moze_doci_na_polje};
+    use crate::tabla::{Tabla, E_FILE, A_FILE, G_FILE, Rokada, H_FILE, B_FILE, Ima_podatke_o_tabli, F_FILE, D_FILE, C_FILE, DESNI_TOP, LEVI_TOP, kretanje_figura::top::top_moze_doci_na_polje, File_rank};
 
-    use super::{polja_na_koja_ide_top, top_napada_polje};
+    use super::{polja_na_koja_ide_top, top_napada_polje, potezi_topa};
 
     fn top_na_polje_kralj_na_polje(file_topa: u8, rank_topa: u8, file_kralja: u8, rank_kralja: u8)->Tabla{
         let tabla0 : Tabla = Tabla::pocetna_pozicija();
@@ -91,11 +151,13 @@ mod top_test{
         tabla1.odigraj_validan_potez_bez_promocije(E_FILE, 8, file_kralja, rank_kralja)
     }
 
-    fn na_koliko_polja<T>(file: u8, rank: u8, tabla: &T) -> usize
-    where T:Ima_podatke_o_tabli
+    fn na_koliko_polja(file: u8, rank: u8, tabla: &Tabla) -> usize
+
     {
-        let polje_na_kom_se_nalazim: u8= crate::file_rank_to_broj(file, rank);
-        polja_na_koja_ide_top(tabla, polje_na_kom_se_nalazim, &tabla.get_rokada(), tabla.get_file_pijuna_koji_se_pomerio_2_polja(), tabla.get_beli_je_na_potezu()).len()
+        let polje_na_kom_se_nalazim: File_rank = File_rank{file, rank};
+        let nekompresirana_tabla = tabla.to_nekompresirana_tabla();
+        
+        polja_na_koja_ide_top(tabla, &polje_na_kom_se_nalazim, &tabla.get_rokada(), &nekompresirana_tabla.get_file_pijuna_koji_se_pomerio_2_polja(), tabla.get_beli_je_na_potezu()).len()
     }
     #[test]
     fn top_sa_a4_vidi_14_polja(){
@@ -108,9 +170,9 @@ mod top_test{
  
     {
         let tabla: Tabla = top_na_polje_kralj_na_polje(file_topa, rank_topa, file_destinacije, rank_destinacije);
-        let polje: u8 = crate::file_rank_to_broj(file_topa, rank_topa);
-        let polje_koje_napadam: u8 = crate::file_rank_to_broj(file_destinacije, rank_destinacije);
-        top_napada_polje(&tabla, polje_koje_napadam, polje, true)
+        let polje: File_rank = File_rank{file: file_topa, rank: rank_topa};
+        let polje_koje_napadam: File_rank = File_rank{file: file_destinacije, rank: rank_destinacije};
+        top_napada_polje(&tabla, &polje_koje_napadam, &polje, true)
     }
 
     #[test]
@@ -145,10 +207,34 @@ mod top_test{
         .odigraj_validan_potez_bez_promocije(D_FILE, 2, D_FILE, 4)
         .odigraj_validan_potez_bez_promocije(G_FILE, 8, F_FILE, 6);
            
-        assert_eq!(true, top_moze_doci_na_polje(&tabla, crate::file_rank_to_broj(F_FILE, 1), tabla.bele_figure[DESNI_TOP], tabla.beli_je_na_potezu()));
-        assert_eq!(true, top_moze_doci_na_polje(&tabla, crate::file_rank_to_broj(G_FILE, 1), tabla.bele_figure[DESNI_TOP], tabla.beli_je_na_potezu()));
-        assert_eq!(false, top_moze_doci_na_polje(&tabla, crate::file_rank_to_broj(F_FILE, 1), tabla.bele_figure[LEVI_TOP], tabla.beli_je_na_potezu()));
-        assert_eq!(14, polja_na_koja_ide_top(&tabla, tabla.bele_figure[DESNI_TOP], &tabla.rokada(), None, tabla.beli_je_na_potezu()).len());
+        assert_eq!(true, top_moze_doci_na_polje(&tabla, &File_rank::new(F_FILE, 1), &File_rank::new_iz_broja(tabla.bele_figure[DESNI_TOP]), tabla.beli_je_na_potezu()));
+        assert_eq!(true, top_moze_doci_na_polje(&tabla, &File_rank::new(G_FILE, 1), &File_rank::new_iz_broja(tabla.bele_figure[DESNI_TOP]), tabla.beli_je_na_potezu()));
+        assert_eq!(false, top_moze_doci_na_polje(&tabla, &File_rank::new(F_FILE, 1), &File_rank::new_iz_broja(tabla.bele_figure[LEVI_TOP]), tabla.beli_je_na_potezu()));
+        assert_eq!(14, polja_na_koja_ide_top(&tabla, &File_rank::new_iz_broja(tabla.bele_figure[DESNI_TOP]), &tabla.rokada(), &None, tabla.beli_je_na_potezu()).len());
+    }
+
+    #[test]
+    fn test_potezi_topa_posle_a4_i_Nc3(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(A_FILE, 2, A_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(B_FILE, 1, C_FILE, 3)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 7, D_FILE, 6);
+        
+        let polja_topa: Vec<File_rank> = potezi_topa(&tabla, &File_rank::new(A_FILE, 1), &tabla.rokada(), &None, tabla.beli_je_na_potezu());
+        assert_eq!(3, polja_topa.len());
+        assert_eq!(true, polja_topa.contains(&File_rank::new(B_FILE, 1)));
+        assert_eq!(true, polja_topa.contains(&File_rank::new(A_FILE, 2)));
+        assert_eq!(true, polja_topa.contains(&File_rank::new(A_FILE, 3)));
+    }
+
+    #[test]
+    fn test_top_sa_e4_dolazi_na_10_polja(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(A_FILE, 1, E_FILE, 4);
+
+        let polja_topa: Vec<File_rank> = potezi_topa(&tabla, &File_rank::new(E_FILE, 4), &tabla.rokada(), &None, true);
+        assert_eq!(11, polja_topa.len());
     }
 }
 

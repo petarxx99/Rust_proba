@@ -1,4 +1,4 @@
-use crate::tabla::{Tabla, kretanje_figura::Figura_interfejs, Figura, Rokada, Promocija, Ima_podatke_o_tabli};
+use crate::tabla::{Tabla, kretanje_figura::Figura_interfejs, Figura, Rokada, Promocija, Ima_podatke_o_tabli, File_rank, nekompresirana_tabla::Nekompresirana_tabla};
 
 use super::{Potez_bits, Potez, Potez_polje};
 
@@ -18,19 +18,22 @@ impl Tabla {
         table_nakon_legalnih_poteza
     }
     
-    fn potez_je_legalan(&self, figure: &[u8;16], broj_figure: u8, polje_destinacije: u8, potez: &Potez_polje, figura: &Figura_interfejs<Tabla>, beli_je_na_potezu: bool) -> bool {
-        let trenutno_polje_figure = figure[broj_figure as usize];
+    fn potez_je_legalan(&self, nekompresirana_tabla: &Nekompresirana_tabla, figure: &[u8;16], 
+        broj_figure: u8, polje_destinacije: &File_rank, potez: &Potez_polje, 
+        figura: &Figura_interfejs<Nekompresirana_tabla>, beli_je_na_potezu: bool) -> bool {
+
+        let trenutno_polje_figure: File_rank = File_rank::new_iz_broja(figure[broj_figure as usize]);
 
         if !(figura.figura_moze_doci_na_polje)(
-                self,
+                nekompresirana_tabla,
                 polje_destinacije,
-                trenutno_polje_figure,
+                &trenutno_polje_figure,
                 beli_je_na_potezu
         ){
                 return false
         }
 
-        self.potez_je_legalan_podrazumeva_se_da_figura_moze_doci_na_polje(potez)
+        self.potez_je_legalan_podrazumeva_se_da_figura_moze_doci_na_polje(potez, nekompresirana_tabla)
     }
 
     pub fn svi_legalni_potezi(&self) -> Vec<Potez_bits>{
@@ -39,22 +42,21 @@ impl Tabla {
         let rokada: &Rokada = &self.rokada();
         let fajl_en_passant_pijuna: Option<u8> = self.fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu();
         let beli_je_na_potezu: bool = self.beli_je_na_potezu();
+        let nekompresirana_tabla: Nekompresirana_tabla = self.to_nekompresirana_tabla();
 
         for i in 0..figure.len(){
-            let figura_option: Option<Figura_interfejs<Tabla>> = Figura::iz_niza_u_figure_interfejs(figure, i);
+            let figura_option: Option<Figura_interfejs<Nekompresirana_tabla>> = Figura::iz_niza_u_figure_interfejs(figure, i);
             match figura_option {
                 None => {},
                 Some(figura) => {
-                    let trenutno_polje_figure: u8 = figure[i];
-                    let polja_prirodnog_kretanja: Vec<u8> = (&figura.prirodno_kretanje)(self, trenutno_polje_figure, rokada, fajl_en_passant_pijuna, beli_je_na_potezu);
+                    let trenutno_polje_figure: File_rank = File_rank::new_iz_broja(figure[i]);
+                    let polja_prirodnog_kretanja: Vec<File_rank> = (&figura.prirodno_kretanje)(&nekompresirana_tabla, &trenutno_polje_figure, rokada, &fajl_en_passant_pijuna, beli_je_na_potezu);
 
-                    for polje in polja_prirodnog_kretanja{ 
-                        let (rank, file) = crate::broj_to_rank_file(polje);
-                       
-                        let potez: Potez_bits = Potez_bits{broj_figure: i as u8, file, rank, promocija: Promocija::None};
+                    for polje in polja_prirodnog_kretanja{                  
+                        let potez: Potez_bits = Potez_bits{broj_figure: i as u8, file: polje.file, rank: polje.rank, promocija: Promocija::None};
 
-                        if self.potez_je_legalan(figure, i as u8,polje, &potez.to_Potez_polje(figure), &figura, beli_je_na_potezu){
-                            Tabla::ubaci_poteze_u_listu(&mut legalni_potezi, potez, figure, i, rank);                            
+                        if self.potez_je_legalan(&nekompresirana_tabla, figure, i as u8,&polje, &potez.to_Potez_polje(figure), &figura, beli_je_na_potezu){
+                            Tabla::ubaci_poteze_u_listu(&mut legalni_potezi, potez, figure, i, polje.rank);                            
                         }   
                     }
                 }    
@@ -92,6 +94,36 @@ impl Tabla {
 
         rank == 1 || rank == 8
     }
+
+
+    pub fn nema_legalnih_poteza(&self, nekompresirana_tabla: &Nekompresirana_tabla) -> bool{
+        let figure: &[u8;16] = self.figure_koje_su_na_potezu();       
+        let rokada: &Rokada = &self.rokada();
+        let fajl_en_passant_pijuna: Option<u8> = self.fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu();
+        let beli_je_na_potezu: bool = self.beli_je_na_potezu();
+
+        for i in 0..figure.len(){
+            let figura_option: Option<Figura_interfejs<Nekompresirana_tabla>> = Figura::iz_niza_u_figure_interfejs(figure, i);
+            match figura_option {
+                None => {},
+                Some(figura) => {
+                    let trenutno_polje_figure: File_rank = File_rank::new_iz_broja(figure[i]);
+                    let polja_prirodnog_kretanja: Vec<File_rank> = (&figura.prirodno_kretanje)(&nekompresirana_tabla, &trenutno_polje_figure, rokada, &fajl_en_passant_pijuna, beli_je_na_potezu);
+
+                    for polje in polja_prirodnog_kretanja{                  
+                        let potez: Potez_bits = Potez_bits{broj_figure: i as u8, file: polje.file, rank: polje.rank, promocija: Promocija::None};
+
+                        if self.potez_je_legalan(&nekompresirana_tabla, figure, i as u8,&polje, &potez.to_Potez_polje(figure), &figura, beli_je_na_potezu){
+                            return false                         
+                        }   
+                    }
+                }    
+            }
+        }
+
+        true
+    }
+
 }
 
 
@@ -228,5 +260,21 @@ mod test_legalni_potezi{
         assert_eq!(43, tabla.table_nakon_svih_legalnih_poteza().len());
     }
 
+
+
+    /* Testiranje funkcije nema_legalnih_poteza */
+    #[test]
+    fn testiraj_nema_legalnih_poteza_mat_u_4_poteza(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 1, H_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(B_FILE, 8, C_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 1, C_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(G_FILE, 8, F_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(H_FILE, 5, F_FILE, 7);
+
+        assert_eq!(true, tabla.nema_legalnih_poteza(&tabla.to_nekompresirana_tabla()));
+    }
 }
 

@@ -141,12 +141,19 @@ pub struct Potez{
     pub promocija: Promocija,
 }
 
+impl Display for Potez {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "start rank: {}, start file: {}\n end rank: {}, end file: {}",
+    self.start_rank, self.start_file, self.rank_destinacije, self.file_destinacije)
+    }
+}
+
 #[repr(C)]
 pub struct Potez_bits {
-    broj_figure: u8,
-    file: u8,
-    rank: u8,
-    promocija: Promocija,
+    pub broj_figure: u8,
+    pub file: u8,
+    pub rank: u8,
+    pub promocija: Promocija,
 }
 pub fn print_size_of_Potez_bits(){
     println!("{}", std::mem::size_of::<Potez_bits>());
@@ -187,6 +194,14 @@ impl Potez_bits {
         let (start_rank, start_file) = crate::broj_to_rank_file(figure[self.broj_figure as usize]);
         Potez_polje { start_file, start_rank, end_file: self.file, end_rank:self.rank }
     }
+
+    pub fn to_Potez(&self, figure: &[u8;16]) -> Potez {
+
+        let (start_rank, start_file) = crate::broj_to_rank_file(figure[self.broj_figure as usize]);
+        Potez::new(start_file, start_rank, self.file, self.rank, self.promocija.copy())
+    }
+
+    
 }
 
 impl Potez {
@@ -241,7 +256,7 @@ impl Tabla {
         tabla_nakon_poteza
     }
 
-    fn tabla_nakon_poteza_bits(&self, potez: &Potez_bits) -> Tabla{
+    pub fn tabla_nakon_poteza_bits(&self, potez: &Potez_bits) -> Tabla{
         let mut bele_figure: [u8; 16] = self.bele_figure.clone();
         let mut crne_figure: [u8; 16] = self.crne_figure.clone();
         let mut bitfield: i32 = self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu;

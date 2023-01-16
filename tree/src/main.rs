@@ -1,8 +1,12 @@
-use tabla::Tabla;
+use tabla::{Tabla, E_FILE, D_FILE};
 
+use crate::tabla::H_FILE;
+use crate::komunikacija::{Komunikator, Konzola_sah};
 
 mod drvo_eval;
 mod tabla;
+mod proba_sah_drveta;
+mod komunikacija;
 
 pub fn file_rank_to_broj(file: u8, rank: u8) -> u8 {
     ((rank-1) << 3) + file-1
@@ -26,12 +30,36 @@ fn min_max_broj(broj1: u8, broj2: u8) -> (u8, u8) {
 
 
 fn main() {
-    drvo_eval::proba();
+    
+   /*  drvo_eval::proba();
     crate::tabla::potez::print_size_of_Potez_bits();
     let tabla: Tabla = Tabla::pocetna_pozicija(); 
-    tabla.svi_legalni_potezi();
+    tabla.svi_legalni_potezi(); */
+   // proba();
+   odigraj_partiju(true, 4);
+    //odigraj_partiju2(true, 2);
 }
 
+
+fn proba(){
+    let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 2, D_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 8, H_FILE, 4);
+        let (potez, eval) = tabla.najbolji_potez_i_njegova_evaluacija(4);    
+        println!("najbolji potez posle e4,e5,d4,Qh4:\n {}\n njegova evaluacija: {}", potez.unwrap().to_Potez(&tabla.figure_koje_su_na_potezu()), eval);
+
+    }
+
+
+fn odigraj_partiju(kompjuter_je_beli: bool, dubina_pretrage: u8){
+    Tabla::pocni_partiju(Konzola_sah::new(), kompjuter_je_beli, dubina_pretrage)
+}
+
+fn odigraj_partiju2(kompjuter_je_beli: bool, dubina_pretrage: u8) {
+    Tabla::pocni_partiju2(Konzola_sah::new(), kompjuter_je_beli, dubina_pretrage)
+}
 
 #[cfg(test)]
 mod main_test{

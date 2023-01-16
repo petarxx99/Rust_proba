@@ -1,4 +1,4 @@
-use crate::tabla::{Ima_podatke_o_tabli, Tabla, kretanje_figura::Figura_interfejs, Figura, KRALJ, Promocija};
+use crate::tabla::{Ima_podatke_o_tabli, Tabla, kretanje_figura::Figura_interfejs, Figura, KRALJ, Promocija, File_rank, nekompresirana_tabla::{Nekompresirana_tabla, self}};
 
 use super::{Potez_bits, Potez_polje};
 
@@ -7,10 +7,10 @@ impl Tabla {
 
     /* Ova metoda ocekuje da joj se preda potez takav da figura moze 
     doci do polja destinacije. Podrazumeva se da je taj uslov ispunjen. */
-    pub fn potez_je_legalan_podrazumeva_se_da_figura_moze_doci_na_polje(&self, potez: &Potez_polje) -> bool {
+    pub fn potez_je_legalan_podrazumeva_se_da_figura_moze_doci_na_polje(&self, potez: &Potez_polje, nekompresirana_tabla: &Nekompresirana_tabla) -> bool {
         
         /* Ne mogu da pojedem sopstvenu figuru. */
-        if self.da_li_je_figura_boje_na_polju(self.beli_je_na_potezu(), potez.end_rank, potez.end_file) {
+        if nekompresirana_tabla.da_li_je_figura_boje_na_polju(self.beli_je_na_potezu(), potez.end_rank, potez.end_file) {
             return false
         }
 
@@ -18,30 +18,36 @@ impl Tabla {
     }
 
   
+ 
     fn nisam_u_sahu_nakon_poteza(&self, potez: &Potez_polje) -> bool{
-        let tabla_nakon_odigranog_poteza: Tabla = self.odigraj_potez_bez_promocije_unsafe(potez);
-        let polje_mog_kralja: u8 = tabla_nakon_odigranog_poteza.figure_koje_nisu_na_potezu()[KRALJ];
-        let protivnikove_figure: &[u8;16] = tabla_nakon_odigranog_poteza.figure_koje_su_na_potezu();
-        let protivnik_ima_bele_figure: bool = tabla_nakon_odigranog_poteza.beli_je_na_potezu();
-
-        !tabla_nakon_odigranog_poteza.figure_napadaju_polje(
-            polje_mog_kralja,
-            protivnikove_figure, 
-            protivnik_ima_bele_figure,    
-        )   
+            let tabla_nakon_odigranog_poteza: Tabla = self.odigraj_potez_bez_promocije_unsafe(potez);
+            let polje_mog_kralja: File_rank = File_rank::new_iz_broja(tabla_nakon_odigranog_poteza.figure_koje_nisu_na_potezu()[KRALJ]);
+            let protivnikove_figure: &[u8;16] = tabla_nakon_odigranog_poteza.figure_koje_su_na_potezu();
+            let protivnik_ima_bele_figure: bool = tabla_nakon_odigranog_poteza.beli_je_na_potezu();
+    
+            !tabla_nakon_odigranog_poteza.figure_napadaju_polje(
+                &polje_mog_kralja,
+                protivnikove_figure, 
+                protivnik_ima_bele_figure,   
+                &tabla_nakon_odigranog_poteza.to_nekompresirana_tabla()
+            )   
     }
+ 
+    
 
-    pub fn figure_napadaju_polje(&self, polje_meta: u8, figure: &[u8;16], boja_figura_je_bela: bool) -> bool {
+    pub fn figure_napadaju_polje(&self, polje_meta: &File_rank, figure: &[u8;16], boja_figura_je_bela: bool,
+    nekompresirana_tabla: &Nekompresirana_tabla) -> bool {
+
         for i in 0..figure.len(){
-            let polje_figure: u8 = figure[i];
+            let polje_figure: File_rank = File_rank::new_iz_broja(figure[i]);
             match Figura::iz_niza_u_figure_interfejs(figure, i){
                 None => {},
                 Some(figura) =>
                  {
                     if (figura.napada_polje)(
-                    self,
+                    nekompresirana_tabla,
                     polje_meta,
-                    polje_figure,
+                    &polje_figure,
                     boja_figura_je_bela){
                         return true
                     }
@@ -56,6 +62,8 @@ impl Tabla {
 
 
 
+
+
 #[cfg(test)]
 mod test_provera_legalnosti{
     use crate::tabla::{Tabla, potez::{Potez, Potez_polje}, E_FILE, A_FILE, B_FILE, C_FILE, D_FILE, F_FILE, G_FILE, H_FILE, Promocija};
@@ -63,7 +71,7 @@ mod test_provera_legalnosti{
 
    
     fn test_potez_je_legalan(tabla: &Tabla, start_file: u8, start_rank: u8, end_file: u8, end_rank: u8) -> bool{
-        tabla.potez_je_legalan_podrazumeva_se_da_figura_moze_doci_na_polje(&Potez_polje::new(start_file, start_rank, end_file, end_rank))
+        tabla.potez_je_legalan_podrazumeva_se_da_figura_moze_doci_na_polje(&Potez_polje::new(start_file, start_rank, end_file, end_rank), &tabla.to_nekompresirana_tabla())
     }
     fn odigraj_potez(tabla: &Tabla, start_file: u8, start_rank: u8, end_file: u8, end_rank:u8) -> Tabla {
         tabla.odigraj_validan_potez_bez_promocije(start_file, start_rank, end_file, end_rank)

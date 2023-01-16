@@ -1,15 +1,15 @@
 use crate::tabla::{Rokada, Tabla, File_rank, H_FILE, A_FILE, G_FILE, Ima_podatke_o_tabli};
 
-use super::{lovac::{prirodno_kretanje_lovca, lovac_napada_polje}, top::{polja_na_koja_ide_top, top_napada_polje}};
+use super::{lovac::{prirodno_kretanje_lovca, lovac_napada_polje, potezi_lovca, potez_lovca_uzbrdo, potez_lovca_nizbrdo}, top::{polja_na_koja_ide_top, top_napada_polje, potezi_topa}};
 
 pub fn prirodno_kretanje_kraljice<T>(
     tabla: &T,
-    polje_na_kom_se_nalazim: u8,
+    polje_na_kom_se_nalazim: &File_rank,
     rokada: &Rokada, 
-    fajl_pijuna_2_polja: Option<u8>, ja_sam_beli: bool) -> Vec<u8>
+    fajl_pijuna_2_polja: &Option<u8>, ja_sam_beli: bool) -> Vec<File_rank>
     where T:Ima_podatke_o_tabli{
-        let dijagonale: Vec<u8> = prirodno_kretanje_lovca(tabla, polje_na_kom_se_nalazim, rokada, fajl_pijuna_2_polja, ja_sam_beli);
-        let mut kao_top: Vec<u8> = polja_na_koja_ide_top(tabla, polje_na_kom_se_nalazim, rokada, fajl_pijuna_2_polja, ja_sam_beli);
+        let dijagonale: Vec<File_rank> = prirodno_kretanje_lovca(tabla, polje_na_kom_se_nalazim, rokada, fajl_pijuna_2_polja, ja_sam_beli);
+        let mut kao_top: Vec<File_rank> = polja_na_koja_ide_top(tabla, polje_na_kom_se_nalazim, rokada, fajl_pijuna_2_polja, ja_sam_beli);
         
         for polje in dijagonale {
             kao_top.push(polje);
@@ -19,25 +19,36 @@ pub fn prirodno_kretanje_kraljice<T>(
 
 
 
-pub fn kraljica_napada_polje<T>(tabla: &T, polje_meta: u8, polje_kraljice: u8, ja_sam_beli: bool) -> bool 
+pub fn kraljica_napada_polje<T>(tabla: &T, polje_meta: &File_rank, polje_kraljice: &File_rank, ja_sam_beli: bool) -> bool 
 where T:Ima_podatke_o_tabli{
     lovac_napada_polje(tabla, polje_meta, polje_kraljice, ja_sam_beli)
     ||
     top_napada_polje(tabla, polje_meta, polje_kraljice, ja_sam_beli)
 }
 
-pub fn kraljica_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: u8, moje_polje: u8, ja_sam_beli: bool) -> bool
+pub fn kraljica_moze_doci_na_polje<T>(tabla: &T, polje_na_koje_dolazim: &File_rank, moje_polje: &File_rank, ja_sam_beli: bool) -> bool
     where T:Ima_podatke_o_tabli
     {
-        let (rank, file) = crate::broj_to_rank_file(polje_na_koje_dolazim);
+
         kraljica_napada_polje(tabla, polje_na_koje_dolazim, moje_polje, ja_sam_beli)  
         &&
-        !tabla.da_li_je_figura_boje_na_polju(ja_sam_beli, rank, file) 
+        !tabla.da_li_je_figura_boje_na_polju(ja_sam_beli, polje_na_koje_dolazim.rank, polje_na_koje_dolazim.file) 
     }
+
+pub fn potezi_kraljice<T>(tabla: &T,
+        polje_na_kom_se_nalazim: &File_rank,
+        rokada: &Rokada, 
+        fajl_pijuna_2_polja: &Option<u8>, ja_sam_beli: bool) -> Vec<File_rank>
+        where T:Ima_podatke_o_tabli{
+            let mut polja: Vec<File_rank> = potezi_topa(tabla, polje_na_kom_se_nalazim, rokada, fajl_pijuna_2_polja, ja_sam_beli);
+            potez_lovca_uzbrdo(tabla, &mut polja, polje_na_kom_se_nalazim.file, polje_na_kom_se_nalazim.rank, ja_sam_beli);
+            potez_lovca_nizbrdo(tabla, &mut polja, polje_na_kom_se_nalazim.file, polje_na_kom_se_nalazim.rank, ja_sam_beli);
+            polja
+}     
 
 #[cfg(test)]
 pub mod test_kraljica{
-    use crate::tabla::{Tabla, E_FILE, D_FILE, H_FILE, C_FILE, B_FILE, F_FILE, A_FILE, kretanje_figura::kraljica::kraljica_napada_polje, G_FILE};
+    use crate::tabla::{Tabla, E_FILE, D_FILE, H_FILE, C_FILE, B_FILE, F_FILE, A_FILE, kretanje_figura::kraljica::{kraljica_napada_polje, potezi_kraljice}, G_FILE, File_rank};
 
 
     fn testiraj_kraljica_na_kralj_na(
@@ -48,9 +59,9 @@ pub mod test_kraljica{
         .odigraj_validan_potez_bez_promocije(D_FILE, 1, file_kraljice, rank_kraljice)
         .odigraj_validan_potez_bez_promocije(E_FILE, 8, file_kralja, rank_kralja);
         
-        let polje_kraljice: u8 = crate::file_rank_to_broj(file_kraljice, rank_kraljice);
-        let polje_napada: u8 = crate::file_rank_to_broj(file_kralja, rank_kralja);
-        assert_eq!(kraljica_treba_da_napada_kralja, kraljica_napada_polje(&tabla, polje_napada, polje_kraljice, true));
+        let polje_kraljice: File_rank = File_rank::new(file_kraljice, rank_kraljice);
+        let polje_napada: File_rank = File_rank::new(file_kralja, rank_kralja);
+        assert_eq!(kraljica_treba_da_napada_kralja, kraljica_napada_polje(&tabla, &polje_napada, &polje_kraljice, true));
     }
 
     #[test]
@@ -111,6 +122,17 @@ pub mod test_kraljica{
     #[test]
     fn kraljica_sa_b1_ne_napada_kralja_na_d3_jer_ima_figura_izmedju(){
         testiraj_kraljica_na_kralj_na(B_FILE, 1, D_FILE, 3, false);
+    }
+
+    #[test]
+    fn ako_stavim_kraljicu_na_d4_imace_19_poteza(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(D_FILE, 1, D_FILE, 4);
+
+        let potezi_kraljice: Vec<File_rank> = potezi_kraljice(&tabla, &File_rank::new(D_FILE,4), &tabla.rokada(), &None, true);
+        assert_eq!(19, potezi_kraljice.len());
+        assert_eq!(true, potezi_kraljice.contains(&File_rank::new(G_FILE, 7)));
+        assert_eq!(true, potezi_kraljice.contains(&File_rank::new(A_FILE, 7)));
     }
 }
 
