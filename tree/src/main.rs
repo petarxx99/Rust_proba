@@ -36,8 +36,20 @@ fn main() {
     let tabla: Tabla = Tabla::pocetna_pozicija(); 
     tabla.svi_legalni_potezi(); */
    // proba();
-   odigraj_partiju(true, 4);
+   //odigraj_partiju(true, 4);
+   partije();
     //odigraj_partiju2(true, 2);
+}
+
+fn partije(){
+    let mut beli_ili_crni: String = String::new();
+    println!("1 za belog, 2 za crnog");
+    std::io::stdin().read_line(&mut beli_ili_crni).expect("Greska");
+    if beli_ili_crni.trim().starts_with("2"){
+        odigraj_partiju(false, 4);
+    } else {
+        odigraj_partiju(true, 4);
+    }
 }
 
 

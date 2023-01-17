@@ -9,7 +9,7 @@ impl Tabla {
 
     pub fn nerekursivno_evaluiraj_poziciju(&self, nekompresirana_tabla: &Nekompresirana_tabla) -> f32 {
         let beli_je_na_potezu: bool = self.beli_je_na_potezu();
-        
+
         /* 
         if self.nema_legalnih_poteza(nekompresirana_tabla) {
             if self.igrac_je_u_sahu(nekompresirana_tabla) {

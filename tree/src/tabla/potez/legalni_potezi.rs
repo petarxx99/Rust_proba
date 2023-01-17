@@ -108,7 +108,7 @@ impl Tabla {
                 None => {},
                 Some(figura) => {
                     let trenutno_polje_figure: File_rank = File_rank::new_iz_broja(figure[i]);
-                    let polja_prirodnog_kretanja: Vec<File_rank> = (&figura.prirodno_kretanje)(&nekompresirana_tabla, &trenutno_polje_figure, rokada, &fajl_en_passant_pijuna, beli_je_na_potezu);
+                    let polja_prirodnog_kretanja: Vec<File_rank> = (&figura.potezi_figure)(&nekompresirana_tabla, &trenutno_polje_figure, rokada, &fajl_en_passant_pijuna, beli_je_na_potezu);
 
                     for polje in polja_prirodnog_kretanja{                  
                         let potez_polje: Potez_polje = Potez_polje::new(trenutno_polje_figure.file, trenutno_polje_figure.rank, polje.file, polje.rank);
@@ -130,7 +130,7 @@ impl Tabla {
 
 #[cfg(test)]
 mod test_legalni_potezi{
-    use crate::tabla::{Tabla, potez::{Potez_bits, Potez}, Promocija, G_FILE, F_FILE, E_FILE, D_FILE, C_FILE, B_FILE, H_FILE};
+    use crate::tabla::{Tabla, potez::{Potez_bits, Potez, Potez_polje}, Promocija, G_FILE, F_FILE, E_FILE, D_FILE, C_FILE, B_FILE, H_FILE, A_FILE, DESNI_LOVAC};
 
 
 
@@ -274,6 +274,25 @@ mod test_legalni_potezi{
         .odigraj_validan_potez_bez_promocije(H_FILE, 5, F_FILE, 7);
 
         assert_eq!(true, tabla.nema_legalnih_poteza(&tabla.to_nekompresirana_tabla()));
+    }
+
+
+    #[test]
+    fn test_21_potez_posle_e4_h5_d4_Rh7_Nf3_Rh1_Bc4(){
+        
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(A_FILE, 7, A_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 2, D_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(A_FILE, 8, A_FILE, 7)
+        .odigraj_validan_potez_bez_promocije(G_FILE, 1, F_FILE, 3)
+        .odigraj_validan_potez_bez_promocije(A_FILE, 7, A_FILE, 8)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 1, C_FILE, 4);
+
+        
+        assert_eq!(21, tabla.svi_legalni_potezi().len());
+        assert_eq!(false, tabla.svi_legalni_potezi().contains(&Potez::new(A_FILE, 5, B_FILE, 4, Promocija::None).to_Potez_bits(&tabla).unwrap()));
+        assert_eq!(true, tabla.svi_legalni_potezi().contains(&Potez::new(A_FILE, 5, A_FILE, 4, Promocija::None).to_Potez_bits(&tabla).unwrap()));
     }
 }
 
