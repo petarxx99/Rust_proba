@@ -111,10 +111,9 @@ impl Tabla {
                     let polja_prirodnog_kretanja: Vec<File_rank> = (&figura.prirodno_kretanje)(&nekompresirana_tabla, &trenutno_polje_figure, rokada, &fajl_en_passant_pijuna, beli_je_na_potezu);
 
                     for polje in polja_prirodnog_kretanja{                  
-                        let potez: Potez_bits = Potez_bits{broj_figure: i as u8, file: polje.file, rank: polje.rank, promocija: Promocija::None};
-
-                        if self.potez_je_legalan(&nekompresirana_tabla, figure, i as u8,&polje, &potez.to_Potez_polje(figure), &figura, beli_je_na_potezu){
-                            return false                         
+                        let potez_polje: Potez_polje = Potez_polje::new(trenutno_polje_figure.file, trenutno_polje_figure.rank, polje.file, polje.rank);
+                        if self.nisam_u_sahu_nakon_poteza(&potez_polje) {
+                            return false                           
                         }   
                     }
                 }    
