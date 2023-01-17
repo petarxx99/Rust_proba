@@ -12,7 +12,7 @@ impl Tabla{
         let mut table: Vec<Tabla> = vec![Tabla::pocetna_pozicija()];
         
         if !kompjuter_je_beli {
-            let prvi_potez: Potez = dobavljac_odgovora.posalji_primi_potez(None);
+            let prvi_potez: Potez = dobavljac_odgovora.primi_potez();
             table.push(Tabla::pocetna_pozicija().tabla_nakon_validnog_poteza(&prvi_potez));
         }
 

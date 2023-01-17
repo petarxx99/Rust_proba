@@ -1,3 +1,5 @@
+use komunikacija::Socket_komunikator;
+use komunikacija::enkoder_poteza::Trobajtni_enkoder_poteza;
 use tabla::{Tabla, E_FILE, D_FILE};
 
 use crate::tabla::H_FILE;
@@ -37,8 +39,9 @@ fn main() {
     tabla.svi_legalni_potezi(); */
    // proba();
    //odigraj_partiju(true, 4);
-   partije();
+   //partije();
     //odigraj_partiju2(true, 2);
+    socket_proba(5003, 5000);
 }
 
 fn partije(){
@@ -50,6 +53,24 @@ fn partije(){
     } else {
         odigraj_partiju(true, 4);
     }
+}
+
+use crate::komunikacija::enkoder_poteza::Enkoder_poteza;
+fn socket_proba(moj_port: u32, protivnicki_port: u32){
+    let enkoder_poteza: Box<dyn Enkoder_poteza> = Box::from(Trobajtni_enkoder_poteza::new());
+    let komunikator: Socket_komunikator = Socket_komunikator::new_localhost(moj_port, protivnicki_port, enkoder_poteza);
+    let mut beli_ili_crni: String = String::new();
+    println!("Napisite 1 ako je kompjuter beli, 2 ako je kompjuter crni.");
+    std::io::stdin().read_line(&mut beli_ili_crni).expect("Greska pri citanju iz konzole.");
+    if beli_ili_crni.trim().starts_with("1"){
+        odigraj_partiju_socket(true, 4, komunikator);
+    } else {
+        odigraj_partiju_socket(false, 4, komunikator);
+    }
+}
+
+fn odigraj_partiju_socket<T>(kompjuter_je_beli: bool, dubina_pretrage: u8, komunikator: T) where T:Komunikator{
+    Tabla::pocni_partiju(komunikator, kompjuter_je_beli, dubina_pretrage)
 }
 
 

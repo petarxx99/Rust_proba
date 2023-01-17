@@ -152,6 +152,19 @@ impl Display for Potez {
     }
 }
 
+impl Potez{
+    pub fn copy(&self) -> Potez{
+        Potez{
+            start_file: self.start_file,
+            start_rank: self.start_rank,
+            rank_destinacije: self.rank_destinacije,
+            file_destinacije: self.file_destinacije,
+            promocija: self.promocija.copy()
+        }   
+    }
+}
+
+
 #[repr(C)]
 pub struct Potez_bits {
     pub broj_figure: u8,

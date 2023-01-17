@@ -294,5 +294,25 @@ mod test_legalni_potezi{
         assert_eq!(false, tabla.svi_legalni_potezi().contains(&Potez::new(A_FILE, 5, B_FILE, 4, Promocija::None).to_Potez_bits(&tabla).unwrap()));
         assert_eq!(true, tabla.svi_legalni_potezi().contains(&Potez::new(A_FILE, 5, A_FILE, 4, Promocija::None).to_Potez_bits(&tabla).unwrap()));
     }
+
+    #[test]
+    fn test(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(B_FILE, 1, C_FILE, 3)
+        .odigraj_validan_potez_bez_promocije(B_FILE, 8, C_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(A_FILE, 1, B_FILE, 1)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(A_FILE, 2, A_FILE, 1)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 8, C_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(C_FILE, 3, B_FILE, 1)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 7, D_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(B_FILE, 1, C_FILE, 3)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 8, F_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(G_FILE, 1, H_FILE, 3);
+
+
+        assert_eq!(true, tabla.svi_legalni_potezi().contains(&Potez::new(C_FILE, 8, H_FILE, 3, Promocija::None).to_Potez_bits(&tabla).unwrap()));
+        assert_eq!(45, tabla.svi_legalni_potezi().len());
+    }
 }
 
