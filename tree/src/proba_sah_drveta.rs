@@ -78,7 +78,7 @@ broj_rekursija: u8, trenutna_rekursija: u8, izracunate_table: &mut HashMap<Tabla
     let mut najbolja_opcija_za_sad: f32 = vrednost_mata(ja_sam_beli);
     for legalan_potez in legalni_potezi {
         let tabla_nakon_poteza: Tabla = self.tabla_nakon_poteza_bits(&legalan_potez);
-        let vrednost_table: Option<&f32> = izracunate_table.get(&tabla_nakon_poteza);
+        
         
         let (vrednost_poteza, najbolji_potez) = tabla_nakon_poteza.izracunaj_rekursivno(&Some(najbolja_opcija_za_sad), !ja_volim_vise, broj_rekursija, trenutna_rekursija+1, izracunate_table);
         if najbolji_potez {

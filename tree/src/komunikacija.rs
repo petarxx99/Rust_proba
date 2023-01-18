@@ -19,7 +19,7 @@ impl Konzola_sah {
         Konzola_sah{}
     }
 
-    pub fn primi_potez(&self) -> Potez {
+    pub fn preuzmi_potez(&self) -> Potez {
         let mut pocetni_rank: String = String::new();
         println!("Upisite rank polja sa kog pomerate figuru: ");
         std::io::stdin().read_line(&mut pocetni_rank).expect("Greska");
@@ -71,12 +71,13 @@ impl Komunikator for Konzola_sah {
             None => {println!("Odigrajte potez.");},
             Some(p) => {println!("Kompjuter je odigrao potez {}", p);}
         }
-        self.primi_potez()   
+        self.preuzmi_potez()
     }
 
-    fn primi_potez(&mut self) -> Potez{
-        self.primi_potez()
-    }
+	fn primi_potez(&mut self) -> Potez {
+		self.preuzmi_potez()
+	}
+	
 }
 
 

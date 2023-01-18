@@ -39,9 +39,9 @@ fn main() {
     tabla.svi_legalni_potezi(); */
    // proba();
    //odigraj_partiju(true, 4);
-   //partije();
+    partije();
     //odigraj_partiju2(true, 2);
-    socket_proba(5003, 5000);
+   // socket_proba(5003, 5000);
 }
 
 fn partije(){
