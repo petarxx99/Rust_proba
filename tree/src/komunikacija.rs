@@ -165,13 +165,7 @@ impl Socket_komunikator{
 impl Komunikator for Socket_komunikator{
     fn posalji_primi_potez(&mut self, potez: Option<Potez>) -> Potez {
         self.posalji_potez(&potez.expect("Nijedan potez nije prosledjen soket komunikatoru poteza."));
-        self.preuzmi_poruku();
-        
-        match &self.protivnikov_potez {
-            Mozda_potez::None => panic!("Poruka je primljena, ali poteza nema."),
-            Mozda_potez::Potez(_potez) => _potez.copy(),
-            /* Ne radi ako napisem &Mozda_potez.  */
-        }
+        self.primi_potez()
     }
 
     /*while self.cekam_poruku {
