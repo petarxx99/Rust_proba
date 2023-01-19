@@ -7,34 +7,41 @@ static KRALJ_NA_OTVORENOM: f32 = 3.0;
 static KRALJ_NA_SREDINI: f32 = 1.0;
 static KRALJ_NA_SREDINI_I_NEMA_ROKADE: f32 = 1.4;
 
-static KRALJ_JE_DALEKO_U_ZAVRSNICI:f32 = 2.0;
+static KRALJ_JE_DALEKO_U_ZAVRSNICI:f32 = 2.5;
 static KRALJ_JE_NA_TRECEM_RANKU_U_ZAVRSNICI: f32 = 1.0;
 
-static FIGURA_NIJE_NA_KRAJNJEM_RANKU: f32 = 0.3;
+static FIGURA_NIJE_NA_KRAJNJEM_RANKU: f32 = 0.325;
 static KONJ_NIJE_NA_IVICNOM_FAJLU: f32 = 0.125;
 static MATERIJAL_KAD_JE_PARTIJA_U_ZAVRSNICI:f32 = 20.7;
 
-static CENTRALNI_PIJUN_NA_TRECEM_RANKU: f32 = 0.125;
-static CENTRALNI_PIJUN_NA_CETVRTOM_RANKU: f32 = 0.25;
-static CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE: f32 = 0.28;
+static CENTRALNI_PIJUN_NA_TRECEM_RANKU: f32 = 0.25;
+static CENTRALNI_PIJUN_NA_CETVRTOM_RANKU: f32 = 0.5;
+static CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE: f32 = 0.5;
+static NIJEDAN_CENTRALNI_PIJUN_NIJE_POMEREN_2_POLJA: f32 = 0.25;
 
 impl Tabla {
-
-    pub fn nerekursivno_evaluiraj_poziciju(&self, nekompresirana_tabla: &Nekompresirana_tabla) -> f32 {
-        let beli_je_na_potezu: bool = self.beli_je_na_potezu(); 
-        if self.nema_legalnih_poteza(nekompresirana_tabla) {
+    /*
+    if self.nema_legalnih_poteza(nekompresirana_tabla) {
             if self.igrac_je_u_sahu(nekompresirana_tabla) {
                 return vrednost_mata(beli_je_na_potezu)
             } else {
                 return 0.0
             }
-        } 
+    } 
+         */
+
+    pub fn nerekursivno_evaluiraj_poziciju(&self, nekompresirana_tabla: &Nekompresirana_tabla) -> f32 {
+        let beli_je_na_potezu: bool = self.beli_je_na_potezu(); 
+        if self.igrac_je_u_sahu(nekompresirana_tabla){
+            if self.nema_legalnih_poteza(nekompresirana_tabla){
+                return vrednost_mata(beli_je_na_potezu);
+            }
+        }
         if self.pre_koliko_poteza_je_50_move_rule_pomeren() >= 50 {
             return 0.0
         } 
-        
+
         let (beli_materijal,crni_materijal,beli_ima_kraljicu,crni_ima_kraljicu) =  self.evaluacija_materijala(beli_je_na_potezu);
-        
         let beli_kralj: File_rank = File_rank::new_iz_broja(self.bele_figure[KRALJ]);
         let crni_kralj: File_rank = File_rank::new_iz_broja(self.crne_figure[KRALJ]);
 
@@ -55,36 +62,62 @@ impl Tabla {
         let crni_e_pijun: File_rank = File_rank::new_iz_broja(self.crne_figure[E_PIJUN]);
         let crni_d_pijun: File_rank = File_rank::new_iz_broja(self.crne_figure[D_PIJUN]);
 
-        if beli_e_pijun.rank == 3 {
-            beli_eval += CENTRALNI_PIJUN_NA_TRECEM_RANKU;
-        } else if beli_e_pijun.rank == 4 {
-            beli_eval += CENTRALNI_PIJUN_NA_CETVRTOM_RANKU;
-        } else if beli_e_pijun.rank > 4 {
-            beli_eval += CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE;
+        let mut makar_jedan_beli_centralni_pijun_je_pomeren_2_polja = false;
+        if !Tabla::figura_je_pojedena(&self.bele_figure, E_PIJUN){
+          if beli_e_pijun.rank == 3 {
+                beli_eval += CENTRALNI_PIJUN_NA_TRECEM_RANKU;
+          } else if beli_e_pijun.rank == 4 {
+                makar_jedan_beli_centralni_pijun_je_pomeren_2_polja = true;
+                beli_eval += CENTRALNI_PIJUN_NA_CETVRTOM_RANKU;
+          } else if beli_e_pijun.rank > 4 {
+                makar_jedan_beli_centralni_pijun_je_pomeren_2_polja = true;
+                beli_eval += CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE;
+            }
         }
 
-        if beli_d_pijun.rank == 3 {
-            beli_eval += CENTRALNI_PIJUN_NA_TRECEM_RANKU;
-        } else if beli_e_pijun.rank == 4 {
-            beli_eval += CENTRALNI_PIJUN_NA_CETVRTOM_RANKU;
-        } else if beli_e_pijun.rank > 4 {
-            beli_eval += CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE;
+        if !Tabla::figura_je_pojedena(&self.bele_figure, D_PIJUN){
+            if beli_d_pijun.rank == 3 {
+                beli_eval += CENTRALNI_PIJUN_NA_TRECEM_RANKU;
+            } else if beli_e_pijun.rank == 4 {
+                makar_jedan_beli_centralni_pijun_je_pomeren_2_polja = true;
+                beli_eval += CENTRALNI_PIJUN_NA_CETVRTOM_RANKU;
+             } else if beli_e_pijun.rank > 4 {
+                makar_jedan_beli_centralni_pijun_je_pomeren_2_polja = true;
+                beli_eval += CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE;
+            }
         }
 
-        if crni_e_pijun.rank == 6 {
-            crni_eval += CENTRALNI_PIJUN_NA_TRECEM_RANKU;
-        } else if crni_e_pijun.rank == 5 {
-            crni_eval += CENTRALNI_PIJUN_NA_CETVRTOM_RANKU;
-        } else if crni_e_pijun.rank < 5 {
-            crni_eval += CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE;
+        if !makar_jedan_beli_centralni_pijun_je_pomeren_2_polja {
+            beli_eval += -NIJEDAN_CENTRALNI_PIJUN_NIJE_POMEREN_2_POLJA;
         }
 
-        if crni_d_pijun.rank == 6 {
-            crni_eval += CENTRALNI_PIJUN_NA_TRECEM_RANKU;
-        } else if crni_e_pijun.rank == 5 {
-            crni_eval += CENTRALNI_PIJUN_NA_CETVRTOM_RANKU;
-        } else if crni_e_pijun.rank < 5 {
-            crni_eval += CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE;
+        let mut makar_jedan_crni_centralni_pijun_je_pomeren_2_polja = false;
+        if !Tabla::figura_je_pojedena(&self.crne_figure, E_PIJUN){
+           if crni_e_pijun.rank == 6 {
+                crni_eval += CENTRALNI_PIJUN_NA_TRECEM_RANKU;
+           } else if crni_e_pijun.rank == 5 {
+                makar_jedan_crni_centralni_pijun_je_pomeren_2_polja = true;
+                crni_eval += CENTRALNI_PIJUN_NA_CETVRTOM_RANKU;
+           } else if crni_e_pijun.rank < 5 {
+                 makar_jedan_crni_centralni_pijun_je_pomeren_2_polja = true;
+                 crni_eval += CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE;
+           }
+        }
+
+        if !Tabla::figura_je_pojedena(&self.crne_figure, D_PIJUN){
+            if crni_d_pijun.rank == 6 {
+                crni_eval += CENTRALNI_PIJUN_NA_TRECEM_RANKU;
+            } else if crni_d_pijun.rank == 5 {
+                 makar_jedan_crni_centralni_pijun_je_pomeren_2_polja = true;
+                 crni_eval += CENTRALNI_PIJUN_NA_CETVRTOM_RANKU;
+            } else if crni_d_pijun.rank < 5 {
+                 makar_jedan_crni_centralni_pijun_je_pomeren_2_polja = true;
+                 crni_eval += CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE;
+            }
+        }
+
+        if !makar_jedan_crni_centralni_pijun_je_pomeren_2_polja{
+            crni_eval += -NIJEDAN_CENTRALNI_PIJUN_NIJE_POMEREN_2_POLJA;
         }
 
         (beli_eval, crni_eval)
@@ -194,8 +227,7 @@ impl Tabla {
 
         if udaljenost_od_ivice <= 2 {
             return -KRALJ_JE_DALEKO_U_ZAVRSNICI
-        }
-        if udaljenost_od_ivice == 3 {
+        } else if udaljenost_od_ivice == 3 {
             return -KRALJ_JE_NA_TRECEM_RANKU_U_ZAVRSNICI
         }
         0.0
@@ -245,11 +277,11 @@ mod test_evaluacija_table{
 
 
     #[test]
-    pub fn test_beli_je_bolji_nakon_e4_d5_exd5(){
+    pub fn test_beli_je_bolji_nakon_e4_f5_exf5(){
         let tabla: Tabla = Tabla::pocetna_pozicija()
         .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
-        .odigraj_validan_potez_bez_promocije(D_FILE, 7, D_FILE, 5)
-        .odigraj_validan_potez_bez_promocije(E_FILE, 4, D_FILE, 5);
+        .odigraj_validan_potez_bez_promocije(F_FILE, 7, D_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 4, F_FILE, 5);
         assert_eq!(true, tabla.nerekursivno_evaluiraj_poziciju(&tabla.to_nekompresirana_tabla()) > 0.0);
         assert_eq!(true, tabla.nerekursivno_evaluiraj_poziciju(&tabla.to_nekompresirana_tabla()) < 2.0);
     }

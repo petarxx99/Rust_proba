@@ -110,8 +110,11 @@ impl Tabla {
                     let trenutno_polje_figure: File_rank = File_rank::new_iz_broja(figure[i]);
                     let polja_prirodnog_kretanja: Vec<File_rank> = (&figura.potezi_figure)(&nekompresirana_tabla, &trenutno_polje_figure, rokada, &fajl_en_passant_pijuna, beli_je_na_potezu);
 
-                    if polja_prirodnog_kretanja.len() > 0 {
-                        return false
+                    for polje in polja_prirodnog_kretanja{                  
+                        let potez_polje: Potez_polje = Potez_polje::new(trenutno_polje_figure.file, trenutno_polje_figure.rank, polje.file, polje.rank);
+                        if self.nisam_u_sahu_nakon_poteza(&potez_polje) {
+                            return false
+                        }   
                     }
                 }    
             }
@@ -270,6 +273,7 @@ mod test_legalni_potezi{
         .odigraj_validan_potez_bez_promocije(G_FILE, 8, F_FILE, 6)
         .odigraj_validan_potez_bez_promocije(H_FILE, 5, F_FILE, 7);
 
+        assert_eq!(0, tabla.svi_legalni_potezi().len());
         assert_eq!(true, tabla.nema_legalnih_poteza(&tabla.to_nekompresirana_tabla()));
     }
 
