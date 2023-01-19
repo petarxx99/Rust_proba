@@ -1,6 +1,6 @@
 use crate::proba_sah_drveta::vrednost_mata;
 
-use super::{Figura, Tabla, nekompresirana_tabla::Nekompresirana_tabla, File_rank, D_FILE, E_FILE, F_FILE, KRALJ, LEVI_KONJ, DESNI_KONJ, LEVI_LOVAC, DESNI_LOVAC, A_FILE, H_FILE, E_PIJUN, D_PIJUN};
+use super::{Figura, Tabla, nekompresirana_tabla::Nekompresirana_tabla, File_rank, D_FILE, E_FILE, F_FILE, KRALJ, LEVI_KONJ, DESNI_KONJ, LEVI_LOVAC, DESNI_LOVAC, A_FILE, H_FILE, E_PIJUN, D_PIJUN, F_PIJUN};
 
 static PREDNOST_POTEZA: f32 = 0.2;
 static KRALJ_NA_OTVORENOM: f32 = 3.0;
@@ -17,7 +17,8 @@ static MATERIJAL_KAD_JE_PARTIJA_U_ZAVRSNICI:f32 = 20.7;
 static CENTRALNI_PIJUN_NA_TRECEM_RANKU: f32 = 0.25;
 static CENTRALNI_PIJUN_NA_CETVRTOM_RANKU: f32 = 0.5;
 static CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE: f32 = 0.5;
-static NIJEDAN_CENTRALNI_PIJUN_NIJE_POMEREN_2_POLJA: f32 = 0.25;
+static NIJEDAN_CENTRALNI_PIJUN_NIJE_POMEREN_2_POLJA: f32 = 0.375;
+static POMERANJE_F_PIJUNA_PRE_ROKADE: f32 = 0.5;
 
 impl Tabla {
     /* Ovo je preciznija funkcija, jer gleda i stalemate, ali je zato i sporija.
@@ -184,12 +185,24 @@ impl Tabla {
         } else {
             eval_beli_kralj += self.evaluacija_kralja_protivnik_ima_manje_materijala(true, beli_kralj);
         }
+        if beli_kralj.file == E_FILE && !self.rokada().nijedna_rokada_ove_boje_nije_moguca(false) {
+            let f_pijun: File_rank = File_rank::new_iz_broja(self.bele_figure[F_PIJUN]);
+            if f_pijun.rank != 2 {
+                eval_beli_kralj += -POMERANJE_F_PIJUNA_PRE_ROKADE;
+            }
+        }
 
         let mut eval_crni_kralj: f32 = 0.0;
         if (beli_materijal > MATERIJAL_KAD_JE_PARTIJA_U_ZAVRSNICI) || beli_ima_kraljicu{
             eval_crni_kralj += self.evaluacija_kralja_protivnik_ima_dosta_materijala(false, crni_kralj);
         } else {
             eval_crni_kralj += self.evaluacija_kralja_protivnik_ima_manje_materijala(false, crni_kralj);
+        }
+        if crni_kralj.file == E_FILE && !self.rokada().nijedna_rokada_ove_boje_nije_moguca(false) {
+            let f_pijun: File_rank = File_rank::new_iz_broja(self.crne_figure[F_PIJUN]);
+            if f_pijun.rank != 7 {
+                eval_crni_kralj += -POMERANJE_F_PIJUNA_PRE_ROKADE;
+            }
         }
 
         (eval_beli_kralj, eval_crni_kralj)
