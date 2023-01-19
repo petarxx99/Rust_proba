@@ -20,7 +20,7 @@ static CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE: f32 = 0.5;
 static NIJEDAN_CENTRALNI_PIJUN_NIJE_POMEREN_2_POLJA: f32 = 0.25;
 
 impl Tabla {
-    /*
+    /* Ovo je preciznija funkcija, jer gleda i stalemate, ali je zato i sporija.
     if self.nema_legalnih_poteza(nekompresirana_tabla) {
             if self.igrac_je_u_sahu(nekompresirana_tabla) {
                 return vrednost_mata(beli_je_na_potezu)
