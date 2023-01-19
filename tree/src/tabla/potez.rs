@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use super::{Rokada, Promocija, Tabla, KRALJ, File_rank, DESNI_TOP, F_FILE, LEVI_TOP, D_FILE, Figura, kretanje_figura::figure::abs};
+use super::{Rokada, Promocija, Tabla, KRALJ, File_rank, DESNI_TOP, F_FILE, LEVI_TOP, D_FILE, Figura, kretanje_figura::figure::abs, A_PIJUN};
 mod provera_legalnosti;
 mod legalni_potezi;
 mod obrada_legalnih_poteza;
@@ -53,7 +53,7 @@ impl Potez_info {
     }
 
 
-    fn updejtuj_figure_nakon_odigranog_poteza(&mut self, mut bele_figure: &mut [u8; 16], mut crne_figure: &mut [u8;16], potez: &Potez_bits, beli_je_odigrao_potez: bool){
+    fn updejtuj_figure_nakon_odigranog_poteza(&mut self, mut bele_figure: &mut [u8; 16], mut crne_figure: &mut [u8;16], potez: &Potez_bits, beli_je_odigrao_potez: bool, fajl_en_passant_pijuna: Option<u8>){
         let figure_koje_su_odigrale_potez: &mut [u8;16];
         let figure_protiv_kojih_je_odigran_potez: &mut [u8;16];
 
@@ -69,19 +69,16 @@ impl Potez_info {
         self.updejtuj_figure_koje_su_odigrale_potez(figure_koje_su_odigrale_potez, potez);
         let figura_pojedena: bool = self.updejtuj_figure_protiv_kojih_je_odigran_potez(figure_protiv_kojih_je_odigran_potez, potez);
 
-        
-        if Tabla::figura_je_pijun(&figure_koje_su_odigrale_potez, potez.broj_figure as usize)
+        /* Ako se pijun pomerio ukoso, a nije stao na polje na kom se nalazi neka protivnicka figura, to je
+        jedino moguce prilikom en passant. */
+       if Tabla::figura_je_pijun(&figure_koje_su_odigrale_potez, potez.broj_figure as usize)
         && abs(start_file as i32 - potez.file as i32) == 1 
         && !figura_pojedena{
-            let en_passant_pijun: u8 = crate::file_rank_to_broj(potez.file, start_rank);
-            for i in 8..16 {
-                if Tabla::polja_se_slazu(en_passant_pijun, figure_protiv_kojih_je_odigran_potez[i]){
-                    Tabla::prati_polozaj_kralja(figure_protiv_kojih_je_odigran_potez, i);
-                    break;
-                }
+            match fajl_en_passant_pijuna {
+                None => {},   /* Pretpostavka je da fajlovi idu od 1 do 8, pijuni se nalaze od 8. do 15. mesta u nizu. */
+                Some(_file_en_passant) => {Tabla::prati_polozaj_kralja(figure_protiv_kojih_je_odigran_potez, 7 +_file_en_passant as usize);}
             }
-        }
-       
+        } 
     }
 
 /* Posebno obradjujem slucaj kad se pomera kralj, jer kralj ima istu lokaciju kao figure koje
@@ -304,7 +301,7 @@ impl Tabla {
         let mut potez_info: Potez_info = Potez_info::new();
         potez_info.beli_je_odigrao_potez = self.beli_je_na_potezu();
 
-        potez_info.updejtuj_figure_nakon_odigranog_poteza(& mut bele_figure, &mut crne_figure, potez, potez_info.beli_je_odigrao_potez);
+        potez_info.updejtuj_figure_nakon_odigranog_poteza(& mut bele_figure, &mut crne_figure, potez, potez_info.beli_je_odigrao_potez, self.fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu());
         bitfield = potez_info.updejtuj_bitfield_nakon_odigranog_poteza(bitfield);
     
         Tabla {

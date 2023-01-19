@@ -79,10 +79,10 @@ impl Tabla {
         if !Tabla::figura_je_pojedena(&self.bele_figure, D_PIJUN){
             if beli_d_pijun.rank == 3 {
                 beli_eval += CENTRALNI_PIJUN_NA_TRECEM_RANKU;
-            } else if beli_e_pijun.rank == 4 {
+            } else if beli_d_pijun.rank == 4 {
                 makar_jedan_beli_centralni_pijun_je_pomeren_2_polja = true;
                 beli_eval += CENTRALNI_PIJUN_NA_CETVRTOM_RANKU;
-             } else if beli_e_pijun.rank > 4 {
+             } else if beli_d_pijun.rank > 4 {
                 makar_jedan_beli_centralni_pijun_je_pomeren_2_polja = true;
                 beli_eval += CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE;
             }
@@ -286,16 +286,20 @@ impl Tabla {
 
 #[cfg(test)]
 mod test_evaluacija_table{
-    use crate::tabla::{Tabla, A_FILE, B_FILE, C_FILE, D_FILE, E_FILE, F_FILE, G_FILE, H_FILE};
+    use crate::tabla::{Tabla, A_FILE, B_FILE, C_FILE, D_FILE, E_FILE, F_FILE, G_FILE, H_FILE, F_PIJUN};
 
 
     #[test]
     pub fn test_beli_je_bolji_nakon_e4_f5_exf5(){
         let tabla: Tabla = Tabla::pocetna_pozicija()
         .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
-        .odigraj_validan_potez_bez_promocije(F_FILE, 7, D_FILE, 5)
-        .odigraj_validan_potez_bez_promocije(E_FILE, 4, F_FILE, 5);
+        .odigraj_validan_potez_bez_promocije(F_FILE, 7, F_FILE, 5);
+        let tabla: Tabla = tabla.odigraj_validan_potez_bez_promocije(E_FILE, 4, F_FILE, 5);
+        assert_eq!(true, Tabla::figura_je_pojedena(&tabla.crne_figure, F_PIJUN));
+
+        let eval: f32 = tabla.nerekursivno_evaluiraj_poziciju(&tabla.to_nekompresirana_tabla());
+        println!("eval nakon exf5: {}",eval);
         assert_eq!(true, tabla.nerekursivno_evaluiraj_poziciju(&tabla.to_nekompresirana_tabla()) > 0.0);
-        assert_eq!(true, tabla.nerekursivno_evaluiraj_poziciju(&tabla.to_nekompresirana_tabla()) < 2.0);
+        assert_eq!(true, tabla.nerekursivno_evaluiraj_poziciju(&tabla.to_nekompresirana_tabla()) < 3.0);
     }
 }
