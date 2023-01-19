@@ -1,6 +1,6 @@
 use komunikacija::Socket_komunikator;
 use komunikacija::enkoder_poteza::Trobajtni_enkoder_poteza;
-use tabla::{Tabla, E_FILE, D_FILE};
+use tabla::{Tabla, E_FILE, D_FILE, File_rank};
 
 use crate::tabla::H_FILE;
 use crate::komunikacija::{Komunikator, Konzola_sah};
@@ -22,6 +22,12 @@ pub fn broj_to_rank_file(mut broj: u8) -> (u8, u8){
     let file = broj - (broj_sa_8 << 3) + 1;
     (rank, file)
 }
+
+pub fn broj_to_file_rank(broj: u8) -> File_rank{
+    let (rank,file) = broj_to_rank_file(broj);
+    File_rank{file,rank}
+}
+
 fn min_max_broj(broj1: u8, broj2: u8) -> (u8, u8) {
     if broj1 < broj2 {
         (broj1, broj2)
