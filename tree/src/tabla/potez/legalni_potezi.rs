@@ -110,11 +110,8 @@ impl Tabla {
                     let trenutno_polje_figure: File_rank = File_rank::new_iz_broja(figure[i]);
                     let polja_prirodnog_kretanja: Vec<File_rank> = (&figura.potezi_figure)(&nekompresirana_tabla, &trenutno_polje_figure, rokada, &fajl_en_passant_pijuna, beli_je_na_potezu);
 
-                    for polje in polja_prirodnog_kretanja{                  
-                        let potez_polje: Potez_polje = Potez_polje::new(trenutno_polje_figure.file, trenutno_polje_figure.rank, polje.file, polje.rank);
-                        if self.nisam_u_sahu_nakon_poteza(&potez_polje) {
-                            return false                           
-                        }   
+                    if polja_prirodnog_kretanja.len() > 0 {
+                        return false
                     }
                 }    
             }

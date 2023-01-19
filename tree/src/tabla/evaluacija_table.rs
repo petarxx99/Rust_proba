@@ -1,6 +1,6 @@
 use crate::proba_sah_drveta::vrednost_mata;
 
-use super::{Figura, Tabla, nekompresirana_tabla::Nekompresirana_tabla, File_rank, D_FILE, E_FILE, F_FILE, KRALJ, LEVI_KONJ, DESNI_KONJ, DESNI_LOVAC, A_FILE, H_FILE};
+use super::{Figura, Tabla, nekompresirana_tabla::Nekompresirana_tabla, File_rank, D_FILE, E_FILE, F_FILE, KRALJ, LEVI_KONJ, DESNI_KONJ, LEVI_LOVAC, DESNI_LOVAC, A_FILE, H_FILE, E_PIJUN, D_PIJUN};
 
 static PREDNOST_POTEZA: f32 = 0.2;
 static KRALJ_NA_OTVORENOM: f32 = 3.0;
@@ -14,13 +14,14 @@ static FIGURA_NIJE_NA_KRAJNJEM_RANKU: f32 = 0.3;
 static KONJ_NIJE_NA_IVICNOM_FAJLU: f32 = 0.125;
 static MATERIJAL_KAD_JE_PARTIJA_U_ZAVRSNICI:f32 = 20.7;
 
+static CENTRALNI_PIJUN_NA_TRECEM_RANKU: f32 = 0.125;
+static CENTRALNI_PIJUN_NA_CETVRTOM_RANKU: f32 = 0.25;
+static CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE: f32 = 0.28;
 
 impl Tabla {
 
     pub fn nerekursivno_evaluiraj_poziciju(&self, nekompresirana_tabla: &Nekompresirana_tabla) -> f32 {
-        let beli_je_na_potezu: bool = self.beli_je_na_potezu();
-
-        /* 
+        let beli_je_na_potezu: bool = self.beli_je_na_potezu(); 
         if self.nema_legalnih_poteza(nekompresirana_tabla) {
             if self.igrac_je_u_sahu(nekompresirana_tabla) {
                 return vrednost_mata(beli_je_na_potezu)
@@ -30,25 +31,70 @@ impl Tabla {
         } 
         if self.pre_koliko_poteza_je_50_move_rule_pomeren() >= 50 {
             return 0.0
-        } */
+        } 
+        
         let (beli_materijal,crni_materijal,beli_ima_kraljicu,crni_ima_kraljicu) =  self.evaluacija_materijala(beli_je_na_potezu);
         
         let beli_kralj: File_rank = File_rank::new_iz_broja(self.bele_figure[KRALJ]);
         let crni_kralj: File_rank = File_rank::new_iz_broja(self.crne_figure[KRALJ]);
 
         let (beli_kralj_eval, crni_kralj_eval) = self.eval_pozicija_kralja(beli_materijal, crni_materijal, &beli_kralj, &crni_kralj, beli_ima_kraljicu, crni_ima_kraljicu);
-        let (eval_belih_figura, eval_crnih_figura) = self.eval_pozicije_figura();
-        
-        let beli_eval: f32 = beli_materijal + beli_kralj_eval + eval_belih_figura;
-        let crni_eval: f32 = crni_materijal + crni_kralj_eval + eval_crnih_figura;
+        let (eval_belih_figura, eval_crnih_figura) = self.eval_pozicije_figura_podrazumeva_lovci_dolaze_pre_konja_i_konji_lovci_su_jedni_pored_drugih();
+        let (eval_belih_pijuna, eval_crnih_pijuna) = self.eval_pijuna();
+
+        let beli_eval: f32 = beli_materijal + beli_kralj_eval + eval_belih_figura + eval_belih_pijuna;
+        let crni_eval: f32 = crni_materijal + crni_kralj_eval + eval_crnih_figura + eval_crnih_pijuna;
         beli_eval - crni_eval
     }
 
-    
+    fn eval_pijuna(&self) -> (f32, f32){
+        let mut beli_eval: f32 = 0.0;
+        let mut crni_eval: f32 = 0.0;
+        let beli_e_pijun: File_rank = File_rank::new_iz_broja(self.bele_figure[E_PIJUN]);
+        let beli_d_pijun: File_rank = File_rank::new_iz_broja(self.bele_figure[D_PIJUN]);
+        let crni_e_pijun: File_rank = File_rank::new_iz_broja(self.crne_figure[E_PIJUN]);
+        let crni_d_pijun: File_rank = File_rank::new_iz_broja(self.crne_figure[D_PIJUN]);
 
-    fn eval_pozicije_figura(&self) -> (f32, f32) {
-        let mut i: usize = LEVI_KONJ;
-        let granica: usize = DESNI_LOVAC;
+        if beli_e_pijun.rank == 3 {
+            beli_eval += CENTRALNI_PIJUN_NA_TRECEM_RANKU;
+        } else if beli_e_pijun.rank == 4 {
+            beli_eval += CENTRALNI_PIJUN_NA_CETVRTOM_RANKU;
+        } else if beli_e_pijun.rank > 4 {
+            beli_eval += CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE;
+        }
+
+        if beli_d_pijun.rank == 3 {
+            beli_eval += CENTRALNI_PIJUN_NA_TRECEM_RANKU;
+        } else if beli_e_pijun.rank == 4 {
+            beli_eval += CENTRALNI_PIJUN_NA_CETVRTOM_RANKU;
+        } else if beli_e_pijun.rank > 4 {
+            beli_eval += CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE;
+        }
+
+        if crni_e_pijun.rank == 6 {
+            crni_eval += CENTRALNI_PIJUN_NA_TRECEM_RANKU;
+        } else if crni_e_pijun.rank == 5 {
+            crni_eval += CENTRALNI_PIJUN_NA_CETVRTOM_RANKU;
+        } else if crni_e_pijun.rank < 5 {
+            crni_eval += CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE;
+        }
+
+        if crni_d_pijun.rank == 6 {
+            crni_eval += CENTRALNI_PIJUN_NA_TRECEM_RANKU;
+        } else if crni_e_pijun.rank == 5 {
+            crni_eval += CENTRALNI_PIJUN_NA_CETVRTOM_RANKU;
+        } else if crni_e_pijun.rank < 5 {
+            crni_eval += CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE;
+        }
+
+        (beli_eval, crni_eval)
+    }
+
+   
+
+    fn eval_pozicije_figura_podrazumeva_lovci_dolaze_pre_konja_i_konji_lovci_su_jedni_pored_drugih(&self) -> (f32, f32) {
+        let mut i: usize = LEVI_LOVAC;
+        let granica: usize = DESNI_KONJ;
         let mut bela_evaluacija: f32 = 0.0;
         let mut crna_evaluacija: f32 = 0.0;
 

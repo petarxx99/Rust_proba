@@ -20,6 +20,14 @@ pub static LEVI_LOVAC: usize = 4;
 pub static DESNI_LOVAC: usize = 5;
 pub static LEVI_KONJ: usize = 6;
 pub static DESNI_KONJ: usize = 7;
+pub static A_PIJUN: usize = 8;
+pub static B_PIJUN: usize = 9;
+pub static C_PIJUN: usize = 10;
+pub static D_PIJUN: usize = 11;
+pub static E_PIJUN: usize = 12;
+pub static F_PIJUN: usize = 13;
+pub static G_PIJUN: usize = 14;
+pub static H_PIJUN: usize = 15;
 
 pub static PROMOVISANA_KRALJICA: u8 = 1;
 pub static PROMOVISAN_TOP: u8 = 2;
@@ -699,6 +707,8 @@ impl Tabla {
     pub fn povecaj_fifty_move_rule_za_1(&mut self) {
         self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu = Tabla::povecaj_50_move_rule_brojac_za_1_unsafe(self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu);
     }
+
+    
 
 }
 
