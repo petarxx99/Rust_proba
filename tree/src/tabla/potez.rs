@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use super::{Rokada, Promocija, Tabla, KRALJ, File_rank, DESNI_TOP, F_FILE, LEVI_TOP, D_FILE, Figura};
+use super::{Rokada, Promocija, Tabla, KRALJ, File_rank, DESNI_TOP, F_FILE, LEVI_TOP, D_FILE, Figura, kretanje_figura::figure::abs};
 mod provera_legalnosti;
 mod legalni_potezi;
 mod obrada_legalnih_poteza;
@@ -53,15 +53,35 @@ impl Potez_info {
     }
 
 
-    fn updejtuj_figure_nakon_odigranog_poteza(&mut self, bele_figure: &mut [u8; 16], crne_figure: &mut [u8;16], potez: &Potez_bits, beli_je_odigrao_potez: bool){
-        
+    fn updejtuj_figure_nakon_odigranog_poteza(&mut self, mut bele_figure: &mut [u8; 16], mut crne_figure: &mut [u8;16], potez: &Potez_bits, beli_je_odigrao_potez: bool){
+        let figure_koje_su_odigrale_potez: &mut [u8;16];
+        let figure_protiv_kojih_je_odigran_potez: &mut [u8;16];
+
         if beli_je_odigrao_potez {
-            self.updejtuj_figure_koje_su_odigrale_potez(bele_figure, potez);
-            self.updejtuj_figure_protiv_kojih_je_odigran_potez(crne_figure, potez);
+            figure_koje_su_odigrale_potez = &mut bele_figure;
+            figure_protiv_kojih_je_odigran_potez = &mut crne_figure;
         } else {
-            self.updejtuj_figure_koje_su_odigrale_potez(crne_figure, potez);
-            self.updejtuj_figure_protiv_kojih_je_odigran_potez(bele_figure, potez);
+            figure_koje_su_odigrale_potez = &mut crne_figure;
+            figure_protiv_kojih_je_odigran_potez = &mut bele_figure;
         }
+        /* Ova linija mora da ide pre updejta, jer zelim poziciju figure pre nego sto se pomerila. */
+        let (start_rank, start_file) = crate::broj_to_rank_file(figure_koje_su_odigrale_potez[potez.broj_figure as usize]);
+        self.updejtuj_figure_koje_su_odigrale_potez(figure_koje_su_odigrale_potez, potez);
+        let figura_pojedena: bool = self.updejtuj_figure_protiv_kojih_je_odigran_potez(figure_protiv_kojih_je_odigran_potez, potez);
+
+        
+        if Tabla::figura_je_pijun(&figure_koje_su_odigrale_potez, potez.broj_figure as usize)
+        && abs(start_file as i32 - potez.file as i32) == 1 
+        && !figura_pojedena{
+            let en_passant_pijun: u8 = crate::file_rank_to_broj(potez.file, start_rank);
+            for i in 8..16 {
+                if Tabla::polja_se_slazu(en_passant_pijun, figure_protiv_kojih_je_odigran_potez[i]){
+                    Tabla::prati_polozaj_kralja(figure_protiv_kojih_je_odigran_potez, i);
+                    break;
+                }
+            }
+        }
+       
     }
 
 /* Posebno obradjujem slucaj kad se pomera kralj, jer kralj ima istu lokaciju kao figure koje
@@ -90,15 +110,18 @@ su sklonjene sa table. */
     /*https://rust-lang.github.io/rfcs/2005-match-ergonomics.html
     https://stackoverflow.com/questions/36590549/what-is-the-syntax-to-match-on-a-reference-to-an-enum */
 
-    fn updejtuj_figure_protiv_kojih_je_odigran_potez(&mut self, figure: &mut[u8;16], potez: &Potez_bits){
+    fn updejtuj_figure_protiv_kojih_je_odigran_potez(&mut self, figure: &mut[u8;16], potez: &Potez_bits) -> bool{
         let polje_destinacije: u8 = crate::file_rank_to_broj(potez.file, potez.rank);
-        for i in 0..figure.len() {
+        
+        for i in 0..16 {
             if Tabla::polja_se_slazu(polje_destinacije, figure[i]){
                 self.pijun_pomeren_ili_figura_pojedena = true;
                 Tabla::prati_polozaj_kralja(figure, i);
-                return;
-            }
+                return true;
+            } 
         }
+
+        false
     }
 
     fn zapisi_info_za_rokadu(&mut self, potez: &Potez_bits){
@@ -432,7 +455,7 @@ impl Tabla {
 
 #[cfg(test)]
 mod potez_tests{
-    use crate::tabla::{Tabla, E_FILE, B_FILE, C_FILE, F_FILE, LEVI_KONJ, DESNI_LOVAC, Promocija, G_FILE, DESNI_TOP, File_rank, A_FILE, D_FILE, H_FILE, DESNI_KONJ, LEVI_TOP};
+    use crate::tabla::{Tabla, E_FILE, B_FILE, C_FILE, F_FILE, LEVI_KONJ, DESNI_LOVAC, Promocija, G_FILE, DESNI_TOP, File_rank, A_FILE, D_FILE, H_FILE, DESNI_KONJ, LEVI_TOP, F_PIJUN};
 
     use super::{Potez, Potez_bits, Potez_info};
     use crate::tabla::{Figura};
@@ -689,5 +712,17 @@ mod potez_tests{
          .odigraj_validan_potez_bez_promocije(D_FILE, 4, D_FILE, 5)
          .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5);
          assert_eq!(E_FILE, tabla.fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu().unwrap());
+    }
+
+    #[test]
+    fn testiraj_f_pijun_je_pojeden_nakon_en_passant(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(A_FILE, 7, A_FILE, 7)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 4, E_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 7, F_FILE, 5);
+        let tabla: Tabla = tabla.odigraj_validan_potez_bez_promocije(E_FILE, 5, F_FILE, 6);
+        
+        assert_eq!(true, Tabla::figura_je_pojedena(&tabla.crne_figure, F_PIJUN));
     }
 }
