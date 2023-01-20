@@ -17,7 +17,7 @@ static MATERIJAL_KAD_JE_PARTIJA_U_ZAVRSNICI:f32 = 20.7;
 static CENTRALNI_PIJUN_NA_TRECEM_RANKU: f32 = 0.25;
 static CENTRALNI_PIJUN_NA_CETVRTOM_RANKU: f32 = 0.5;
 static CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE: f32 = 0.75;
-static NIJEDAN_CENTRALNI_PIJUN_NIJE_POMEREN_2_POLJA: f32 = 0.375;
+static NIJEDAN_CENTRALNI_PIJUN_NIJE_POMEREN_2_POLJA: f32 = 0.5;
 static POMERANJE_F_PIJUNA_PRE_ROKADE: f32 = 0.5;
 
 
@@ -57,83 +57,58 @@ impl Tabla {
     }
 
     fn eval_pijuna(&self) -> (f32, f32){
-        let mut beli_eval: f32 = 0.0;
-        let mut crni_eval: f32 = 0.0;
-        let beli_e_pijun: File_rank = File_rank::new_iz_broja(self.bele_figure[E_PIJUN]);
-        let beli_d_pijun: File_rank = File_rank::new_iz_broja(self.bele_figure[D_PIJUN]);
-        let crni_e_pijun: File_rank = File_rank::new_iz_broja(self.crne_figure[E_PIJUN]);
-        let crni_d_pijun: File_rank = File_rank::new_iz_broja(self.crne_figure[D_PIJUN]);
-
-        let mut makar_jedan_beli_centralni_pijun_je_pomeren_2_polja = false;
-        if !Tabla::figura_je_pojedena(&self.bele_figure, E_PIJUN){
-          if beli_e_pijun.rank == 3 {
-                beli_eval += CENTRALNI_PIJUN_NA_TRECEM_RANKU;
-          } else if beli_e_pijun.rank == 4 {
-                makar_jedan_beli_centralni_pijun_je_pomeren_2_polja = true;
-                beli_eval += CENTRALNI_PIJUN_NA_CETVRTOM_RANKU;
-          } else if beli_e_pijun.rank > 4 {
-                makar_jedan_beli_centralni_pijun_je_pomeren_2_polja = true;
-                beli_eval += CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE;
-            }
-        }
-
-        if !Tabla::figura_je_pojedena(&self.bele_figure, D_PIJUN){
-            if beli_d_pijun.rank == 3 {
-                beli_eval += CENTRALNI_PIJUN_NA_TRECEM_RANKU;
-            } else if beli_d_pijun.rank == 4 {
-                makar_jedan_beli_centralni_pijun_je_pomeren_2_polja = true;
-                beli_eval += CENTRALNI_PIJUN_NA_CETVRTOM_RANKU;
-             } else if beli_d_pijun.rank > 4 {
-                makar_jedan_beli_centralni_pijun_je_pomeren_2_polja = true;
-                beli_eval += CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE;
-            }
-        }
-
-        if !makar_jedan_beli_centralni_pijun_je_pomeren_2_polja {
-            beli_eval += -NIJEDAN_CENTRALNI_PIJUN_NIJE_POMEREN_2_POLJA;
-        }
-
-        let mut makar_jedan_crni_centralni_pijun_je_pomeren_2_polja = false;
-        if !Tabla::figura_je_pojedena(&self.crne_figure, E_PIJUN){
-           if crni_e_pijun.rank == 6 {
-                crni_eval += CENTRALNI_PIJUN_NA_TRECEM_RANKU;
-           } else if crni_e_pijun.rank == 5 {
-                makar_jedan_crni_centralni_pijun_je_pomeren_2_polja = true;
-                crni_eval += CENTRALNI_PIJUN_NA_CETVRTOM_RANKU;
-           } else if crni_e_pijun.rank < 5 {
-                 makar_jedan_crni_centralni_pijun_je_pomeren_2_polja = true;
-                 crni_eval += CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE;
-           }
-        }
-
-        if !Tabla::figura_je_pojedena(&self.crne_figure, D_PIJUN){
-            if crni_d_pijun.rank == 6 {
-                crni_eval += CENTRALNI_PIJUN_NA_TRECEM_RANKU;
-            } else if crni_d_pijun.rank == 5 {
-                 makar_jedan_crni_centralni_pijun_je_pomeren_2_polja = true;
-                 crni_eval += CENTRALNI_PIJUN_NA_CETVRTOM_RANKU;
-            } else if crni_d_pijun.rank < 5 {
-                 makar_jedan_crni_centralni_pijun_je_pomeren_2_polja = true;
-                 crni_eval += CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE;
-            }
-        }
-
-        if !makar_jedan_crni_centralni_pijun_je_pomeren_2_polja{
-            crni_eval += -NIJEDAN_CENTRALNI_PIJUN_NIJE_POMEREN_2_POLJA;
-        }
-
+        let beli_eval: f32 = self.eval_centralnih_pijuna(&self.bele_figure, true);
+        let crni_eval: f32 = self.eval_centralnih_pijuna(&self.crne_figure, false);
+        
         (beli_eval, crni_eval)
     }
 
-   
+    fn centralni_pijun_dva_polja(&self, pijun: &File_rank, pijun_je_beli: bool, evaluacija: &mut f32) -> bool {
+        let (treci_rank, cetvrti_rank, pijun_je_preko_pola): (u8,u8,bool);
+        if pijun_je_beli {
+            treci_rank = 3;
+            cetvrti_rank = 4;
+            pijun_je_preko_pola = pijun.rank > 4;
+        } else {
+            treci_rank = 6;
+            cetvrti_rank = 5;
+            pijun_je_preko_pola = pijun.rank < 5;
+        }
+
+        if pijun.rank == treci_rank {
+            *evaluacija += CENTRALNI_PIJUN_NA_TRECEM_RANKU;
+            return false
+        } else if pijun.rank == cetvrti_rank{
+            *evaluacija += CENTRALNI_PIJUN_NA_CETVRTOM_RANKU;
+            return true
+        } else if pijun_je_preko_pola {
+            *evaluacija+= CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE;
+            return true
+        } else {
+            false
+        }
+    }
+
+   fn eval_centralnih_pijuna(&self, figure: &[u8;16], bele_figure: bool) -> f32 {
+    let e_pijun: File_rank = File_rank::new_iz_broja(figure[E_PIJUN]);
+    let d_pijun: File_rank = File_rank::new_iz_broja(figure[D_PIJUN]);
+
+    let mut eval: f32 = 0.0;
+    let e_pijun_2_polja_pomeren: bool = self.centralni_pijun_dva_polja(&e_pijun, bele_figure, & mut eval);
+    let d_pijun_2_polja_pomeren: bool = self.centralni_pijun_dva_polja(&d_pijun, bele_figure, &mut eval);
+    
+    if !e_pijun_2_polja_pomeren && !d_pijun_2_polja_pomeren {
+        eval += -NIJEDAN_CENTRALNI_PIJUN_NIJE_POMEREN_2_POLJA;
+    }
+    eval
+   }
 
     fn eval_pozicije_figura_podrazumeva_figure_se_nalaze_izmedju_levog_i_desnog_konja(&self) -> (f32, f32) {
-        let mut i: usize = LEVI_KONJ;
-        let granica: usize = DESNI_KONJ;
         let mut bela_evaluacija: f32 = 0.0;
         let mut crna_evaluacija: f32 = 0.0;
 
-        while i<= granica {
+        let mut i: usize = LEVI_KONJ;
+        while i<= DESNI_KONJ {
             if !Tabla::figura_je_pojedena(&self.bele_figure, i){
                 let (rank, _) = crate::broj_to_rank_file(self.bele_figure[i]);
                 if rank != 1 && rank != 8 {
@@ -156,6 +131,7 @@ impl Tabla {
         (bela_evaluacija + beli_konj,  crna_evaluacija + crni_konj)
         
     }
+
 
     fn eval_konj_nije_na_ivici(&self, figure: &[u8;16]) -> f32 {
         let mut eval:f32 = 0.0;

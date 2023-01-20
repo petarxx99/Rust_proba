@@ -69,6 +69,23 @@ impl Promocija {
             Self::None => Self::None
         }
     }
+
+    pub fn iz_stringa(string: &str) -> Promocija {
+        let string: &str = string.trim();
+        if string.starts_with("KRALJICA"){
+            return Promocija::KRALJICA
+        }
+        if string.starts_with("TOP"){
+            return Promocija::TOP
+        }
+        if string.starts_with("LOVAC"){
+            return Promocija::LOVAC
+        }
+        if string.starts_with("KONJ"){
+            return Promocija::KONJ
+        }
+        Promocija::None
+    }
 }
 
 #[derive(PartialEq)]

@@ -728,4 +728,19 @@ mod potez_tests{
     }
 
    
+    #[test]
+    fn testiraj_d4_d5_e4_c6_exd5_a5_dxc6_ima_30_legalnih_poteza_kraljica_ne_moze_da_jede_kraljicu(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(D_FILE, 2, D_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 7, D_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(C_FILE, 7, C_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 4, D_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(A_FILE, 7, A_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 5, C_FILE, 6);
+
+        let potezi: Vec<Potez_bits> = tabla.svi_legalni_potezi();
+        assert_eq!(30, potezi.len());
+        assert_eq!(false, potezi.contains(&Potez::new(D_FILE, 8, D_FILE, 1, Promocija::None).to_Potez_bits(&tabla).unwrap()));
+    }
 }

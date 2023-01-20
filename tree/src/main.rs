@@ -1,7 +1,9 @@
 use komunikacija::Socket_komunikator;
 use komunikacija::enkoder_poteza::Trobajtni_enkoder_poteza;
+use permanencija::Zapisivac_partije;
 use tabla::{Tabla, E_FILE, D_FILE, File_rank};
 
+use crate::permanencija::Zapisivac_partije_u_fajl;
 use crate::tabla::H_FILE;
 use crate::komunikacija::{Komunikator, Konzola_sah};
 
@@ -9,6 +11,7 @@ mod drvo_eval;
 mod tabla;
 mod proba_sah_drveta;
 mod komunikacija;
+mod permanencija;
 
 pub fn file_rank_to_broj(file: u8, rank: u8) -> u8 {
     ((rank-1) << 3) + file-1
@@ -48,6 +51,7 @@ fn main() {
     //partije();
     //odigraj_partiju2(true, 2);
     socket_proba(5003, 5000);
+   
 }
 
 fn partije(){
@@ -65,18 +69,21 @@ use crate::komunikacija::enkoder_poteza::Enkoder_poteza;
 fn socket_proba(moj_port: u32, protivnicki_port: u32){
     let enkoder_poteza: Box<dyn Enkoder_poteza> = Box::from(Trobajtni_enkoder_poteza::new());
     let komunikator: Socket_komunikator = Socket_komunikator::new_localhost(moj_port, protivnicki_port, enkoder_poteza);
+    let zapisivac: Zapisivac_partije_u_fajl = Zapisivac_partije_u_fajl::new("log_partije.txt".to_owned());
+
     let mut beli_ili_crni: String = String::new();
     println!("Napisite 1 ako je kompjuter beli, 2 ako je kompjuter crni.");
     std::io::stdin().read_line(&mut beli_ili_crni).expect("Greska pri citanju iz konzole.");
     if beli_ili_crni.trim().starts_with("1"){
-        odigraj_partiju_socket(true, 4, komunikator);
+        odigraj_partiju_socket(true, 4, komunikator, zapisivac);
     } else {
-        odigraj_partiju_socket(false, 4, komunikator);
+        odigraj_partiju_socket(false, 4, komunikator, zapisivac);
     }
 }
 
-fn odigraj_partiju_socket<T>(kompjuter_je_beli: bool, dubina_pretrage: u8, komunikator: T) where T:Komunikator{
-    Tabla::pocni_partiju(komunikator, kompjuter_je_beli, dubina_pretrage)
+fn odigraj_partiju_socket<T,V>(kompjuter_je_beli: bool, dubina_pretrage: u8, komunikator: T, zapisivac: V) 
+where T:Komunikator, V:Zapisivac_partije{
+    Tabla::pocni_partiju(komunikator, kompjuter_je_beli, dubina_pretrage, zapisivac)
 }
 
 
@@ -93,7 +100,7 @@ fn proba(){
 
 
 fn odigraj_partiju(kompjuter_je_beli: bool, dubina_pretrage: u8){
-    Tabla::pocni_partiju(Konzola_sah::new(), kompjuter_je_beli, dubina_pretrage)
+    Tabla::pocni_partiju(Konzola_sah::new(), kompjuter_je_beli, dubina_pretrage, Zapisivac_partije_u_fajl::new("log_partije.txt".to_owned()));
 }
 
 fn odigraj_partiju2(kompjuter_je_beli: bool, dubina_pretrage: u8) {
