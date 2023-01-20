@@ -69,16 +69,20 @@ impl Potez_info {
         self.updejtuj_figure_koje_su_odigrale_potez(figure_koje_su_odigrale_potez, potez);
         let figura_pojedena: bool = self.updejtuj_figure_protiv_kojih_je_odigran_potez(figure_protiv_kojih_je_odigran_potez, potez);
 
-        /* Ako se pijun pomerio ukoso, a nije stao na polje na kom se nalazi neka protivnicka figura, to je
-        jedino moguce prilikom en passant. */
-       if Tabla::figura_je_pijun(&figure_koje_su_odigrale_potez, potez.broj_figure as usize)
-        && abs(start_file as i32 - potez.file as i32) == 1 
-        && !figura_pojedena{
-            match fajl_en_passant_pijuna {
-                None => {},   /* Pretpostavka je da fajlovi idu od 1 do 8, pijuni se nalaze od 8. do 15. mesta u nizu. */
-                Some(_file_en_passant) => {Tabla::prati_polozaj_kralja(figure_protiv_kojih_je_odigran_potez, 7 +_file_en_passant as usize);}
+        /* Ako se pijun pomerio ukoso, a nije stao na polje na kom se nalazi neka protivnicka figura,
+        to je jedino moguce prilikom en passant. */
+       let potez_je_en_passant: bool = abs(start_file as i32 - potez.file as i32) == 1 
+       && !figura_pojedena
+       && Tabla::figura_je_pijun(&figure_koje_su_odigrale_potez, potez.broj_figure as usize);
+       if potez_je_en_passant {
+        match fajl_en_passant_pijuna{
+            None => {}, /* Pretpostavka je da fajlovi idu od 1 do 8, pijuni se nalaze od 8. do 15. mesta u nizu. */
+            Some(_file_en_passant_pojedenog_pijuna) => {
+                Tabla::prati_polozaj_kralja(figure_protiv_kojih_je_odigran_potez, 7 + _file_en_passant_pojedenog_pijuna as usize);
             }
-        } 
+        }
+       }
+       
     }
 
 /* Posebno obradjujem slucaj kad se pomera kralj, jer kralj ima istu lokaciju kao figure koje
@@ -723,16 +727,5 @@ mod potez_tests{
         assert_eq!(true, Tabla::figura_je_pojedena(&tabla.crne_figure, F_PIJUN));
     }
 
-    #[test]
-    fn posle_e4_e5_Qh5_Nf6_Qxe5_je_legalan_potez(){
-        let tabla: Tabla = Tabla::pocetna_pozicija()
-        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
-        .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)
-        .odigraj_validan_potez_bez_promocije(D_FILE, 1, H_FILE, 5)
-        .odigraj_validan_potez_bez_promocije(G_FILE, 8, F_FILE, 6);
-        let legalni_potezi: Vec<Potez_bits> = tabla.svi_legalni_potezi();
-        assert_eq!(true, legalni_potezi.contains(&Potez::new(H_FILE, 5, E_FILE, 5, Promocija::None).to_Potez_bits(&tabla).unwrap()));
-
-        
-    }
+   
 }

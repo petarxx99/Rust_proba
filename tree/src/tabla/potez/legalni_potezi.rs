@@ -315,5 +315,20 @@ mod test_legalni_potezi{
         assert_eq!(true, tabla.svi_legalni_potezi().contains(&Potez::new(C_FILE, 8, H_FILE, 3, Promocija::None).to_Potez_bits(&tabla).unwrap()));
         assert_eq!(45, tabla.svi_legalni_potezi().len());
     }
+
+    #[test]
+    fn posle_e4_e5_Qh5_Nf6_Qxe5_je_legalan_potez(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 1, H_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(G_FILE, 8, F_FILE, 6);
+        let legalni_potezi: Vec<Potez_bits> = tabla.svi_legalni_potezi();
+        assert_eq!(true, legalni_potezi.contains(&Potez::new(H_FILE, 5, E_FILE, 5, Promocija::None).to_Potez_bits(&tabla).unwrap()));
+
+        let tabla: Tabla = tabla
+        .odigraj_validan_potez_bez_promocije(H_FILE, 5, E_FILE, 5);
+        assert_eq!(2, tabla.svi_legalni_potezi().len());
+    }
 }
 

@@ -20,6 +20,7 @@ static CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE: f32 = 0.75;
 static NIJEDAN_CENTRALNI_PIJUN_NIJE_POMEREN_2_POLJA: f32 = 0.375;
 static POMERANJE_F_PIJUNA_PRE_ROKADE: f32 = 0.5;
 
+
 impl Tabla {
     /* Ovo je preciznija funkcija, jer gleda i stalemate, ali je zato i sporija.
     if self.nema_legalnih_poteza(nekompresirana_tabla) {
