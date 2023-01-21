@@ -456,7 +456,7 @@ impl Tabla {
 
 #[cfg(test)]
 mod potez_tests{
-    use crate::tabla::{Tabla, E_FILE, B_FILE, C_FILE, F_FILE, LEVI_KONJ, DESNI_LOVAC, Promocija, G_FILE, DESNI_TOP, File_rank, A_FILE, D_FILE, H_FILE, DESNI_KONJ, LEVI_TOP, F_PIJUN};
+    use crate::tabla::{Tabla, E_FILE, B_FILE, C_FILE, F_FILE, LEVI_KONJ, DESNI_LOVAC, Promocija, G_FILE, DESNI_TOP, File_rank, A_FILE, D_FILE, H_FILE, DESNI_KONJ, LEVI_TOP, F_PIJUN, LEVI_LOVAC};
 
     use super::{Potez, Potez_bits, Potez_info};
     use crate::tabla::{Figura};
@@ -742,5 +742,25 @@ mod potez_tests{
         let potezi: Vec<Potez_bits> = tabla.svi_legalni_potezi();
         assert_eq!(30, potezi.len());
         assert_eq!(false, potezi.contains(&Potez::new(D_FILE, 8, D_FILE, 1, Promocija::None).to_Potez_bits(&tabla).unwrap()));
+    }
+
+    #[test]
+    fn posle_Nc3_d5_e4_d4_Na4_e5_Nf3_Bd6_c3_potez_Bd7_je_legalan(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(B_FILE, 1, C_FILE, 3)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 7, D_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 5, D_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(C_FILE, 3, A_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(G_FILE, 1, F_FILE, 3)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 8, D_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(C_FILE, 2, C_FILE, 3);
+
+        assert_eq!(true, Tabla::to_je_file_rank_polja(tabla.crne_figure[LEVI_LOVAC], 3, 8));
+        let potezi: Vec<Potez_bits> = tabla.svi_legalni_potezi();
+        assert_eq!(true, potezi.contains(&Potez_bits{broj_figure: LEVI_LOVAC as u8, file: 4, rank: 7, promocija: Promocija::None}));
+        assert_eq!(true, potezi.contains(&Potez::new(C_FILE, 8, D_FILE, 7, Promocija::None).to_Potez_bits(&tabla).unwrap()));
+        assert_eq!(potezi.len(), 38);
     }
 }

@@ -29,7 +29,7 @@ impl Tabla{
         let legalni_potezi: Vec<Potez_bits> = self.svi_legalni_potezi();
         for potez in legalni_potezi {
             let tabla: Tabla = self.tabla_nakon_poteza_bits(&potez);
-            let (vrednost_poteza, _) = tabla.izracunaj_rekursivno(&None, protivnik_je_beli, dubina, 1, &mut HashMap::new())/* .unwrap() */ ;
+            let (vrednost_poteza, _) = tabla.izracunaj_rekursivno(&None, protivnik_je_beli, dubina, 1, self.materijalna_prednost_onog_ko_je_na_potezu(), vrednost_mata(self.beli_je_na_potezu())) ;
             if ovo_je_najbolji_potez(najbolja_evaluacija, vrednost_poteza, ja_sam_beli){
                 najbolji_potez = Some(potez);
                 najbolja_evaluacija = vrednost_poteza;
@@ -41,15 +41,11 @@ impl Tabla{
     }
 
 pub fn izracunaj_rekursivno(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ja_volim_vise:  bool,
-broj_rekursija: u8, trenutna_rekursija: u8, izracunate_table: &mut HashMap<Tabla, f32>) -> (f32, bool){
+broj_rekursija: u8, trenutna_rekursija: u8, materijal_proslog_poteza: f32, materijal_pretproslog_poteza: f32) -> (f32, bool){
    
     if trenutna_rekursija >= broj_rekursija {
         let sopstvena_evaluacija: f32 = self.nerekursivno_evaluiraj_poziciju(&self.to_nekompresirana_tabla());
-        if protivnik_se_zajebo(vrednost_koju_protivnik_ima_u_dzepu, sopstvena_evaluacija, ja_volim_vise){
-            return (sopstvena_evaluacija, false)
-        } else {
-            return (sopstvena_evaluacija, true)
-        }
+        return vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, sopstvena_evaluacija, ja_volim_vise)
     }
 
     let ja_sam_beli: bool = self.beli_je_na_potezu();
@@ -57,28 +53,21 @@ broj_rekursija: u8, trenutna_rekursija: u8, izracunate_table: &mut HashMap<Tabla
     let broj_legalnih_poteza: usize = legalni_potezi.len();
     if broj_legalnih_poteza == 0 {
         if self.igrac_je_u_sahu(&self.to_nekompresirana_tabla()) {
-                return (vrednost_mata(ja_volim_vise), true)
+            return (vrednost_mata(ja_volim_vise), true)
         } else {
-            if protivnik_se_zajebo(vrednost_koju_protivnik_ima_u_dzepu, 0.0, ja_volim_vise){
-                return (0.0, false)
-            } else {
-                return (0.0, true)
-            }
+            return vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, 0.0, ja_volim_vise)
         }
     }
     if self.pre_koliko_poteza_je_50_move_rule_pomeren() >= 50 {
-        if protivnik_se_zajebo(vrednost_koju_protivnik_ima_u_dzepu, 0.0, ja_volim_vise){
-            return (0.0, false)
-        } else {
-            return (0.0, true)
-        }
+        return vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, 0.0, ja_volim_vise)
     }
 
+    let materijalno_stanje: f32 = self.materijalna_prednost_onog_ko_je_na_potezu();
     let mut najbolja_opcija_za_sad: f32 = vrednost_mata(ja_sam_beli);
     for legalan_potez in legalni_potezi {
         let tabla_nakon_poteza: Tabla = self.tabla_nakon_poteza_bits(&legalan_potez);
         
-        let (vrednost_poteza, najbolji_potez) = tabla_nakon_poteza.izracunaj_rekursivno(&Some(najbolja_opcija_za_sad), !ja_volim_vise, broj_rekursija, trenutna_rekursija+1, izracunate_table);
+        let (vrednost_poteza, najbolji_potez) = tabla_nakon_poteza.izracunaj_rekursivno(&Some(najbolja_opcija_za_sad), !ja_volim_vise, broj_rekursija, trenutna_rekursija+1, materijalno_stanje, materijal_proslog_poteza);
         if najbolji_potez {
                  najbolja_opcija_za_sad = vrednost_poteza;
         }
@@ -92,6 +81,14 @@ broj_rekursija: u8, trenutna_rekursija: u8, izracunate_table: &mut HashMap<Tabla
 
 }
 
+}
+
+fn vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, evaluacija_posle_mog_poteza: f32, ja_sam_beli: bool) -> (f32, bool) {
+    if protivnik_se_zajebo(vrednost_koju_protivnik_ima_u_dzepu, evaluacija_posle_mog_poteza, ja_sam_beli){
+        (evaluacija_posle_mog_poteza, false)
+    } else {
+        (evaluacija_posle_mog_poteza, true)
+    }
 }
 
 fn updejtuj_najbolji_potez(najbolji_potez_za_sad: & mut f32, novi_potez: f32, ja_volim_vise: bool){

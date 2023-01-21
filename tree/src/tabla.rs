@@ -733,7 +733,7 @@ impl Tabla {
 
 #[cfg(test)]
 mod tabla_tests{
-    use crate::tabla::{KRALJICA, File_rank};
+    use crate::tabla::{KRALJICA, File_rank, LEVI_LOVAC};
 
     use super::{Tabla, E_FILE, Rokada};
 
@@ -823,6 +823,12 @@ mod tabla_tests{
         let fr: File_rank = File_rank::new_iz_broja(4);
         assert_eq!(E_FILE, fr.file);
         assert_eq!(1, fr.rank);
+    }
+
+    #[test]
+    fn test_lovac_je_na_c8(){
+        let tabla: Tabla = Tabla::pocetna_pozicija();
+        assert_eq!(true, Tabla::to_je_file_rank_polja(tabla.crne_figure[LEVI_LOVAC], 3, 8));
     }
 }
 

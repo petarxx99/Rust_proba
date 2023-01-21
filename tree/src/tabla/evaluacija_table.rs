@@ -11,7 +11,7 @@ static KRALJ_JE_DALEKO_U_ZAVRSNICI:f32 = 2.5;
 static KRALJ_JE_NA_TRECEM_RANKU_U_ZAVRSNICI: f32 = 1.0;
 
 static FIGURA_NIJE_NA_KRAJNJEM_RANKU: f32 = 0.325;
-static KONJ_NIJE_NA_IVICNOM_FAJLU: f32 = 0.125;
+static KONJ_NIJE_NA_IVICNOM_FAJLU: f32 = 0.25;
 static MATERIJAL_KAD_JE_PARTIJA_U_ZAVRSNICI:f32 = 20.7;
 
 static CENTRALNI_PIJUN_NA_TRECEM_RANKU: f32 = 0.25;
@@ -223,7 +223,17 @@ impl Tabla {
         0.0
     }
 
-    fn evaluacija_materijala(&self, beli_je_na_potezu: bool) -> (f32,f32, bool, bool) {
+    pub fn materijalna_prednost_onog_ko_je_na_potezu(&self) -> f32 {
+        let beli_je_na_potezu: bool = self.beli_je_na_potezu();
+        let (beli_materijal, crni_materijal, _, _) = self.evaluacija_materijala(beli_je_na_potezu);
+        if beli_je_na_potezu {
+            beli_materijal - crni_materijal
+        } else {
+            crni_materijal - beli_materijal
+        }
+    }
+
+    pub fn evaluacija_materijala(&self, beli_je_na_potezu: bool) -> (f32,f32, bool, bool) {
         let mut evaluacija_belog: f32 = 0f32;
         let mut evaluacija_crnog: f32 = 0f32;
         let mut beli_ima_kraljicu: bool = false;
