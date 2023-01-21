@@ -129,6 +129,43 @@ impl Tabla{
 
 
 
+pub struct Tabla_pijuna{
+    tabla: [[u8;9];9],
+}
+
+impl Tabla_pijuna{
+    pub fn pijun_bele_boje(&self, rank: u8, file: u8) -> bool {
+        self.tabla[rank as usize][file as usize] == BELA_FIGURA
+    }
+
+    pub fn pijun_crne_boje(&self, rank: u8, file: u8) -> bool {
+        self.tabla[rank as usize][file as usize] == CRNA_FIGURA
+    }
+}
+
+impl Tabla{
+    pub fn to_tabla_pijuna(&self) -> Tabla_pijuna{
+        let mut tabla_pijuna = Tabla_pijuna{tabla: [[PRAZNO_POLJE;9];9]};
+        for i in 8..16 {
+            if !Tabla::figura_je_pojedena(&self.bele_figure, i) {
+                if !Tabla::pijun_je_promovisan(self.bele_figure[i]){
+                    let (rank,file) :(u8,u8) = crate::broj_to_rank_file(self.bele_figure[i]);
+                    tabla_pijuna.tabla[rank as usize][file as usize] = BELA_FIGURA;
+                }
+            }
+
+            if !Tabla::figura_je_pojedena(&self.crne_figure, i) {
+                if !Tabla::pijun_je_promovisan(self.crne_figure[i]){
+                    let (rank,file): (u8,u8) = crate::broj_to_rank_file(self.crne_figure[i]);
+                    tabla_pijuna.tabla[rank as usize][file as usize] = CRNA_FIGURA;
+                }
+            }
+        }
+
+        tabla_pijuna
+    }
+}
+
 #[cfg(test)]
 mod nekompresovana_tabla_test{
     use crate::tabla::{Tabla, File_rank, C_FILE, A_FILE, B_FILE, F_FILE, Ima_podatke_o_tabli};

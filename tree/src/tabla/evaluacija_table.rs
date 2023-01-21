@@ -1,6 +1,6 @@
 use crate::proba_sah_drveta::vrednost_mata;
 
-use super::{Figura, Tabla, nekompresirana_tabla::Nekompresirana_tabla, File_rank, D_FILE, E_FILE, F_FILE, KRALJ, LEVI_KONJ, DESNI_KONJ, LEVI_LOVAC, DESNI_LOVAC, A_FILE, H_FILE, E_PIJUN, D_PIJUN, F_PIJUN};
+use super::{Figura, Tabla, nekompresirana_tabla::{Nekompresirana_tabla, Tabla_pijuna}, File_rank, D_FILE, E_FILE, F_FILE, KRALJ, LEVI_KONJ, DESNI_KONJ, LEVI_LOVAC, DESNI_LOVAC, A_FILE, H_FILE, E_PIJUN, D_PIJUN, F_PIJUN, LEVI_TOP, C_FILE, DESNI_TOP, KRALJICA};
 
 static PREDNOST_POTEZA: f32 = 0.2;
 static KRALJ_NA_OTVORENOM: f32 = 3.0;
@@ -20,6 +20,12 @@ static CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE: f32 = 0.75;
 static NIJEDAN_CENTRALNI_PIJUN_NIJE_POMEREN_2_POLJA: f32 = 0.5;
 static POMERANJE_F_PIJUNA_PRE_ROKADE: f32 = 0.5;
 
+static TOP_NA_SREDINI: f32 = 0.125;
+static TOP_IZA_PIJUNA_NA_6_7_ranku: f32 = 0.125;
+static TOP_NA_FAJLU_GDE_NEMA_SOPSTVENOG_PIJUNA: f32 = 0.25;
+static TOP_NA_ISTOM_RANKU_KAO_KRALJ: f32 = 0.125;
+static TOP_NA_ISTOM_FAJLU_KAO_KRALJ: f32 = 0.125;
+static TOP_NA_ISTOM_RANKU_FAJLU_KAO_PROTIVNICKA_KRALJICA: f32 = 0.125;
 
 impl Tabla {
     /* Ovo je preciznija funkcija, jer gleda i stalemate, ali je zato i sporija.
@@ -43,12 +49,13 @@ impl Tabla {
             return 0.0
         } 
 
+        let tabla_pijuna: Tabla_pijuna = self.to_tabla_pijuna();
         let (beli_materijal,crni_materijal,beli_ima_kraljicu,crni_ima_kraljicu) =  self.evaluacija_materijala(beli_je_na_potezu);
         let beli_kralj: File_rank = File_rank::new_iz_broja(self.bele_figure[KRALJ]);
         let crni_kralj: File_rank = File_rank::new_iz_broja(self.crne_figure[KRALJ]);
 
         let (beli_kralj_eval, crni_kralj_eval) = self.eval_pozicija_kralja(beli_materijal, crni_materijal, &beli_kralj, &crni_kralj, beli_ima_kraljicu, crni_ima_kraljicu);
-        let (eval_belih_figura, eval_crnih_figura) = self.eval_pozicije_figura_podrazumeva_figure_se_nalaze_izmedju_levog_i_desnog_konja();
+        let (eval_belih_figura, eval_crnih_figura) = self.eval_pozicije_figura_podrazumeva_figure_se_nalaze_izmedju_levog_i_desnog_konja(&tabla_pijuna);
         let (eval_belih_pijuna, eval_crnih_pijuna) = self.eval_pijuna();
 
         let beli_eval: f32 = beli_materijal + beli_kralj_eval + eval_belih_figura + eval_belih_pijuna;
@@ -103,7 +110,8 @@ impl Tabla {
     eval
    }
 
-    fn eval_pozicije_figura_podrazumeva_figure_se_nalaze_izmedju_levog_i_desnog_konja(&self) -> (f32, f32) {
+    fn eval_pozicije_figura_podrazumeva_figure_se_nalaze_izmedju_levog_i_desnog_konja(&self,
+    tabla_pijuna: &Tabla_pijuna) -> (f32, f32) {
         let mut bela_evaluacija: f32 = 0.0;
         let mut crna_evaluacija: f32 = 0.0;
 
@@ -127,11 +135,120 @@ impl Tabla {
 
         let beli_konj: f32 = self.eval_konj_nije_na_ivici(&self.bele_figure);
         let crni_konj: f32 = self.eval_konj_nije_na_ivici(&self.crne_figure);
+        let (beli_topovi, crni_topovi): (f32, f32) = self.eval_topova_obe_boje(tabla_pijuna);
 
-        (bela_evaluacija + beli_konj,  crna_evaluacija + crni_konj)
+        (bela_evaluacija + beli_konj + beli_topovi,  crna_evaluacija + crni_konj + crni_topovi)
         
     }
 
+    fn eval_topova_obe_boje(&self, tabla_pijuna: &Tabla_pijuna) -> (f32, f32) {
+        let beli: f32 = self.eval_topova(true, tabla_pijuna);
+        let crni: f32 = self.eval_topova(false, tabla_pijuna);
+        (beli, crni)
+    }
+
+    fn eval_topova(&self, igrac_je_beo: bool, tabla_pijuna: &Tabla_pijuna) -> f32{
+        let figure: &[u8;16];
+        if igrac_je_beo{
+            figure = &self.bele_figure;
+        } else {
+            figure = &self.crne_figure;
+        }
+
+        let mut eval_topova: f32 = 0.0;
+        eval_topova += self.eval_jednog_topa(figure, LEVI_TOP, tabla_pijuna, igrac_je_beo);
+        eval_topova += self.eval_jednog_topa(figure, DESNI_TOP, tabla_pijuna, igrac_je_beo);
+
+        eval_topova
+    }
+
+    fn eval_jednog_topa(&self, figure: &[u8;16], redni_broj_topa: usize, tabla_pijuna: &Tabla_pijuna, igrac_je_beo: bool) -> f32{
+
+        let mut eval_topa: f32 = 0.0;
+        if !Tabla::figura_je_pojedena(figure, redni_broj_topa){
+            let (rank,file): (u8,u8) = crate::broj_to_rank_file(figure[redni_broj_topa]);
+            if file == C_FILE || file == D_FILE || file == E_FILE || file == F_FILE {
+                eval_topa += TOP_NA_SREDINI;
+            } 
+
+            eval_topa += self.bonus_za_x_ray_topa(file, rank, igrac_je_beo);
+
+            if igrac_je_beo{
+                eval_topa += self.evaluacija_belog_topa_na_osnovu_fajla_na_kom_se_nalazi(tabla_pijuna, &File_rank::new_iz_broja(figure[redni_broj_topa]));
+            } else {
+                eval_topa += self.evaluacija_crnog_topa_na_osnovu_fajla_na_kom_se_nalazi(tabla_pijuna, &File_rank::new_iz_broja(figure[redni_broj_topa]));
+            }
+        }
+
+        eval_topa
+    }
+
+    fn evaluacija_belog_topa_na_osnovu_fajla_na_kom_se_nalazi(&self, tabla_pijuna: &Tabla_pijuna, top: &File_rank)->f32{
+        let mut i: u8 = 2;
+        while i<=5{
+            if tabla_pijuna.pijun_bele_boje(i, top.file){
+                return 0.0;
+            }
+            i += 1;
+        }
+
+        while i<=8{
+            if tabla_pijuna.pijun_bele_boje(i, top.file){
+                return TOP_IZA_PIJUNA_NA_6_7_ranku
+            }
+            i += 1;
+        }
+
+        TOP_NA_FAJLU_GDE_NEMA_SOPSTVENOG_PIJUNA
+    }
+
+    fn evaluacija_crnog_topa_na_osnovu_fajla_na_kom_se_nalazi(&self, tabla_pijuna: &Tabla_pijuna, top: &File_rank) -> f32{
+        let mut i: u8 = 7;
+        while i>= 4 {
+            if tabla_pijuna.pijun_crne_boje(i, top.file){
+                return 0.0;
+            }
+            i -= 1;
+        }
+
+        while i>=1 {
+            if tabla_pijuna.pijun_crne_boje(i,top.file){
+                return TOP_IZA_PIJUNA_NA_6_7_ranku
+            }
+            i -= 1;
+        }
+
+        TOP_NA_FAJLU_GDE_NEMA_SOPSTVENOG_PIJUNA
+    }
+
+    fn bonus_za_x_ray_topa(&self, file_topa: u8, rank_topa: u8, igrac_je_beo: bool) -> f32 {
+        let mut bonus_eval: f32 = 0.0;
+        let protivnicki_kralj: File_rank;
+        let protivnicke_figure: &[u8;16];
+        if igrac_je_beo{
+            protivnicki_kralj = File_rank::new_iz_broja(self.crne_figure[KRALJ]);
+            protivnicke_figure = &self.crne_figure;
+        } else {
+            protivnicki_kralj = File_rank::new_iz_broja(self.bele_figure[KRALJ]);
+            protivnicke_figure = &self.bele_figure;
+        }
+
+        if !Tabla::figura_je_pojedena(protivnicke_figure, KRALJICA){
+            let (rank_kraljice, file_kraljice) = crate::broj_to_rank_file(protivnicke_figure[KRALJICA]);
+            if rank_kraljice == rank_topa || file_kraljice == file_topa {
+                bonus_eval += TOP_NA_ISTOM_RANKU_FAJLU_KAO_PROTIVNICKA_KRALJICA;
+            }
+        }
+        
+        if protivnicki_kralj.rank == rank_topa{
+            bonus_eval += TOP_NA_ISTOM_RANKU_KAO_KRALJ;
+        }
+        if protivnicki_kralj.file == file_topa{
+            bonus_eval += TOP_NA_ISTOM_FAJLU_KAO_KRALJ;
+        }
+
+        bonus_eval
+    }
 
     fn eval_konj_nije_na_ivici(&self, figure: &[u8;16]) -> f32 {
         let mut eval:f32 = 0.0;
