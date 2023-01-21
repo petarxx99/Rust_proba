@@ -42,9 +42,9 @@ impl Tabla{
 
 pub fn izracunaj_rekursivno(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ja_volim_vise:  bool,
 broj_rekursija: u8, trenutna_rekursija: u8, izracunate_table: &mut HashMap<Tabla, f32>) -> (f32, bool){
+   
     if trenutna_rekursija >= broj_rekursija {
         let sopstvena_evaluacija: f32 = self.nerekursivno_evaluiraj_poziciju(&self.to_nekompresirana_tabla());
-     //   return Some(sopstvena_evaluacija);
         if protivnik_se_zajebo(vrednost_koju_protivnik_ima_u_dzepu, sopstvena_evaluacija, ja_volim_vise){
             return (sopstvena_evaluacija, false)
         } else {
@@ -57,7 +57,6 @@ broj_rekursija: u8, trenutna_rekursija: u8, izracunate_table: &mut HashMap<Tabla
     let broj_legalnih_poteza: usize = legalni_potezi.len();
     if broj_legalnih_poteza == 0 {
         if self.igrac_je_u_sahu(&self.to_nekompresirana_tabla()) {
-         //   return Some(vrednost_mata(ja_volim_vise))
                 return (vrednost_mata(ja_volim_vise), true)
         } else {
             if protivnik_se_zajebo(vrednost_koju_protivnik_ima_u_dzepu, 0.0, ja_volim_vise){
@@ -79,19 +78,17 @@ broj_rekursija: u8, trenutna_rekursija: u8, izracunate_table: &mut HashMap<Tabla
     for legalan_potez in legalni_potezi {
         let tabla_nakon_poteza: Tabla = self.tabla_nakon_poteza_bits(&legalan_potez);
         
-        
         let (vrednost_poteza, najbolji_potez) = tabla_nakon_poteza.izracunaj_rekursivno(&Some(najbolja_opcija_za_sad), !ja_volim_vise, broj_rekursija, trenutna_rekursija+1, izracunate_table);
         if najbolji_potez {
                  najbolja_opcija_za_sad = vrednost_poteza;
-
         }
+
         if protivnik_se_zajebo(vrednost_koju_protivnik_ima_u_dzepu, najbolja_opcija_za_sad, ja_volim_vise){
                 return (najbolja_opcija_za_sad, false)
-        }
-       
+        }   
     }
     
- (najbolja_opcija_za_sad, true)
+    (najbolja_opcija_za_sad, true)
 
 }
 
