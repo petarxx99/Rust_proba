@@ -58,21 +58,13 @@ broj_rekursija: u8, trenutna_rekursija: u8, materijal_proslog_poteza: f32, mater
         return self.izracunaj_rekursivno_samo_jedenje_figura(vrednost_koju_protivnik_ima_u_dzepu, ja_volim_vise, materijal_proslog_poteza, materijal_pretproslog_poteza);
     }
 
-    let ja_sam_beli: bool = self.beli_je_na_potezu();
     let legalni_potezi: Vec<Potez_bits> = self.svi_legalni_potezi();
-    let broj_legalnih_poteza: usize = legalni_potezi.len();
-    if broj_legalnih_poteza == 0 {
-        if self.igrac_je_u_sahu(&self.to_nekompresirana_tabla()) {
-            return (vrednost_mata(ja_volim_vise), true)
-        } else {
-            return vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, 0.0, ja_volim_vise)
-        }
-    }
-    if self.pre_koliko_poteza_je_50_move_rule_pomeren() >= 50 {
-        return vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, 0.0, ja_volim_vise)
+    let evaluacija_gotove_partije = self.vrati_evaluaciju_ako_je_partija_gotova(vrednost_koju_protivnik_ima_u_dzepu, &legalni_potezi, ja_volim_vise);
+    if evaluacija_gotove_partije.partija_zavrsena {
+        return evaluacija_gotove_partije.evaluacija
     }
     
-    let mut najbolja_opcija_za_sad: f32 = vrednost_mata(ja_sam_beli);
+    let mut najbolja_opcija_za_sad: f32 = vrednost_mata(ja_volim_vise);
     for legalan_potez in legalni_potezi {
         let tabla_nakon_poteza: Tabla = self.tabla_nakon_poteza_bits(&legalan_potez);
         
@@ -80,7 +72,6 @@ broj_rekursija: u8, trenutna_rekursija: u8, materijal_proslog_poteza: f32, mater
         if najbolji_potez {
                  najbolja_opcija_za_sad = vrednost_poteza;
         }
-
         if protivnik_se_zajebo(vrednost_koju_protivnik_ima_u_dzepu, najbolja_opcija_za_sad, ja_volim_vise){
                 return (najbolja_opcija_za_sad, false)
         }   
