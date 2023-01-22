@@ -66,7 +66,7 @@ impl Tabla {
 
 #[cfg(test)]
 mod test_provera_legalnosti{
-    use crate::tabla::{Tabla, potez::{Potez, Potez_polje}, E_FILE, A_FILE, B_FILE, C_FILE, D_FILE, F_FILE, G_FILE, H_FILE, Promocija};
+    use crate::{tabla::{Tabla, potez::{Potez, Potez_polje, Potez_bits}, E_FILE, A_FILE, B_FILE, C_FILE, D_FILE, F_FILE, G_FILE, H_FILE, Promocija, DESNI_LOVAC, LEVI_LOVAC, KRALJ}, permanencija::Zapisivac_partije_u_fajl};
 
 
    
@@ -144,5 +144,25 @@ mod test_provera_legalnosti{
             test_potez_je_legalan(&tabla_nakon_sto_pomerim_pijuna, A_FILE, 1, A_FILE, 2)
         );
     }
+
+    #[test]
+    fn test_log_partije_2(){
+        let mut tabla: Tabla = Tabla::pocetna_pozicija();
+        let mut zapisivac: Zapisivac_partije_u_fajl = Zapisivac_partije_u_fajl::new("log_partije_proba2.txt".to_owned());
+        let potezi: Vec<Potez> = zapisivac.preuzmi_poteze_iz_fajla("log_partije_proba2.txt").unwrap();
+
+        for i in 0..(potezi.len()-35){
+            tabla = tabla.tabla_nakon_validnog_poteza(&potezi[i]);
+        }
+
+        assert_eq!(tabla.crne_figure[DESNI_LOVAC], crate::file_rank_to_broj(H_FILE, 6));
+        assert_eq!(tabla.bele_figure[LEVI_LOVAC], crate::file_rank_to_broj(E_FILE, 3));
+        assert_eq!(true, tabla.svi_legalni_potezi().contains(&Potez_bits::new(LEVI_LOVAC as u8, H_FILE, 6, Promocija::None)));
+
+    }
+
+    use std::{fs::File, io::{Write, Read}};
+
+    
 
 }

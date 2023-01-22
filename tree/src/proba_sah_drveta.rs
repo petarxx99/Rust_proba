@@ -55,6 +55,10 @@ broj_rekursija: u8, trenutna_rekursija: u8, materijal_proslog_poteza: f32, mater
    
     let materijalno_stanje: f32 = self.materijalna_prednost_onog_ko_je_na_potezu();
     if trenutna_rekursija >= broj_rekursija {
+        let mali_broj: f32 = 0.125;
+        if materijalno_stanje + mali_broj > materijal_pretproslog_poteza {
+            return self.vrati_nerekursivnu_evaluaciju_koja_uzima_u_obzir_da_li_je_mat(vrednost_koju_protivnik_ima_u_dzepu, ja_volim_vise)
+        }
         return self.izracunaj_rekursivno_samo_jedenje_figura(vrednost_koju_protivnik_ima_u_dzepu, ja_volim_vise, materijal_proslog_poteza, materijal_pretproslog_poteza);
     }
 
@@ -121,6 +125,11 @@ fn izracunaj_rekursivno_samo_jedenje_figura(&self,
 
 fn vrati_nerekursivnu_evaluaciju(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ja_sam_beli: bool) -> (f32, bool){
     let sopstvena_evaluacija: f32 = self.nerekursivno_evaluiraj_poziciju(&self.to_nekompresirana_tabla());
+    vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, sopstvena_evaluacija, ja_sam_beli)
+}
+
+fn vrati_nerekursivnu_evaluaciju_koja_uzima_u_obzir_da_li_je_mat(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ja_sam_beli:  bool) -> (f32,bool) {
+    let sopstvena_evaluacija: f32 = self.nerekursivno_evaluiraj_poziciju_sa_proverom_mata(&self.to_nekompresirana_tabla());
     vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, sopstvena_evaluacija, ja_sam_beli)
 }
 
@@ -447,7 +456,7 @@ impl Tabla{
 mod proba_test{
     use std::collections::HashSet;
 
-    use crate::{tabla::{Tabla, E_FILE, F_FILE, D_FILE, G_FILE, C_FILE, B_FILE, potez::Potez_bits, H_FILE}, proba_sah_drveta::BELI_JE_MATIRAO_CRNOG};
+    use crate::{tabla::{Tabla, E_FILE, F_FILE, D_FILE, G_FILE, C_FILE, B_FILE, potez::{Potez_bits, Potez}, H_FILE, DESNI_LOVAC}, proba_sah_drveta::BELI_JE_MATIRAO_CRNOG, permanencija::Zapisivac_partije_u_fajl};
 
     
     #[test]
@@ -513,4 +522,7 @@ mod proba_test{
         assert_eq!(true, eval.eval < 0.5);
         assert_eq!(true, eval.eval > -0.5);    
     }
+
+
+    
 }

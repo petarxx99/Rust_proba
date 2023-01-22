@@ -41,13 +41,18 @@ impl Tabla {
     } 
          */
 
-    pub fn nerekursivno_evaluiraj_poziciju(&self, nekompresirana_tabla: &Nekompresirana_tabla) -> f32 {
+    pub fn nerekursivno_evaluiraj_poziciju_sa_proverom_mata(&self, nekompresirana_tabla: &Nekompresirana_tabla) -> f32{
         let beli_je_na_potezu: bool = self.beli_je_na_potezu(); 
         if self.igrac_je_u_sahu(nekompresirana_tabla){
             if self.nema_legalnih_poteza(nekompresirana_tabla){
                 return vrednost_mata(beli_je_na_potezu);
             }
         }
+        self.nerekursivno_evaluiraj_poziciju(nekompresirana_tabla)
+    }     
+
+    pub fn nerekursivno_evaluiraj_poziciju(&self, nekompresirana_tabla: &Nekompresirana_tabla) -> f32 {
+        let beli_je_na_potezu: bool = self.beli_je_na_potezu(); 
         if self.pre_koliko_poteza_je_50_move_rule_pomeren() >= 50 {
             return 0.0
         } 

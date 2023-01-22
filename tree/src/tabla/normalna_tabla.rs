@@ -164,7 +164,7 @@ impl Tabla {
 
         /* Ako figura nije kralj, ali je na poziciji svog kralja, to znaci da je figura sklonjena sa table.
         Na taj nacin skladistim informaciju da je figura sklonjena sa table, kako bih ustedeo memorijski prostor. */
-                if broj_figure != KRALJ && figure[broj_figure] == figure[KRALJ]{
+                if broj_figure != KRALJ && Tabla::polja_se_slazu(figure[broj_figure], figure[KRALJ]){
                         return None;
                 }
         
