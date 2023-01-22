@@ -130,7 +130,7 @@ impl Tabla {
 
 #[cfg(test)]
 mod test_legalni_potezi{
-    use crate::tabla::{Tabla, potez::{Potez_bits, Potez, Potez_polje}, Promocija, G_FILE, F_FILE, E_FILE, D_FILE, C_FILE, B_FILE, H_FILE, A_FILE, DESNI_LOVAC};
+    use crate::{tabla::{Tabla, potez::{Potez_bits, Potez, Potez_polje}, Promocija, G_FILE, F_FILE, E_FILE, D_FILE, C_FILE, B_FILE, H_FILE, A_FILE, DESNI_LOVAC, DESNI_TOP, KRALJ, LEVI_TOP, D_PIJUN}, permanencija::Zapisivac_partije_u_fajl};
 
 
 
@@ -330,5 +330,7 @@ mod test_legalni_potezi{
         .odigraj_validan_potez_bez_promocije(H_FILE, 5, E_FILE, 5);
         assert_eq!(2, tabla.svi_legalni_potezi().len());
     }
+
+   
 }
 

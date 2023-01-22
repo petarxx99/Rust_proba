@@ -456,7 +456,7 @@ impl Tabla {
 
 #[cfg(test)]
 mod potez_tests{
-    use crate::tabla::{Tabla, E_FILE, B_FILE, C_FILE, F_FILE, LEVI_KONJ, DESNI_LOVAC, Promocija, G_FILE, DESNI_TOP, File_rank, A_FILE, D_FILE, H_FILE, DESNI_KONJ, LEVI_TOP, F_PIJUN, LEVI_LOVAC};
+    use crate::tabla::{Tabla, E_FILE, B_FILE, C_FILE, F_FILE, LEVI_KONJ, DESNI_LOVAC, Promocija, G_FILE, DESNI_TOP, File_rank, A_FILE, D_FILE, H_FILE, DESNI_KONJ, LEVI_TOP, F_PIJUN, LEVI_LOVAC, KRALJ};
 
     use super::{Potez, Potez_bits, Potez_info};
     use crate::tabla::{Figura};
@@ -762,5 +762,18 @@ mod potez_tests{
         assert_eq!(true, potezi.contains(&Potez_bits{broj_figure: LEVI_LOVAC as u8, file: 4, rank: 7, promocija: Promocija::None}));
         assert_eq!(true, potezi.contains(&Potez::new(C_FILE, 8, D_FILE, 7, Promocija::None).to_Potez_bits(&tabla).unwrap()));
         assert_eq!(potezi.len(), 38);
+    }
+
+    #[test]
+    fn nakon_sto_se_pijun_pojede_pijun_prati_kralja(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 7, F_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 4, F_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 8, F_FILE, 7);
+
+        assert_eq!(true, Tabla::figura_je_pojedena(&tabla.crne_figure, F_PIJUN));
+        assert_eq!(tabla.crne_figure[F_PIJUN], tabla.crne_figure[KRALJ]);
+
     }
 }

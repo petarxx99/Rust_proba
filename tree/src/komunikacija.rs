@@ -112,6 +112,7 @@ impl Socket_komunikator{
     }
 
     fn posalji_potez(&self, potez: &Potez){
+        println!("Saljem potez {}", potez);
         let bajtovi_poteza: Vec<u8> = self.enkoder_poteza.enkoduj_potez(&potez);
 
         let mut stream: TcpStream = TcpStream::connect(&self.puna_adresa_drugog).expect("Greska pri konekciji prilikom slanja.");

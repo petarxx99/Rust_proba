@@ -35,7 +35,8 @@ impl Tabla{
                     let protivnicki_potez: Potez = dobavljac_odgovora.posalji_primi_potez(Some(potez_za_slanje));
                     potezi.push(protivnicki_potez.copy());
                     zapisivac_partije.zapisi_partiju(&potezi);
-                    table.push(t.tabla_nakon_validnog_poteza(&protivnicki_potez));
+                    let t:Tabla = t.tabla_nakon_validnog_poteza(&protivnicki_potez);
+                    table.push(t);
                 }
             }
         }

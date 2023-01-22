@@ -1,4 +1,4 @@
-use crate::tabla::{F_FILE, C_FILE, B_FILE, D_FILE};
+use crate::tabla::{F_FILE, C_FILE, B_FILE, D_FILE, E_FILE};
 use crate::tabla::{Rokada, Tabla, File_rank, H_FILE, A_FILE, G_FILE, Ima_podatke_o_tabli};
 
 use super::figure::abs;
@@ -54,9 +54,14 @@ pub fn prirodno_kretanje_kralja<T>(
             File_rank{file: C_FILE, rank: kraljev_rank},
             File_rank{file: B_FILE, rank: kraljev_rank},
         ];
+        let polja_koja_ne_smeju_da_budu_napadnuta: Vec<File_rank> = vec![
+            File_rank{file: E_FILE, rank: kraljev_rank},
+            File_rank{file: D_FILE, rank: kraljev_rank},
+            File_rank{file: C_FILE, rank: kraljev_rank},
+        ];
+
         if kraljicina_rokada && tabla.da_li_su_polja_prazna(&polja_izmedju_kraljicine_rokade){
-            polja_izmedju_kraljicine_rokade.pop();
-            if tabla.polja_nisu_napadnuta(&polja_izmedju_kraljicine_rokade, !ja_sam_beli){
+            if tabla.polja_nisu_napadnuta(&polja_koja_ne_smeju_da_budu_napadnuta, !ja_sam_beli){
                 return true;
             }
         }
@@ -71,10 +76,15 @@ pub fn prirodno_kretanje_kralja<T>(
             File_rank{file: F_FILE, rank: kraljev_rank},
             File_rank{file: G_FILE, rank: kraljev_rank}
         ];
+        let polja_koja_ne_smeju_da_budu_napadnuta: Vec<File_rank> = vec![
+            File_rank{file: E_FILE, rank: kraljev_rank},
+            File_rank{file: F_FILE, rank: kraljev_rank},
+            File_rank{file: G_FILE, rank: kraljev_rank}
+        ];
         if kraljeva_rokada &&
             tabla.da_li_su_polja_prazna(&polja_izmedju_kraljeve_rokade)
             &&
-            tabla.polja_nisu_napadnuta(&polja_izmedju_kraljeve_rokade, !ja_sam_beli){
+            tabla.polja_nisu_napadnuta(&polja_koja_ne_smeju_da_budu_napadnuta, !ja_sam_beli){
                 return true;
             }
 
