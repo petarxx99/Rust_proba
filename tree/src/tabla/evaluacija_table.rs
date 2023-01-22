@@ -371,7 +371,7 @@ impl Tabla {
             if figure[G_PIJUN] == drugi_rank{
                 return 0.0;
             }
-            if figure[G_PIJUN] != treci_rank{
+            if (figure[G_PIJUN] != treci_rank) || Tabla::figura_je_pojedena(figure, G_PIJUN){
                 return -GURANJE_G_PIJUNA_2_POLJA_AKO_KRALJ_NIJE_NA_DRUGOJ_STRANI;
             }
         }
