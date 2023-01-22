@@ -1,6 +1,6 @@
 use crate::proba_sah_drveta::vrednost_mata;
 
-use super::{Figura, Tabla, nekompresirana_tabla::{Nekompresirana_tabla, Tabla_pijuna}, File_rank, D_FILE, E_FILE, F_FILE, KRALJ, LEVI_KONJ, DESNI_KONJ, LEVI_LOVAC, DESNI_LOVAC, A_FILE, H_FILE, E_PIJUN, D_PIJUN, F_PIJUN, LEVI_TOP, C_FILE, DESNI_TOP, KRALJICA};
+use super::{Figura, Tabla, nekompresirana_tabla::{Nekompresirana_tabla, Tabla_pijuna}, File_rank, D_FILE, E_FILE, F_FILE, KRALJ, LEVI_KONJ, DESNI_KONJ, LEVI_LOVAC, DESNI_LOVAC, A_FILE, H_FILE, E_PIJUN, D_PIJUN, F_PIJUN, LEVI_TOP, C_FILE, DESNI_TOP, KRALJICA, G_PIJUN, G_FILE};
 
 static PREDNOST_POTEZA: f32 = 0.2;
 static KRALJ_NA_OTVORENOM: f32 = 3.0;
@@ -26,6 +26,9 @@ static TOP_NA_FAJLU_GDE_NEMA_SOPSTVENOG_PIJUNA: f32 = 0.25;
 static TOP_NA_ISTOM_RANKU_KAO_KRALJ: f32 = 0.125;
 static TOP_NA_ISTOM_FAJLU_KAO_KRALJ: f32 = 0.125;
 static TOP_NA_ISTOM_RANKU_FAJLU_KAO_PROTIVNICKA_KRALJICA: f32 = 0.125;
+
+static GURANJE_G_PIJUNA_2_POLJA_AKO_KRALJ_NIJE_NA_DRUGOJ_STRANI: f32 = 1.25;
+static GURANJE_B_PIJUNA_2_POLJA_AKO_JE_KRALJ_NA_KRALJICINOJ_STRANI: f32 = 1.25;
 
 impl Tabla {
     /* Ovo je preciznija funkcija, jer gleda i stalemate, ali je zato i sporija.
@@ -304,24 +307,41 @@ impl Tabla {
 
 
     fn evaluacija_kralja_protivnik_ima_dosta_materijala(&self, kralj_je_beo: bool, kralj: &File_rank) -> f32 {
+        let mut eval: f32 = 0.0;
+        let figure: &[u8;16];
+        let (prvi_rank, drugi_rank, treci_rank): (u8,u8,u8);
+        let rokada_moguca: bool;
+
         if kralj_je_beo {
             if kralj.rank > 2 {
-                return -KRALJ_NA_OTVORENOM
-            }
+                eval -= KRALJ_NA_OTVORENOM;
+            } 
+            figure = &self.bele_figure;
+            prvi_rank = 1;
+            drugi_rank = 2;
+            treci_rank = 3;
+            rokada_moguca = self.rokada().nijedna_rokada_ove_boje_nije_moguca(true);
         } else {
             if kralj.rank < 7 {
-                return -KRALJ_NA_OTVORENOM
+                eval -= KRALJ_NA_OTVORENOM;
             }
+            prvi_rank = 8;
+            drugi_rank = 7;
+            treci_rank = 6;
+            figure = &self.crne_figure;
+            rokada_moguca = self.rokada().nijedna_rokada_ove_boje_nije_moguca(false);
         }
        
+
         if (kralj.file == E_FILE || kralj.file == D_FILE || kralj.file == F_FILE){
             if self.rokada().nijedna_rokada_ove_boje_nije_moguca(kralj_je_beo){
-                return -KRALJ_NA_SREDINI_I_NEMA_ROKADE
+                eval -= KRALJ_NA_SREDINI_I_NEMA_ROKADE;
             }
-            return -KRALJ_NA_SREDINI
+            eval -= KRALJ_NA_SREDINI;
         } 
 
-        0.0
+        eval += self.guranje_pijuna_ako_kralj_nije_na_drugoj_strani(figure, kralj, prvi_rank, drugi_rank, treci_rank);
+        eval
     }
 
     fn evaluacija_kralja_protivnik_ima_manje_materijala(&self, kralj_je_beli:bool, kralj: &File_rank) -> f32 {
@@ -337,6 +357,25 @@ impl Tabla {
         } else if udaljenost_od_ivice == 3 {
             return -KRALJ_JE_NA_TRECEM_RANKU_U_ZAVRSNICI
         }
+        0.0
+    }
+
+    fn guranje_pijuna_ako_kralj_nije_na_drugoj_strani(&self, figure: &[u8;16], kralj: &File_rank,
+    prvi_rank: u8, drugi_rank: u8, treci_rank: u8) -> f32 {
+        if kralj.rank != prvi_rank{
+            return 0.0;
+        }
+        
+
+        if kralj.file == E_FILE || kralj.file >= G_FILE{
+            if figure[G_PIJUN] == drugi_rank{
+                return 0.0;
+            }
+            if figure[G_PIJUN] != treci_rank{
+                return -GURANJE_G_PIJUNA_2_POLJA_AKO_KRALJ_NIJE_NA_DRUGOJ_STRANI;
+            }
+        }
+
         0.0
     }
 
