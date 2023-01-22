@@ -16,6 +16,16 @@ impl Eval_deteta{
     }
 }
 
+struct Evaluacija{
+    partija_zavrsena: bool,
+    evaluacija: (f32,bool),
+}
+impl Evaluacija{
+    pub fn new(partija_zavrsena: bool, evaluacija: (f32,bool)) -> Evaluacija{
+        Evaluacija{partija_zavrsena, evaluacija}
+    }
+}
+
 impl Tabla{
 
 
@@ -43,9 +53,9 @@ impl Tabla{
 pub fn izracunaj_rekursivno(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ja_volim_vise:  bool,
 broj_rekursija: u8, trenutna_rekursija: u8, materijal_proslog_poteza: f32, materijal_pretproslog_poteza: f32) -> (f32, bool){
    
+    let materijalno_stanje: f32 = self.materijalna_prednost_onog_ko_je_na_potezu();
     if trenutna_rekursija >= broj_rekursija {
-        let sopstvena_evaluacija: f32 = self.nerekursivno_evaluiraj_poziciju(&self.to_nekompresirana_tabla());
-        return vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, sopstvena_evaluacija, ja_volim_vise)
+        return self.izracunaj_rekursivno_samo_jedenje_figura(vrednost_koju_protivnik_ima_u_dzepu, ja_volim_vise, materijal_proslog_poteza, materijal_pretproslog_poteza);
     }
 
     let ja_sam_beli: bool = self.beli_je_na_potezu();
@@ -61,8 +71,7 @@ broj_rekursija: u8, trenutna_rekursija: u8, materijal_proslog_poteza: f32, mater
     if self.pre_koliko_poteza_je_50_move_rule_pomeren() >= 50 {
         return vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, 0.0, ja_volim_vise)
     }
-
-    let materijalno_stanje: f32 = self.materijalna_prednost_onog_ko_je_na_potezu();
+    
     let mut najbolja_opcija_za_sad: f32 = vrednost_mata(ja_sam_beli);
     for legalan_potez in legalni_potezi {
         let tabla_nakon_poteza: Tabla = self.tabla_nakon_poteza_bits(&legalan_potez);
@@ -81,6 +90,80 @@ broj_rekursija: u8, trenutna_rekursija: u8, materijal_proslog_poteza: f32, mater
 
 }
 
+fn izracunaj_rekursivno_samo_jedenje_figura(&self, 
+    vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ja_sam_beli:  bool, 
+    materijal_proslog_poteza: f32, materijal_pretproslog_poteza: f32) -> (f32, bool) {
+
+    let materijal: f32 = self.materijalna_prednost_onog_ko_je_na_potezu();
+    let mala_vrednost: f32 = 0.125;
+    if materijal+ mala_vrednost > materijal_pretproslog_poteza{
+        return self.vrati_nerekursivnu_evaluaciju(vrednost_koju_protivnik_ima_u_dzepu, ja_sam_beli);
+    }
+
+    let legalni_potezi: Vec<Potez_bits> = self.svi_legalni_potezi();
+    let evaluacija_gotove_partije: Evaluacija = self.vrati_evaluaciju_ako_je_partija_gotova(vrednost_koju_protivnik_ima_u_dzepu, &legalni_potezi, ja_sam_beli);
+    if evaluacija_gotove_partije.partija_zavrsena {
+        return evaluacija_gotove_partije.evaluacija
+    }
+
+    let potezi_jedenja: Vec<Potez_bits> = self.samo_potezi_koji_jedu_figure(&legalni_potezi);
+    if potezi_jedenja.len() == 0 {
+        return self.vrati_nerekursivnu_evaluaciju(vrednost_koju_protivnik_ima_u_dzepu, ja_sam_beli)
+    }
+
+    let mut najbolji_potez_do_sad: f32 = vrednost_mata(ja_sam_beli);
+    for potez in &potezi_jedenja {
+        let tabla_nakon_poteza: Tabla = self.tabla_nakon_poteza_bits(potez);
+
+        let (vrednost_poteza, ovo_je_najbolji_potez_do_sad) = tabla_nakon_poteza.izracunaj_rekursivno_samo_jedenje_figura(&Some(najbolji_potez_do_sad), !ja_sam_beli, materijal, materijal_proslog_poteza);
+        if ovo_je_najbolji_potez_do_sad{
+            najbolji_potez_do_sad = vrednost_poteza;
+            if protivnik_se_zajebo(vrednost_koju_protivnik_ima_u_dzepu, vrednost_poteza, ja_sam_beli){
+                return (vrednost_poteza, false)
+            }
+        }
+    }
+
+    (najbolji_potez_do_sad, true)
+
+}
+
+fn vrati_nerekursivnu_evaluaciju(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ja_sam_beli: bool) -> (f32, bool){
+    let sopstvena_evaluacija: f32 = self.nerekursivno_evaluiraj_poziciju(&self.to_nekompresirana_tabla());
+    vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, sopstvena_evaluacija, ja_sam_beli)
+}
+
+fn vrati_evaluaciju_ako_je_partija_gotova(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, legalni_potezi: &[Potez_bits], ja_sam_beli:  bool) -> Evaluacija{
+    let broj_legalnih_poteza: usize = legalni_potezi.len();
+    if broj_legalnih_poteza == 0 {
+        let partija_gotova: bool = true;
+        if self.igrac_je_u_sahu(&self.to_nekompresirana_tabla()) {
+            return Evaluacija::new(partija_gotova,(vrednost_mata(ja_sam_beli), true));
+        } else {
+            return Evaluacija::new(partija_gotova, vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, 0.0, ja_sam_beli));
+        }
+    }
+    if self.pre_koliko_poteza_je_50_move_rule_pomeren() >= 50 {
+        let partija_gotova: bool = true;
+        return Evaluacija::new(partija_gotova, vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, 0.0, ja_sam_beli));
+    }
+
+    let partija_gotova: bool = false;
+    let random_nebitan_broj: f32 = 0.0;
+    Evaluacija::new(partija_gotova, (random_nebitan_broj, true))
+}
+
+fn samo_potezi_koji_jedu_figure(&self, potezi: &[Potez_bits]) -> Vec<Potez_bits>{
+    let mut potezi_jedenja: Vec<Potez_bits> = Vec::new();
+    for potez in potezi{
+        if self.polje_je_prazno(&File_rank{file: potez.file, rank:potez.rank}){
+            potezi_jedenja.push(potez.copy());
+        }
+    }
+
+    potezi_jedenja
+}
+
 }
 
 fn vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, evaluacija_posle_mog_poteza: f32, ja_sam_beli: bool) -> (f32, bool) {
@@ -90,6 +173,8 @@ fn vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ev
         (evaluacija_posle_mog_poteza, true)
     }
 }
+
+
 
 fn updejtuj_najbolji_potez(najbolji_potez_za_sad: & mut f32, novi_potez: f32, ja_volim_vise: bool){
 
