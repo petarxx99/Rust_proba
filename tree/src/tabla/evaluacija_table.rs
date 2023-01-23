@@ -453,7 +453,7 @@ impl Tabla {
     }
 
     fn eval_kralja_posle_rokade_na_osnovu_pijuna_ispred_sebe(&self, figure: &[u8;16], kralj: &File_rank, drugi_rank: u8, treci_rank: u8, kralj_je_beo: bool) -> f32{
-        if kralj.file >= G_FILE || kralj.file <= C_FILE {
+        if kralj.file < G_FILE && kralj.file > C_FILE {
             return 0.0
         }
 
