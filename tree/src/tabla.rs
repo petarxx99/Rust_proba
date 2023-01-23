@@ -725,7 +725,27 @@ impl Tabla {
         self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu = Tabla::povecaj_50_move_rule_brojac_za_1_unsafe(self.sopstvena_evaluacija_2rokada_en_passant_3pre_koliko_poteza_je_pijun_pojeden_4ko_je_na_potezu);
     }
 
+    pub fn pijun_postoji(figure: &[u8;16], redni_broj_pijuna: usize) -> bool {
+        !Tabla::figura_je_pojedena(figure, redni_broj_pijuna)
+        &&
+        !Tabla::pijun_je_promovisan(figure[redni_broj_pijuna])
+    }
     
+    pub fn figura_se_nalazi_na_polju(&self, figure: &[u8;16], redni_broj_figure: usize, polje: &File_rank) -> bool {
+        if Tabla::figura_je_pojedena(figure, redni_broj_figure) {
+            return false
+        }
+        let figura: File_rank = File_rank::new_iz_broja(figure[redni_broj_figure]);
+        figura.file == polje.file && figura.rank == polje.rank
+    }
+
+    pub fn lovac_boje_se_nalazi_na_polju(&self, figure: &[u8;16], polje: &File_rank) -> bool{
+        if self.figura_se_nalazi_na_polju(figure, LEVI_LOVAC, polje){
+            return true
+        }
+
+        self.figura_se_nalazi_na_polju(figure, DESNI_LOVAC, polje)
+    }
 
 }
 
@@ -830,6 +850,8 @@ mod tabla_tests{
         let tabla: Tabla = Tabla::pocetna_pozicija();
         assert_eq!(true, Tabla::to_je_file_rank_polja(tabla.crne_figure[LEVI_LOVAC], 3, 8));
     }
+
+    
 }
 
     
