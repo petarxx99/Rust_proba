@@ -1,6 +1,6 @@
 use crate::proba_sah_drveta::vrednost_mata;
 
-use super::{Figura, Tabla, nekompresirana_tabla::{Nekompresirana_tabla, Tabla_pijuna}, File_rank, D_FILE, E_FILE, F_FILE, KRALJ, LEVI_KONJ, DESNI_KONJ, LEVI_LOVAC, DESNI_LOVAC, A_FILE, H_FILE, E_PIJUN, D_PIJUN, F_PIJUN, LEVI_TOP, C_FILE, DESNI_TOP, KRALJICA, G_PIJUN, G_FILE};
+use super::{Figura, Tabla, nekompresirana_tabla::{Nekompresirana_tabla, Tabla_pijuna}, File_rank, D_FILE, E_FILE, F_FILE, KRALJ, LEVI_KONJ, DESNI_KONJ, LEVI_LOVAC, DESNI_LOVAC, A_FILE, H_FILE, E_PIJUN, D_PIJUN, F_PIJUN, LEVI_TOP, C_FILE, DESNI_TOP, KRALJICA, G_PIJUN, G_FILE, B_PIJUN, kretanje_figura::figure::abs, A_PIJUN};
 
 static PREDNOST_POTEZA: f32 = 0.2;
 static KRALJ_NA_OTVORENOM: f32 = 3.0;
@@ -11,7 +11,7 @@ static KRALJ_JE_DALEKO_U_ZAVRSNICI:f32 = 2.5;
 static KRALJ_JE_NA_TRECEM_RANKU_U_ZAVRSNICI: f32 = 1.0;
 
 static FIGURA_NIJE_NA_KRAJNJEM_RANKU: f32 = 0.325;
-static KONJ_NIJE_NA_IVICNOM_FAJLU: f32 = 0.375;
+static KONJ_NIJE_NA_IVICNOM_FAJLU: f32 = 0.5;
 static MATERIJAL_KAD_JE_PARTIJA_U_ZAVRSNICI:f32 = 20.7;
 
 static CENTRALNI_PIJUN_NA_TRECEM_RANKU: f32 = 0.25;
@@ -29,6 +29,8 @@ static TOP_NA_ISTOM_RANKU_FAJLU_KAO_PROTIVNICKA_KRALJICA: f32 = 0.125;
 
 static GURANJE_G_PIJUNA_2_POLJA_AKO_KRALJ_NIJE_NA_DRUGOJ_STRANI: f32 = 1.25;
 static GURANJE_B_PIJUNA_2_POLJA_AKO_JE_KRALJ_NA_KRALJICINOJ_STRANI: f32 = 1.25;
+static GURANJE_B_PIJUNA_1_POLJE_AKO_JE_KRALJ_NA_KRALJICINOJ_STRANI: f32 = 0.5;
+static POJEDEN_PIJUN_ISPRED_KRALJA: f32 = 0.75;
 
 impl Tabla {
     /* Ovo je preciznija funkcija, jer gleda i stalemate, ali je zato i sporija.
@@ -62,7 +64,7 @@ impl Tabla {
         let beli_kralj: File_rank = File_rank::new_iz_broja(self.bele_figure[KRALJ]);
         let crni_kralj: File_rank = File_rank::new_iz_broja(self.crne_figure[KRALJ]);
 
-        let (beli_kralj_eval, crni_kralj_eval) = self.eval_pozicija_kralja(beli_materijal, crni_materijal, &beli_kralj, &crni_kralj, beli_ima_kraljicu, crni_ima_kraljicu);
+        let (beli_kralj_eval, crni_kralj_eval) = self.eval_pozicija_kralja(&tabla_pijuna, beli_materijal, crni_materijal, &beli_kralj, &crni_kralj, beli_ima_kraljicu, crni_ima_kraljicu);
         let (eval_belih_figura, eval_crnih_figura) = self.eval_pozicije_figura_podrazumeva_figure_se_nalaze_izmedju_levog_i_desnog_konja(&tabla_pijuna);
         let (eval_belih_pijuna, eval_crnih_pijuna) = self.eval_pijuna();
 
@@ -280,10 +282,10 @@ impl Tabla {
 
 
 
-    fn eval_pozicija_kralja(&self, beli_materijal: f32, crni_materijal: f32, beli_kralj: &File_rank, crni_kralj: &File_rank, beli_ima_kraljicu: bool, crni_ima_kraljicu: bool) -> (f32, f32){
+    fn eval_pozicija_kralja(&self, tabla_pijuna: &Tabla_pijuna, beli_materijal: f32, crni_materijal: f32, beli_kralj: &File_rank, crni_kralj: &File_rank, beli_ima_kraljicu: bool, crni_ima_kraljicu: bool) -> (f32, f32){
         let mut eval_beli_kralj: f32 = 0.0;
         if (crni_materijal > MATERIJAL_KAD_JE_PARTIJA_U_ZAVRSNICI) || crni_ima_kraljicu{
-            eval_beli_kralj += self.evaluacija_kralja_protivnik_ima_dosta_materijala(true, beli_kralj)
+            eval_beli_kralj += self.evaluacija_kralja_protivnik_ima_dosta_materijala(tabla_pijuna, true, beli_kralj)
         } else {
             eval_beli_kralj += self.evaluacija_kralja_protivnik_ima_manje_materijala(true, beli_kralj);
         }
@@ -296,7 +298,7 @@ impl Tabla {
 
         let mut eval_crni_kralj: f32 = 0.0;
         if (beli_materijal > MATERIJAL_KAD_JE_PARTIJA_U_ZAVRSNICI) || beli_ima_kraljicu{
-            eval_crni_kralj += self.evaluacija_kralja_protivnik_ima_dosta_materijala(false, crni_kralj);
+            eval_crni_kralj += self.evaluacija_kralja_protivnik_ima_dosta_materijala(tabla_pijuna, false, crni_kralj);
         } else {
             eval_crni_kralj += self.evaluacija_kralja_protivnik_ima_manje_materijala(false, crni_kralj);
         }
@@ -311,17 +313,19 @@ impl Tabla {
     }
 
 
-    fn evaluacija_kralja_protivnik_ima_dosta_materijala(&self, kralj_je_beo: bool, kralj: &File_rank) -> f32 {
+    fn evaluacija_kralja_protivnik_ima_dosta_materijala(&self, tabla_pijuna: &Tabla_pijuna, kralj_je_beo: bool, kralj: &File_rank) -> f32 {
         let mut eval: f32 = 0.0;
         let figure: &[u8;16];
         let (prvi_rank, drugi_rank, treci_rank): (u8,u8,u8);
         let rokada_moguca: bool;
+        let protivnicki_kralj: File_rank;
 
         if kralj_je_beo {
             if kralj.rank > 2 {
                 eval -= KRALJ_NA_OTVORENOM;
             } 
             figure = &self.bele_figure;
+            protivnicki_kralj = File_rank::new_iz_broja(self.crne_figure[KRALJ]);
             prvi_rank = 1;
             drugi_rank = 2;
             treci_rank = 3;
@@ -334,6 +338,7 @@ impl Tabla {
             drugi_rank = 7;
             treci_rank = 6;
             figure = &self.crne_figure;
+            protivnicki_kralj = File_rank::new_iz_broja(self.bele_figure[KRALJ]);
             rokada_moguca = self.rokada().nijedna_rokada_ove_boje_nije_moguca(false);
         }
        
@@ -346,6 +351,7 @@ impl Tabla {
         } 
 
         eval += self.guranje_pijuna_ako_kralj_nije_na_drugoj_strani(figure, kralj, prvi_rank, drugi_rank, treci_rank);
+        eval += self.eval_kralja_suprotna_rokada(tabla_pijuna, kralj_je_beo);
         eval
     }
 
@@ -370,18 +376,78 @@ impl Tabla {
         if kralj.rank != prvi_rank{
             return 0.0;
         }
-        
+        let (rank_g_pijuna, _) = crate::broj_to_rank_file(figure[G_PIJUN]);
 
         if kralj.file == E_FILE || kralj.file >= G_FILE{
+            if figure[G_PIJUN] != treci_rank || Tabla::figura_je_pojedena(figure, G_PIJUN){
+                return -GURANJE_G_PIJUNA_2_POLJA_AKO_KRALJ_NIJE_NA_DRUGOJ_STRANI;
+            }
+
             if figure[G_PIJUN] == drugi_rank{
                 return 0.0;
             }
-            if (figure[G_PIJUN] != treci_rank) || Tabla::figura_je_pojedena(figure, G_PIJUN){
-                return -GURANJE_G_PIJUNA_2_POLJA_AKO_KRALJ_NIJE_NA_DRUGOJ_STRANI;
-            }
         }
 
+        let (rank_b_pijuna,_) = crate::broj_to_rank_file(figure[B_PIJUN]);
+        if kralj.file <= C_FILE {
+            if Tabla::figura_je_pojedena(figure, B_PIJUN) ||rank_b_pijuna != treci_rank{
+                return -GURANJE_B_PIJUNA_2_POLJA_AKO_JE_KRALJ_NA_KRALJICINOJ_STRANI;
+            }  
+
+            if rank_b_pijuna == drugi_rank{
+                return 0.0;
+            } 
+
+            if rank_b_pijuna == treci_rank {
+                return -GURANJE_B_PIJUNA_1_POLJE_AKO_JE_KRALJ_NA_KRALJICINOJ_STRANI;
+            }
+        }
+        
         0.0
+    }
+
+    fn eval_kralja_suprotna_rokada(&self, tabla_pijuna: &Tabla_pijuna, kralj_je_beo: bool) -> f32 {
+        let beli_kralj: File_rank = File_rank::new_iz_broja(self.bele_figure[KRALJ]);
+        let crni_kralj: File_rank = File_rank::new_iz_broja(self.crne_figure[KRALJ]);
+
+        if abs(crni_kralj.file as i32 - beli_kralj.file as i32) < 2{
+            return 0.0
+        }
+
+        if kralj_je_beo{
+            let mut eval_za_pijune_ispred_belog: i8 = -8;
+            let mut i: u8 = 2;
+             while i<=7 {
+                if tabla_pijuna.pijun_crne_boje(i, beli_kralj.file){
+                eval_za_pijune_ispred_belog = -(7 - i as i8);
+                break;
+            }
+                i+=1;
+            }
+            let mut eval: f32 = eval_za_pijune_ispred_belog as f32 / 8.0;
+            if Tabla::figura_je_pojedena(&self.bele_figure, A_PIJUN-1+beli_kralj.file as usize) ||
+            Tabla::pijun_je_promovisan(self.bele_figure[A_PIJUN-1+beli_kralj.file as usize]){
+                eval -= POJEDEN_PIJUN_ISPRED_KRALJA;
+            }
+            return eval;
+        } else {
+
+            let mut eval_za_pijuna_ispred_crnog: i8 = -8;
+            let mut i: u8 = 7;
+            while i>=2 {
+                    if tabla_pijuna.pijun_bele_boje(i, crni_kralj.file){
+                         eval_za_pijuna_ispred_crnog = -(i as i8 - 2);
+                    }
+                    i-=1;
+            }
+
+            let mut eval: f32 = eval_za_pijuna_ispred_crnog as f32 / 8.0;
+            if Tabla::figura_je_pojedena(&self.crne_figure, A_PIJUN-1+crni_kralj.file as usize) ||
+             Tabla::pijun_je_promovisan(self.crne_figure[A_PIJUN-1+crni_kralj.file as usize]){
+                eval -= POJEDEN_PIJUN_ISPRED_KRALJA;
+            }
+            return eval
+        }
     }
 
     pub fn materijalna_prednost_onog_ko_je_na_potezu(&self) -> f32 {
