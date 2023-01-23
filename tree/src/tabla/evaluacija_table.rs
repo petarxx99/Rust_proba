@@ -2,10 +2,11 @@ use crate::proba_sah_drveta::vrednost_mata;
 
 use super::{Figura, Tabla, nekompresirana_tabla::{Nekompresirana_tabla, Tabla_pijuna}, File_rank, D_FILE, E_FILE, F_FILE, KRALJ, LEVI_KONJ, DESNI_KONJ, LEVI_LOVAC, DESNI_LOVAC, A_FILE, H_FILE, E_PIJUN, D_PIJUN, F_PIJUN, LEVI_TOP, C_FILE, DESNI_TOP, KRALJICA, G_PIJUN, G_FILE, B_PIJUN, kretanje_figura::figure::abs, A_PIJUN};
 
+static KOLIKO_POLJA_KRETANJA_FIGURA_VREDI_JEDAN_POEN: f32 = 16.0;
 static PREDNOST_POTEZA: f32 = 0.2;
 static KRALJ_NA_OTVORENOM: f32 = 3.0;
 static KRALJ_NA_SREDINI: f32 = 1.0;
-static KRALJ_NA_SREDINI_I_NEMA_ROKADE: f32 = 1.4;
+static KRALJ_NA_SREDINI_I_NEMA_ROKADE: f32 = 2.4;
 
 static KRALJ_JE_DALEKO_U_ZAVRSNICI:f32 = 2.5;
 static KRALJ_JE_NA_TRECEM_RANKU_U_ZAVRSNICI: f32 = 1.0;
@@ -70,9 +71,10 @@ impl Tabla {
         let (beli_kralj_eval, crni_kralj_eval) = self.eval_pozicija_kralja(&tabla_pijuna, beli_materijal, crni_materijal, &beli_kralj, &crni_kralj, beli_ima_kraljicu, crni_ima_kraljicu);
         let (eval_belih_figura, eval_crnih_figura) = self.eval_pozicije_figura_podrazumeva_figure_se_nalaze_izmedju_levog_i_desnog_konja(&tabla_pijuna);
         let (eval_belih_pijuna, eval_crnih_pijuna) = self.eval_pijuna();
+        let (beli_potezi, crni_potezi) = self.broj_poteza_kretanja_figura_belog_i_crnog(nekompresirana_tabla);
 
-        let beli_eval: f32 = beli_materijal + beli_kralj_eval + eval_belih_figura + eval_belih_pijuna;
-        let crni_eval: f32 = crni_materijal + crni_kralj_eval + eval_crnih_figura + eval_crnih_pijuna;
+        let beli_eval: f32 = beli_materijal + beli_kralj_eval + eval_belih_figura + eval_belih_pijuna + beli_potezi as f32 / KOLIKO_POLJA_KRETANJA_FIGURA_VREDI_JEDAN_POEN;
+        let crni_eval: f32 = crni_materijal + crni_kralj_eval + eval_crnih_figura + eval_crnih_pijuna + crni_potezi as f32 / KOLIKO_POLJA_KRETANJA_FIGURA_VREDI_JEDAN_POEN;
         beli_eval - crni_eval
     }
 
@@ -382,24 +384,26 @@ impl Tabla {
 
     fn guranje_pijuna_ako_kralj_nije_na_drugoj_strani(&self, figure: &[u8;16], kralj: &File_rank,
     prvi_rank: u8, drugi_rank: u8, treci_rank: u8) -> f32 {
-        if kralj.rank != prvi_rank{
-            return 0.0;
-        }
+       
         let (rank_g_pijuna, _) = crate::broj_to_rank_file(figure[G_PIJUN]);
 
         if kralj.file == E_FILE || kralj.file >= G_FILE{
-            if figure[G_PIJUN] != treci_rank || Tabla::figura_je_pojedena(figure, G_PIJUN){
+            if Tabla::figura_je_pojedena(figure, G_PIJUN){
                 return -GURANJE_G_PIJUNA_2_POLJA_AKO_KRALJ_NIJE_NA_DRUGOJ_STRANI;
             }
-
-            if figure[G_PIJUN] == drugi_rank{
+            if rank_g_pijuna == drugi_rank{
                 return 0.0;
             }
+
+            if rank_g_pijuna != treci_rank {
+                return -GURANJE_G_PIJUNA_2_POLJA_AKO_KRALJ_NIJE_NA_DRUGOJ_STRANI;
+            }
+            
         }
 
         let (rank_b_pijuna,_) = crate::broj_to_rank_file(figure[B_PIJUN]);
         if kralj.file <= C_FILE {
-            if Tabla::figura_je_pojedena(figure, B_PIJUN) ||rank_b_pijuna != treci_rank{
+            if Tabla::figura_je_pojedena(figure, B_PIJUN) {
                 return -GURANJE_B_PIJUNA_2_POLJA_AKO_JE_KRALJ_NA_KRALJICINOJ_STRANI;
             }  
 
@@ -410,6 +414,7 @@ impl Tabla {
             if rank_b_pijuna == treci_rank {
                 return -GURANJE_B_PIJUNA_1_POLJE_AKO_JE_KRALJ_NA_KRALJICINOJ_STRANI;
             }
+            return -GURANJE_B_PIJUNA_2_POLJA_AKO_JE_KRALJ_NA_KRALJICINOJ_STRANI;
         }
         
         0.0
@@ -460,13 +465,13 @@ impl Tabla {
         let mut eval: f32 = 0.0;
         let pijun_ispred_kralja: File_rank = File_rank::new_iz_broja(figure[A_PIJUN-1 + kralj.file as usize]);
         if !Tabla::pijun_postoji(figure, A_PIJUN-1 + kralj.file as usize){
-            eval += POJEDEN_PIJUN_ISPRED_SOPSTVENOG_KRALJA;
+            eval -= POJEDEN_PIJUN_ISPRED_SOPSTVENOG_KRALJA;
         } else if pijun_ispred_kralja. rank == treci_rank {
             if !self.lovac_boje_se_nalazi_na_polju(figure, &File_rank::new(kralj.file, drugi_rank)){
-                eval += PIJUN_ISPRED_KRALJA_GURNUT_JEDNO_POLJE_NAKON_ROKADE;
+                eval -= PIJUN_ISPRED_KRALJA_GURNUT_JEDNO_POLJE_NAKON_ROKADE;
             }
         } else {
-            eval += PIJUN_ISPRED_KRALJA_GURNUT_VISE_OD_JEDNOG_POLJA_NAKON_ROKADE;
+            eval -= PIJUN_ISPRED_KRALJA_GURNUT_VISE_OD_JEDNOG_POLJA_NAKON_ROKADE;
         }
         
         eval

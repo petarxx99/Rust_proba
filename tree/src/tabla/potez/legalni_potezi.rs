@@ -1,4 +1,4 @@
-use crate::tabla::{Tabla, kretanje_figura::Figura_interfejs, Figura, Rokada, Promocija, Ima_podatke_o_tabli, File_rank, nekompresirana_tabla::Nekompresirana_tabla};
+use crate::tabla::{Tabla, kretanje_figura::Figura_interfejs, Figura, Rokada, Promocija, Ima_podatke_o_tabli, File_rank, nekompresirana_tabla::Nekompresirana_tabla, LEVI_KONJ, LEVI_LOVAC, DESNI_LOVAC, LEVI_TOP, DESNI_TOP, DESNI_KONJ};
 
 use super::{Potez_bits, Potez, Potez_polje};
 
@@ -65,6 +65,38 @@ impl Tabla {
 
 
         legalni_potezi
+    }
+
+    pub fn broj_poteza_kretanja_figura_belog_i_crnog(&self, nekompresirana_tabla: &Nekompresirana_tabla) -> (u8, u8){
+        let rokada: Rokada = Rokada::new_sve_rokade_moguce();
+        let mut broj_belih_poteza: u8 = 0;
+        let mut broj_crnih_poteza: u8 = 0;
+        let redni_brojevi_figura_koje_me_interesuju = [LEVI_KONJ, DESNI_KONJ, LEVI_LOVAC, DESNI_LOVAC, LEVI_TOP, DESNI_TOP];
+
+        for i in redni_brojevi_figura_koje_me_interesuju {
+            let bela_figura_option: Option<Figura_interfejs<Nekompresirana_tabla>> = Figura::iz_niza_u_figure_interfejs(&self.bele_figure, i);
+            match bela_figura_option {
+                None => {},
+                Some(_figura) => {
+                    let trenutno_polje_figure = File_rank::new_iz_broja(self.bele_figure[i]);
+                    let potezi_figure: Vec<File_rank> = (&_figura.potezi_figure)(nekompresirana_tabla, &trenutno_polje_figure, &rokada, &None, true);
+                    broj_belih_poteza += potezi_figure.len() as u8;
+                }
+            
+            }
+
+            let crna_figura_option: Option<Figura_interfejs<Nekompresirana_tabla>> = Figura::iz_niza_u_figure_interfejs(&self.crne_figure, i);
+            match crna_figura_option{
+                None => {},
+                Some(_figura) => {
+                    let trenutno_polje_figure = File_rank::new_iz_broja(self.crne_figure[i]);
+                    let potezi_figure:  Vec<File_rank> =(&_figura.potezi_figure)(nekompresirana_tabla, &trenutno_polje_figure, &rokada, &None, false);
+                    broj_crnih_poteza += potezi_figure.len() as u8;
+                }
+            }
+        }
+
+        (broj_belih_poteza, broj_crnih_poteza)
     }
 
 
