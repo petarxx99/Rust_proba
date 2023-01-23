@@ -162,7 +162,7 @@ impl Tabla {
 
 #[cfg(test)]
 mod test_legalni_potezi{
-    use crate::{tabla::{Tabla, potez::{Potez_bits, Potez, Potez_polje}, Promocija, G_FILE, F_FILE, E_FILE, D_FILE, C_FILE, B_FILE, H_FILE, A_FILE, DESNI_LOVAC, DESNI_TOP, KRALJ, LEVI_TOP, D_PIJUN}, permanencija::Zapisivac_partije_u_fajl};
+    use crate::{tabla::{Tabla, potez::{Potez_bits, Potez, Potez_polje}, Promocija, G_FILE, F_FILE, E_FILE, D_FILE, C_FILE, B_FILE, H_FILE, A_FILE, DESNI_LOVAC, DESNI_TOP, KRALJ, LEVI_TOP, D_PIJUN, DESNI_KONJ, KRALJICA}, permanencija::Zapisivac_partije_u_fajl};
 
 
 
@@ -363,6 +363,26 @@ mod test_legalni_potezi{
         assert_eq!(2, tabla.svi_legalni_potezi().len());
     }
 
+    #[test]
+    fn posle_e4_e5_Bc4_Bc5_Qf3_ima_34_legalnih_poteza(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 1, C_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 8, C_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 1, F_FILE, 3);
+
+        let legalni_potezi: Vec<Potez_bits> = tabla.svi_legalni_potezi();
+        assert_eq!(33, legalni_potezi.len());
+        assert_eq!(true, legalni_potezi.contains(&Potez_bits::new(DESNI_KONJ as u8, F_FILE, 6, Promocija::None)));
+
+        let tabla: Tabla = tabla.odigraj_validan_potez_bez_promocije(G_FILE, 8, F_FILE, 6);
+        let legalni_potezi: Vec<Potez_bits> = tabla.svi_legalni_potezi();
+        assert_eq!(false, legalni_potezi.contains(&Potez_bits::new(KRALJICA as u8, F_FILE, 7, Promocija::None)));
+        assert_eq!(41, legalni_potezi.len());
+        assert_eq!(true, tabla.nerekursivno_evaluiraj_poziciju_sa_proverom_mata(&tabla.to_nekompresirana_tabla()) < 1.5);
+
+    }
    
 }
 
