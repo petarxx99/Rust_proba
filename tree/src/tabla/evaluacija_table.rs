@@ -2,7 +2,7 @@ use crate::proba_sah_drveta::vrednost_mata;
 
 use super::{Figura, Tabla, nekompresirana_tabla::{Nekompresirana_tabla, Tabla_pijuna}, File_rank, D_FILE, E_FILE, F_FILE, KRALJ, LEVI_KONJ, DESNI_KONJ, LEVI_LOVAC, DESNI_LOVAC, A_FILE, H_FILE, E_PIJUN, D_PIJUN, F_PIJUN, LEVI_TOP, C_FILE, DESNI_TOP, KRALJICA, G_PIJUN, G_FILE, B_PIJUN, kretanje_figura::figure::abs, A_PIJUN};
 
-static KOLIKO_POLJA_KRETANJA_FIGURA_VREDI_JEDAN_POEN: f32 = 16.0;
+static KOLIKO_POLJA_KRETANJA_FIGURA_VREDI_JEDAN_POEN: f32 = 32.0;
 static PREDNOST_POTEZA: f32 = 0.2;
 static KRALJ_NA_OTVORENOM: f32 = 3.0;
 static KRALJ_NA_SREDINI: f32 = 1.0;
