@@ -12,7 +12,7 @@ static KRALJ_JE_DALEKO_U_ZAVRSNICI:f32 = 2.5;
 static KRALJ_JE_NA_TRECEM_RANKU_U_ZAVRSNICI: f32 = 1.0;
 
 static FIGURA_NIJE_NA_KRAJNJEM_RANKU: f32 = 0.325;
-static KONJ_NIJE_NA_IVICNOM_FAJLU: f32 = 0.5;
+static KONJ_NIJE_NA_IVICNOM_FAJLU: f32 = 0.75;
 static MATERIJAL_KAD_JE_PARTIJA_U_ZAVRSNICI:f32 = 20.7;
 
 static CENTRALNI_PIJUN_NA_TRECEM_RANKU: f32 = 0.25;
@@ -71,10 +71,10 @@ impl Tabla {
         let (beli_kralj_eval, crni_kralj_eval) = self.eval_pozicija_kralja(&tabla_pijuna, beli_materijal, crni_materijal, &beli_kralj, &crni_kralj, beli_ima_kraljicu, crni_ima_kraljicu);
         let (eval_belih_figura, eval_crnih_figura) = self.eval_pozicije_figura_podrazumeva_figure_se_nalaze_izmedju_levog_i_desnog_konja(&tabla_pijuna);
         let (eval_belih_pijuna, eval_crnih_pijuna) = self.eval_pijuna();
-        let (beli_potezi, crni_potezi) = self.broj_poteza_kretanja_figura_belog_i_crnog(nekompresirana_tabla);
+      //  let (beli_potezi, crni_potezi) = self.broj_poteza_kretanja_figura_belog_i_crnog(nekompresirana_tabla);
 
-        let beli_eval: f32 = beli_materijal + beli_kralj_eval + eval_belih_figura + eval_belih_pijuna + beli_potezi as f32 / KOLIKO_POLJA_KRETANJA_FIGURA_VREDI_JEDAN_POEN;
-        let crni_eval: f32 = crni_materijal + crni_kralj_eval + eval_crnih_figura + eval_crnih_pijuna + crni_potezi as f32 / KOLIKO_POLJA_KRETANJA_FIGURA_VREDI_JEDAN_POEN;
+        let beli_eval: f32 = beli_materijal + beli_kralj_eval + eval_belih_figura + eval_belih_pijuna /*+ beli_potezi as f32 / KOLIKO_POLJA_KRETANJA_FIGURA_VREDI_JEDAN_POEN*/;
+        let crni_eval: f32 = crni_materijal + crni_kralj_eval + eval_crnih_figura + eval_crnih_pijuna /*+ crni_potezi as f32 / KOLIKO_POLJA_KRETANJA_FIGURA_VREDI_JEDAN_POEN*/;
         beli_eval - crni_eval
     }
 
