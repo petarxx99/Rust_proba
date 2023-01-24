@@ -106,7 +106,7 @@ fn izracunaj_rekursivno_samo_jedenje_figura(&self,
         return self.vrati_nerekursivnu_evaluaciju(vrednost_koju_protivnik_ima_u_dzepu, ja_sam_beli)
     }
 
-    let mut najbolji_potez_do_sad: f32 = vrednost_mata(ja_sam_beli);
+    let mut najbolji_potez_do_sad: f32 = self.nerekursivno_evaluiraj_poziciju(&self.to_nekompresirana_tabla());
     for potez in &potezi_jedenja {
         let tabla_nakon_poteza: Tabla = self.tabla_nakon_poteza_bits(potez);
 
@@ -119,7 +119,7 @@ fn izracunaj_rekursivno_samo_jedenje_figura(&self,
         }
     }
 
-    (najbolji_potez_do_sad, true)
+    vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, najbolji_potez_do_sad, ja_sam_beli)
 
 }
 
