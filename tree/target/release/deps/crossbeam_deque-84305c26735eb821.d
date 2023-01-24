@@ -1,0 +1,8 @@
+/home/bokalovic/Documents/Rust/github/sah/Rust_sah_nastavak/Rust_proba/tree/target/release/deps/crossbeam_deque-84305c26735eb821.rmeta: /home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-deque-0.8.2/src/lib.rs /home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-deque-0.8.2/src/deque.rs
+
+/home/bokalovic/Documents/Rust/github/sah/Rust_sah_nastavak/Rust_proba/tree/target/release/deps/libcrossbeam_deque-84305c26735eb821.rlib: /home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-deque-0.8.2/src/lib.rs /home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-deque-0.8.2/src/deque.rs
+
+/home/bokalovic/Documents/Rust/github/sah/Rust_sah_nastavak/Rust_proba/tree/target/release/deps/crossbeam_deque-84305c26735eb821.d: /home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-deque-0.8.2/src/lib.rs /home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-deque-0.8.2/src/deque.rs
+
+/home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-deque-0.8.2/src/lib.rs:
+/home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-deque-0.8.2/src/deque.rs:

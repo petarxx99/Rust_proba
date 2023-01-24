@@ -1,0 +1,10 @@
+/home/bokalovic/Documents/Rust/github/sah/Rust_sah_nastavak/Rust_proba/tree/target/debug/deps/tinytemplate-12f76a01d75770a1.rmeta: /home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/tinytemplate-1.2.1/src/lib.rs /home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/tinytemplate-1.2.1/src/compiler.rs /home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/tinytemplate-1.2.1/src/error.rs /home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/tinytemplate-1.2.1/src/instruction.rs /home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/tinytemplate-1.2.1/src/syntax.rs /home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/tinytemplate-1.2.1/src/template.rs
+
+/home/bokalovic/Documents/Rust/github/sah/Rust_sah_nastavak/Rust_proba/tree/target/debug/deps/tinytemplate-12f76a01d75770a1.d: /home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/tinytemplate-1.2.1/src/lib.rs /home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/tinytemplate-1.2.1/src/compiler.rs /home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/tinytemplate-1.2.1/src/error.rs /home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/tinytemplate-1.2.1/src/instruction.rs /home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/tinytemplate-1.2.1/src/syntax.rs /home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/tinytemplate-1.2.1/src/template.rs
+
+/home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/tinytemplate-1.2.1/src/lib.rs:
+/home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/tinytemplate-1.2.1/src/compiler.rs:
+/home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/tinytemplate-1.2.1/src/error.rs:
+/home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/tinytemplate-1.2.1/src/instruction.rs:
+/home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/tinytemplate-1.2.1/src/syntax.rs:
+/home/bokalovic/.cargo/registry/src/github.com-1ecc6299db9ec823/tinytemplate-1.2.1/src/template.rs:
