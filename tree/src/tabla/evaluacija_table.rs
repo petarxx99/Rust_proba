@@ -69,7 +69,7 @@ impl Tabla {
         let crni_kralj: File_rank = File_rank::new_iz_broja(self.crne_figure[KRALJ]);
 
         let (beli_kralj_eval, crni_kralj_eval) = self.eval_pozicija_kralja(&tabla_pijuna, beli_materijal, crni_materijal, &beli_kralj, &crni_kralj, beli_ima_kraljicu, crni_ima_kraljicu);
-        let (eval_belih_figura, eval_crnih_figura) = self.eval_pozicije_figura_podrazumeva_figure_se_nalaze_izmedju_levog_i_desnog_konja(&tabla_pijuna);
+        let (eval_belih_figura, eval_crnih_figura) = self.eval_pozicije_figura(&tabla_pijuna);
         let (eval_belih_pijuna, eval_crnih_pijuna) = self.eval_pijuna();
       //  let (beli_potezi, crni_potezi) = self.broj_poteza_kretanja_figura_belog_i_crnog(nekompresirana_tabla);
 
@@ -125,7 +125,7 @@ impl Tabla {
     eval
    }
 
-    fn eval_pozicije_figura_podrazumeva_figure_se_nalaze_izmedju_levog_i_desnog_konja(&self,
+    fn eval_pozicije_figura(&self,
     tabla_pijuna: &Tabla_pijuna) -> (f32, f32) {
         let mut bela_evaluacija: f32 = 0.0;
         let mut crna_evaluacija: f32 = 0.0;
