@@ -61,7 +61,7 @@ impl Tabla{
         (najbolji_potez, najbolja_evaluacija)
     }
 
-    fn evaluiraj_gledajuci_poteze_jedenja(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>,
+fn evaluiraj_gledajuci_poteze_jedenja(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>,
 materijalno_stanje: f32, materijal_proslog_poteza:f32, materijal_pretproslog_poteza: f32, ja_volim_vise:bool) -> (f32, bool){
         
     let mali_broj: f32 = 0.125;
@@ -71,7 +71,7 @@ materijalno_stanje: f32, materijal_proslog_poteza:f32, materijal_pretproslog_pot
         let najgora_evaluacija_za_protivnika: Evaluacija_poteza_jedenja = najgori_eval_poteza_jedenja(!ja_volim_vise);
         let eval = self.izracunaj_rekursivno_samo_jedenje_figura(&najgora_evaluacija_za_protivnika, ja_volim_vise, materijal_proslog_poteza, materijal_pretproslog_poteza);
         return vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, eval.kompletna_evaluacija, ja_volim_vise)
-    }
+}
 
 pub fn izracunaj_rekursivno(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ja_volim_vise:  bool,
 broj_rekursija: u8, trenutna_rekursija: u8, materijal_proslog_poteza: f32, materijal_pretproslog_poteza: f32) -> (f32, bool){
