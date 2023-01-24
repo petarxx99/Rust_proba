@@ -75,7 +75,7 @@ fn socket_proba(moj_port: u32, protivnicki_port: u32){
     let zapisivac: Zapisivac_partije_u_fajl = Zapisivac_partije_u_fajl::new("log_partije.txt".to_owned());
 
     let mut beli_ili_crni: String = String::new();
-    println!("Napisite 1 ako je kompjuter beli, 2 ako je kompjuter crni.");
+    println!("Napisite 1 ako je kompjuter beli, 2 ako je kompjuter crni.\n Write 1 if you want the chess engine to be white, write 2 if you want the chess engine to be black");
     std::io::stdin().read_line(&mut beli_ili_crni).expect("Greska pri citanju iz konzole.");
     if beli_ili_crni.trim().starts_with("1"){
         odigraj_partiju_socket(true, 4, komunikator, zapisivac);
