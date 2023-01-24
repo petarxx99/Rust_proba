@@ -130,8 +130,9 @@ impl Tabla {
         let mut bela_evaluacija: f32 = 0.0;
         let mut crna_evaluacija: f32 = 0.0;
 
-        let mut i: usize = LEVI_KONJ;
-        while i<= DESNI_KONJ {
+        let figure: [usize;4] = [LEVI_KONJ, DESNI_KONJ, LEVI_LOVAC, DESNI_LOVAC];
+        
+        for i in figure {
             if !Tabla::figura_je_pojedena(&self.bele_figure, i){
                 let (rank, _) = crate::broj_to_rank_file(self.bele_figure[i]);
                 if rank != 1 && rank != 8 {
@@ -145,7 +146,6 @@ impl Tabla {
                     crna_evaluacija += FIGURA_NIJE_NA_KRAJNJEM_RANKU;
                 }
             }
-            i += 1;
         }
 
         let beli_konj: f32 = self.eval_konj_nije_na_ivici(&self.bele_figure);

@@ -255,4 +255,27 @@ mod test_obrada_legalnih_poteza{
         /* Lovac, e pijun, konj i a pijun su napadnuti. */
         assert_eq!(4, tabla.moje_napadnute_figure().len());
     }
+
+    #[test]
+    fn posle_e4_e5_f3_Qh4_igrac_je_u_sahu(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 2, F_FILE, 3)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 8, H_FILE, 4);
+
+        assert_eq!(true, tabla.igrac_je_u_sahu(&tabla.to_nekompresirana_tabla()));
+    }
+
+    #[test]
+    fn posle_e4_e5_d3_Qh4_igrac_nije_u_sahu(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 2, D_FILE, 3)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 8, H_FILE, 4);
+
+        assert_eq!(false, tabla.igrac_je_u_sahu(&tabla.to_nekompresirana_tabla()));
+
+    }
 }
