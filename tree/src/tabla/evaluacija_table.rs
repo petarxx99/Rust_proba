@@ -71,10 +71,10 @@ impl Tabla {
         let (beli_kralj_eval, crni_kralj_eval) = self.eval_pozicija_kralja(&tabla_pijuna, beli_materijal, crni_materijal, &beli_kralj, &crni_kralj, beli_ima_kraljicu, crni_ima_kraljicu);
         let (eval_belih_figura, eval_crnih_figura) = self.eval_pozicije_figura(&tabla_pijuna);
         let (eval_belih_pijuna, eval_crnih_pijuna) = self.eval_pijuna();
-      //  let (beli_potezi, crni_potezi) = self.broj_poteza_kretanja_figura_belog_i_crnog(nekompresirana_tabla);
+        let (beli_potezi, crni_potezi) = self.broj_poteza_kretanja_figura_belog_i_crnog(nekompresirana_tabla);
 
-        let beli_eval: f32 = beli_materijal + beli_kralj_eval + eval_belih_figura + eval_belih_pijuna /*+ beli_potezi as f32 / KOLIKO_POLJA_KRETANJA_FIGURA_VREDI_JEDAN_POEN*/;
-        let crni_eval: f32 = crni_materijal + crni_kralj_eval + eval_crnih_figura + eval_crnih_pijuna /*+ crni_potezi as f32 / KOLIKO_POLJA_KRETANJA_FIGURA_VREDI_JEDAN_POEN*/;
+        let beli_eval: f32 = beli_materijal + beli_kralj_eval + eval_belih_figura + eval_belih_pijuna + beli_potezi as f32 / KOLIKO_POLJA_KRETANJA_FIGURA_VREDI_JEDAN_POEN;
+        let crni_eval: f32 = crni_materijal + crni_kralj_eval + eval_crnih_figura + eval_crnih_pijuna + crni_potezi as f32 / KOLIKO_POLJA_KRETANJA_FIGURA_VREDI_JEDAN_POEN;
         beli_eval - crni_eval
     }
 
@@ -134,15 +134,17 @@ impl Tabla {
         
         for i in figure {
             if !Tabla::figura_je_pojedena(&self.bele_figure, i){
-                let (rank, _) = crate::broj_to_rank_file(self.bele_figure[i]);
-                if rank != 1 && rank != 8 {
+                let (rank, file) = crate::broj_to_rank_file(self.bele_figure[i]);
+                let (rank_pijuna, _) = crate::broj_to_rank_file(self.bele_figure[A_PIJUN-1+file as usize]);
+                if rank != 1 && !(rank == 3 && rank_pijuna == 2){
                     bela_evaluacija += FIGURA_NIJE_NA_KRAJNJEM_RANKU;
                 }
             }
 
             if !Tabla::figura_je_pojedena(&self.crne_figure, i){
-                let (rank, _) = crate::broj_to_rank_file(self.crne_figure[i]);
-                if rank != 1 && rank != 8 {
+                let (rank, file) = crate::broj_to_rank_file(self.crne_figure[i]);
+                let (rank_pijuna, _) = crate::broj_to_rank_file(self.crne_figure[A_PIJUN-1+file as usize]);
+                if rank != 8 && !(rank == 6 && rank_pijuna == 7){
                     crna_evaluacija += FIGURA_NIJE_NA_KRAJNJEM_RANKU;
                 }
             }
