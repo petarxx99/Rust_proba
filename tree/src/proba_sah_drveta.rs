@@ -112,8 +112,8 @@ fn izracunaj_rekursivno_samo_jedenje_figura(&self,
     let beli_minus_crni_materijal: f32 = beli_materijal - crni_materijal;
     let materijal: f32 = self.materijalna_prednost_onog_ko_je_na_potezu();
 
-    let mala_vrednost: f32 = 0.125;
-    if materijal+ mala_vrednost > materijal_pretproslog_poteza{
+    let mali_broj: f32 = 0.125;
+    if materijal + mali_broj > materijal_pretproslog_poteza{
         return vrati_evaluaciju_poteza_jedenja(vrednost_koju_protivnik_ima_u_dzepu, beli_minus_crni_materijal, self.nerekursivno_evaluiraj_poziciju(&self.to_nekompresirana_tabla()), ja_sam_beli);
     }
 

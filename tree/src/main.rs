@@ -1,6 +1,6 @@
 use komunikacija::Socket_komunikator;
 use komunikacija::enkoder_poteza::Trobajtni_enkoder_poteza;
-use moj_benchmark::benchmark_svi_legalni_potezi_posle_e4_e5_d4_d5;
+use moj_benchmark::{benchmark_svi_legalni_potezi_posle_e4_e5_d4_d5, benchmark_brzina_poteza};
 use permanencija::Zapisivac_partije;
 use tabla::{Tabla, E_FILE, D_FILE, File_rank};
 
@@ -52,8 +52,9 @@ fn main() {
    //odigraj_partiju(true, 4);
     //partije();
     //odigraj_partiju2(true, 2);
-   socket_proba(5003, 5000);
+    socket_proba(5003, 5000);
   // benchmark_svi_legalni_potezi_posle_e4_e5_d4_d5();
+  //benchmark_brzina_poteza();
    
 }
 

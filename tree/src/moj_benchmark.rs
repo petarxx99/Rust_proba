@@ -23,3 +23,24 @@ pub fn benchmark_svi_legalni_potezi_posle_e4_e5_d4_d5(){
     }
     
 }
+
+
+pub fn benchmark_brzina_poteza(){
+    let mut tabla: Tabla = Tabla::pocetna_pozicija()
+    .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+    .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5);
+    
+    for _ in 0..1000000{
+        tabla = tabla
+        .odigraj_validan_potez_bez_promocije(D_FILE, 1, H_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 8, H_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(H_FILE, 5, D_FILE, 1)
+        .odigraj_validan_potez_bez_promocije(H_FILE, 4, D_FILE, 8)
+        .odigraj_validan_potez_bez_promocije(A_FILE, 2, A_FILE, 2)
+        .odigraj_validan_potez_bez_promocije(A_FILE, 7, A_FILE, 7)
+        .odigraj_validan_potez_bez_promocije(B_FILE, 2, B_FILE, 2)
+        .odigraj_validan_potez_bez_promocije(B_FILE, 7, B_FILE, 7)
+        .odigraj_validan_potez_bez_promocije(C_FILE, 2, C_FILE, 2)
+        .odigraj_validan_potez_bez_promocije(C_FILE, 7, C_FILE, 7);
+    }
+}
