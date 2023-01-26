@@ -20,6 +20,7 @@ static CENTRALNI_PIJUN_NA_CETVRTOM_RANKU: f32 = 0.5;
 static CENTRALNI_PIJUN_NA_DRUGOJ_STRANI_TABLE: f32 = 0.75;
 static NIJEDAN_CENTRALNI_PIJUN_NIJE_POMEREN_2_POLJA: f32 = 0.5;
 static POMERANJE_F_PIJUNA_PRE_ROKADE: f32 = 0.5;
+static DUPLI_PIJUNI: f32 = 0.325;
 
 static TOP_NA_SREDINI: f32 = 0.125;
 static TOP_IZA_PIJUNA_NA_6_7_ranku: f32 = 0.125;
@@ -46,18 +47,18 @@ impl Tabla {
             }
     } 
          */
-
-    pub fn nerekursivno_evaluiraj_poziciju_sa_proverom_mata(&self, nekompresirana_tabla: &Nekompresirana_tabla) -> f32{
+    pub fn nerekursivno_i_nezahtevno_evaluiraj_poziciju_sa_proverom_mata(&self, nekompresirana_tabla: &Nekompresirana_tabla)->f32{
         let beli_je_na_potezu: bool = self.beli_je_na_potezu(); 
         if self.igrac_je_u_sahu(nekompresirana_tabla){
             if self.nema_legalnih_poteza(nekompresirana_tabla){
                 return vrednost_mata(beli_je_na_potezu);
             }
         }
-        self.nerekursivno_evaluiraj_poziciju(nekompresirana_tabla)
-    }     
-
-    pub fn nerekursivno_evaluiraj_poziciju(&self, nekompresirana_tabla: &Nekompresirana_tabla) -> f32 {
+        self.nerekursivno_i_nezahtevno_evaluiraj_poziciju(nekompresirana_tabla)
+    }
+    
+    
+    pub fn nerekursivno_i_nezahtevno_evaluiraj_poziciju(&self, nekompresirana_tabla: &Nekompresirana_tabla)->f32{
         let beli_je_na_potezu: bool = self.beli_je_na_potezu(); 
         if self.pre_koliko_poteza_je_50_move_rule_pomeren() >= 50 {
             return 0.0
@@ -71,18 +72,64 @@ impl Tabla {
         let (beli_kralj_eval, crni_kralj_eval) = self.eval_pozicija_kralja(&tabla_pijuna, beli_materijal, crni_materijal, &beli_kralj, &crni_kralj, beli_ima_kraljicu, crni_ima_kraljicu);
         let (eval_belih_figura, eval_crnih_figura) = self.eval_pozicije_figura(&tabla_pijuna);
         let (eval_belih_pijuna, eval_crnih_pijuna) = self.eval_pijuna();
-        let (beli_potezi, crni_potezi) = self.broj_poteza_kretanja_figura_belog_i_crnog(nekompresirana_tabla);
 
-        let beli_eval: f32 = beli_materijal + beli_kralj_eval + eval_belih_figura + eval_belih_pijuna + beli_potezi as f32 / KOLIKO_POLJA_KRETANJA_FIGURA_VREDI_JEDAN_POEN;
-        let crni_eval: f32 = crni_materijal + crni_kralj_eval + eval_crnih_figura + eval_crnih_pijuna + crni_potezi as f32 / KOLIKO_POLJA_KRETANJA_FIGURA_VREDI_JEDAN_POEN;
+        let beli_eval: f32 = beli_materijal + beli_kralj_eval + eval_belih_figura + eval_belih_pijuna;
+        let crni_eval: f32 = crni_materijal + crni_kralj_eval + eval_crnih_figura + eval_crnih_pijuna;
         beli_eval - crni_eval
     }
 
+    pub fn nerekursivno_evaluiraj_poziciju_sa_proverom_mata(&self, nekompresirana_tabla: &Nekompresirana_tabla) -> f32{
+        let beli_je_na_potezu: bool = self.beli_je_na_potezu(); 
+        if self.igrac_je_u_sahu(nekompresirana_tabla){
+            if self.nema_legalnih_poteza(nekompresirana_tabla){
+                return vrednost_mata(beli_je_na_potezu);
+            }
+        }
+        self.nerekursivno_evaluiraj_poziciju(nekompresirana_tabla)
+    }     
+
+    pub fn nerekursivno_evaluiraj_poziciju(&self, nekompresirana_tabla: &Nekompresirana_tabla) -> f32 {
+        let mut evaluacija: f32 = self.nerekursivno_i_nezahtevno_evaluiraj_poziciju(nekompresirana_tabla);
+        let (beli_potezi, crni_potezi) = self.broj_poteza_kretanja_figura_belog_i_crnog(nekompresirana_tabla);
+
+        evaluacija += beli_potezi as f32 / KOLIKO_POLJA_KRETANJA_FIGURA_VREDI_JEDAN_POEN;
+        evaluacija -= crni_potezi as f32 / KOLIKO_POLJA_KRETANJA_FIGURA_VREDI_JEDAN_POEN;
+        evaluacija
+    }
+
+
+
+
+
+
+
+
     fn eval_pijuna(&self) -> (f32, f32){
-        let beli_eval: f32 = self.eval_centralnih_pijuna(&self.bele_figure, true);
-        let crni_eval: f32 = self.eval_centralnih_pijuna(&self.crne_figure, false);
+        let mut beli_eval: f32 = self.eval_centralnih_pijuna(&self.bele_figure, true);
+        let mut crni_eval: f32 = self.eval_centralnih_pijuna(&self.crne_figure, false);
         
+        beli_eval += self.eval_duplih_pijuna(&self.bele_figure);
+        crni_eval += self.eval_duplih_pijuna(&self.crne_figure);
+
         (beli_eval, crni_eval)
+    }
+
+    fn eval_duplih_pijuna(&self, figure: &[u8;16]) -> f32{
+        let mut dupli_pijuni: u8 = 0;
+
+        let mut fajlovi_pijuna_boje: [u8; 9] = [0 as u8; 9];
+        for i in 8..16 {
+            if !Tabla::pijun_postoji(figure, i){
+                continue;
+            }
+            let (_, file_pijuna) = crate::broj_to_rank_file(figure[i]);
+            if fajlovi_pijuna_boje[file_pijuna as usize] > 0 {
+                dupli_pijuni += 1;
+            }
+            fajlovi_pijuna_boje[file_pijuna as usize] += 1;
+        }
+
+        -(dupli_pijuni as f32 * DUPLI_PIJUNI)
     }
 
     fn centralni_pijun_dva_polja(&self, pijun: &File_rank, pijun_je_beli: bool, evaluacija: &mut f32) -> bool {
