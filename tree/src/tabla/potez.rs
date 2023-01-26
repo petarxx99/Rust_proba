@@ -262,8 +262,8 @@ impl Potez {
         }
 
         
-   /* Kralja za svaki slucaj treniram kao specijalni slucaj, jer figure koje su sklonjene sa table imaju istu lokaciju kao kralj.
-   Ovaj deo koda je nepotreban, ali za slucaj da u buducnosti promenim redosled figura ovaj deo koda bi ucinio da takva promena ne proizvede bagove.*/     
+   /* Kralja treniram kao specijalni slucaj, jer figure koje su sklonjene sa table imaju istu lokaciju kao kralj.
+*/     
         if Tabla::to_je_file_rank_polja(figure[KRALJ], self.start_file, self.start_rank){
             return Some(Potez_bits{broj_figure: KRALJ as u8, file: self.file_destinacije, rank: self.rank_destinacije, promocija: self.promocija.copy()})
         }
