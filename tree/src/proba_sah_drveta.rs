@@ -50,7 +50,7 @@ impl Tabla{
         let legalni_potezi: Vec<Potez_bits> = self.svi_legalni_potezi();
         for potez in legalni_potezi {
             let tabla: Tabla = self.tabla_nakon_poteza_bits(&potez);
-            let (vrednost_poteza, _) = tabla.izracunaj_rekursivno(&Some(najbolja_evaluacija), protivnik_je_beli, dubina, 1, self.materijalna_prednost_onog_ko_je_na_potezu(), vrednost_mata(self.beli_je_na_potezu())) ;
+            let (vrednost_poteza, _) = tabla.izracunaj_rekursivno(&Some(najbolja_evaluacija), protivnik_je_beli, dubina, 1, self.materijalna_prednost_onog_ko_je_na_potezu(), vrednost_mata(self.beli_je_na_potezu()), false) ;
             if ovo_je_najbolji_potez(najbolja_evaluacija, vrednost_poteza, ja_sam_beli){
                 najbolji_potez = Some(potez);
                 najbolja_evaluacija = vrednost_poteza;
@@ -74,7 +74,7 @@ materijalno_stanje: f32, materijal_proslog_poteza:f32, materijal_pretproslog_pot
 }
 
 pub fn izracunaj_rekursivno(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ja_volim_vise:  bool,
-broj_rekursija: u8, trenutna_rekursija: u8, materijal_proslog_poteza: f32, materijal_pretproslog_poteza: f32) -> (f32, bool){
+mut broj_rekursija: u8, trenutna_rekursija: u8, materijal_proslog_poteza: f32, materijal_pretproslog_poteza: f32, mut dodao_sam_dubinu_zbog_saha: bool) -> (f32, bool){
     
     let materijalno_stanje: f32 = self.materijalna_prednost_onog_ko_je_na_potezu();
     if trenutna_rekursija >= broj_rekursija{
@@ -86,12 +86,16 @@ broj_rekursija: u8, trenutna_rekursija: u8, materijal_proslog_poteza: f32, mater
     if evaluacija_gotove_partije.partija_zavrsena {
         return evaluacija_gotove_partije.evaluacija
     }
+    if self.igrac_je_u_sahu(&self.to_nekompresirana_tabla()) && !dodao_sam_dubinu_zbog_saha{
+        broj_rekursija += 2;
+        dodao_sam_dubinu_zbog_saha = true;
+    }
 
     let mut najbolja_opcija_za_sad: f32 = vrednost_mata(ja_volim_vise);
     for legalan_potez in legalni_potezi {
         let tabla_nakon_poteza: Tabla = self.tabla_nakon_poteza_bits(&legalan_potez);
         
-        let (vrednost_poteza, najbolji_potez) = tabla_nakon_poteza.izracunaj_rekursivno(&Some(najbolja_opcija_za_sad), !ja_volim_vise, broj_rekursija, trenutna_rekursija+1, materijalno_stanje, materijal_proslog_poteza);
+        let (vrednost_poteza, najbolji_potez) = tabla_nakon_poteza.izracunaj_rekursivno(&Some(najbolja_opcija_za_sad), !ja_volim_vise, broj_rekursija, trenutna_rekursija+1, materijalno_stanje, materijal_proslog_poteza, dodao_sam_dubinu_zbog_saha);
         if najbolji_potez {
                  najbolja_opcija_za_sad = vrednost_poteza;
         }
