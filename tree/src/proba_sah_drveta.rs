@@ -16,9 +16,9 @@ impl Eval_deteta{
     }
 }
 
-struct Evaluacija{
-    partija_zavrsena: bool,
-    evaluacija: (f32,bool),
+pub struct Evaluacija{
+    pub partija_zavrsena: bool,
+    pub evaluacija: (f32,bool),
 }
 impl Evaluacija{
     pub fn new(partija_zavrsena: bool, evaluacija: (f32,bool)) -> Evaluacija{
@@ -50,7 +50,7 @@ impl Tabla{
         let legalni_potezi: Vec<Potez_bits> = self.svi_legalni_potezi();
         for potez in legalni_potezi {
             let tabla: Tabla = self.tabla_nakon_poteza_bits(&potez);
-            let (vrednost_poteza, _) = tabla.izracunaj_rekursivno(&None, protivnik_je_beli, dubina, 1, self.materijalna_prednost_onog_ko_je_na_potezu(), vrednost_mata(self.beli_je_na_potezu())) ;
+            let (vrednost_poteza, _) = tabla.izracunaj_rekursivno(&Some(najbolja_evaluacija), protivnik_je_beli, dubina, 1, self.materijalna_prednost_onog_ko_je_na_potezu(), vrednost_mata(self.beli_je_na_potezu())) ;
             if ovo_je_najbolji_potez(najbolja_evaluacija, vrednost_poteza, ja_sam_beli){
                 najbolji_potez = Some(potez);
                 najbolja_evaluacija = vrednost_poteza;

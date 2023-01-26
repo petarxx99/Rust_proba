@@ -14,6 +14,7 @@ mod proba_sah_drveta;
 mod komunikacija;
 mod permanencija;
 mod moj_benchmark;
+mod sah_varijacije_kandidati;
 
 pub fn file_rank_to_broj(file: u8, rank: u8) -> u8 {
     ((rank-1) << 3) + file-1
