@@ -547,6 +547,10 @@ impl Tabla {
         }
     }
 
+    pub fn beli_minus_crni_materijal(&self) -> f32 {
+        let (beli, crni, _, _) = self.evaluacija_materijala(true);
+        beli - crni
+    }
     pub fn evaluacija_materijala(&self, beli_je_na_potezu: bool) -> (f32,f32, bool, bool) {
         let mut evaluacija_belog: f32 = 0f32;
         let mut evaluacija_crnog: f32 = 0f32;

@@ -26,7 +26,7 @@ impl Evaluacija{
     }
 }
 
-struct Evaluacija_poteza_jedenja{
+pub struct Evaluacija_poteza_jedenja{
     evaluacija_po_materijalu: f32,
     kompletna_evaluacija: f32,
     ovo_je_najbolja_varijacija_do_sad: bool,
@@ -50,7 +50,7 @@ impl Tabla{
         let legalni_potezi: Vec<Potez_bits> = self.svi_legalni_potezi();
         for potez in legalni_potezi {
             let tabla: Tabla = self.tabla_nakon_poteza_bits(&potez);
-            let (vrednost_poteza, _) = tabla.izracunaj_rekursivno(&Some(najbolja_evaluacija), protivnik_je_beli, dubina, 1, self.materijalna_prednost_onog_ko_je_na_potezu(), vrednost_mata(self.beli_je_na_potezu()), false) ;
+            let (vrednost_poteza, _) = tabla.izracunaj_rekursivno(&Some(najbolja_evaluacija), protivnik_je_beli, dubina, 1, self.materijalna_prednost_onog_ko_je_na_potezu(), vrednost_mata(!self.beli_je_na_potezu()), false) ;
             if ovo_je_najbolji_potez(najbolja_evaluacija, vrednost_poteza, ja_sam_beli){
                 najbolji_potez = Some(potez);
                 najbolja_evaluacija = vrednost_poteza;
@@ -159,7 +159,7 @@ fn vrati_nerekursivnu_evaluaciju(&self, vrednost_koju_protivnik_ima_u_dzepu: &Op
     vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, sopstvena_evaluacija, ja_sam_beli)
 }
 
-fn vrati_nerekursivnu_evaluaciju_koja_uzima_u_obzir_da_li_je_mat(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ja_sam_beli:  bool) -> (f32,bool) {
+pub fn vrati_nerekursivnu_evaluaciju_koja_uzima_u_obzir_da_li_je_mat(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ja_sam_beli:  bool) -> (f32,bool) {
     let sopstvena_evaluacija: f32 = self.nerekursivno_evaluiraj_poziciju_sa_proverom_mata(&self.to_nekompresirana_tabla());
     vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, sopstvena_evaluacija, ja_sam_beli)
 }
@@ -184,7 +184,7 @@ fn vrati_evaluaciju_ako_je_partija_gotova(&self, vrednost_koju_protivnik_ima_u_d
     Evaluacija::new(partija_gotova, (random_nebitan_broj, true))
 }
 
-fn samo_potezi_koji_jedu_figure(&self, potezi: &[Potez_bits]) -> Vec<Potez_bits>{
+pub fn samo_potezi_koji_jedu_figure(&self, potezi: &[Potez_bits]) -> Vec<Potez_bits>{
     let mut potezi_jedenja: Vec<Potez_bits> = Vec::new();
     for potez in potezi{
         if self.polje_je_prazno(&File_rank{file: potez.file, rank:potez.rank}){
