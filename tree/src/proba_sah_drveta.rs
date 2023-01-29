@@ -170,6 +170,11 @@ pub fn vrati_nerekursivnu_i_nezahtevnu_evaluaciju(&self, vrednost_koju_protivnik
     vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, sopstvena_evaluacija, ja_sam_beli)
 }
 
+pub fn vrati_nerekursivnu_i_nezahtevnu_evaluaciju_koja_uzima_u_obzir_da_li_je_mat(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ja_sam_beli: bool)->(f32,bool){
+    let sopstvena_evaluacija: f32 = self.nerekursivno_i_nezahtevno_evaluiraj_poziciju_sa_proverom_mata(&self.to_nekompresirana_tabla());
+    vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, sopstvena_evaluacija, ja_sam_beli)
+}
+
 pub fn vrati_evaluaciju_ako_je_partija_gotova(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, legalni_potezi: &[Potez_bits], ja_sam_beli:  bool) -> Evaluacija{
     let broj_legalnih_poteza: usize = legalni_potezi.len();
     if broj_legalnih_poteza == 0 {

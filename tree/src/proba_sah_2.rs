@@ -73,7 +73,7 @@ impl Tabla{
                 
             let mali_broj: f32 = 0.125;
                 if materijalno_stanje + mali_broj > materijal_pretproslog_poteza {
-                    return self.vrati_nerekursivnu_i_nezahtevnu_evaluaciju(vrednost_koju_protivnik_ima_u_dzepu, ja_volim_vise)
+                    return self.vrati_nerekursivnu_i_nezahtevnu_evaluaciju_koja_uzima_u_obzir_da_li_je_mat(vrednost_koju_protivnik_ima_u_dzepu, ja_volim_vise)
                 }
                 let najgora_evaluacija_za_protivnika: Evaluacija_poteza_jedenja = najgori_eval_poteza_jedenja(!ja_volim_vise);
                 let eval = self.izracunaj_rekursivno_samo_jedenje_figura_nezahtevno(&najgora_evaluacija_za_protivnika, ja_volim_vise, materijal_proslog_poteza, materijal_pretproslog_poteza);
