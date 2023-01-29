@@ -4,6 +4,7 @@ use moj_benchmark::{benchmark_svi_legalni_potezi_posle_e4_e5_d4_d5, benchmark_br
 use permanencija::Zapisivac_partije;
 use tabla::{Tabla, E_FILE, D_FILE, File_rank};
 
+
 use crate::permanencija::Zapisivac_partije_u_fajl;
 use crate::tabla::H_FILE;
 use crate::komunikacija::{Komunikator, Konzola_sah};
@@ -15,6 +16,7 @@ mod komunikacija;
 mod permanencija;
 mod moj_benchmark;
 mod sah_varijacije_kandidati;
+mod proba_sah_2;
 
 pub fn file_rank_to_broj(file: u8, rank: u8) -> u8 {
     ((rank-1) << 3) + file-1

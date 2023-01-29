@@ -2,7 +2,7 @@ use crate::proba_sah_drveta::{self, vrednost_mata, Evaluacija, Evaluacija_poteza
 use crate::tabla::potez::Potez_bits;
 use crate::tabla::{Tabla, Ima_podatke_o_tabli};
 
-static MAX_BROJ_VARIJACIJA: usize = 5;
+static MAX_BROJ_VARIJACIJA: usize = 2;
 
 pub struct Evaluacija_poteza<T> where T:Ima_podatke_o_tabli{
     pub pozicija: Pozicija<T>,
@@ -101,25 +101,25 @@ impl Tabla{
 
     pub fn najbolji_potez_i_njegova_evaluacija_preko_kandidata(&self, dubina: u8) -> (Option<Potez_bits>, f32) {
         let mut varijacije_kandidati = self.izracunaj_varijacije_kandidate(dubina);
-   /*      if varijacije_kandidati[0].potez.broj_figure == varijacije_kandidati[1].potez.broj_figure
-        && varijacije_kandidati[0].potez.file == varijacije_kandidati[1].potez.file
-        && varijacije_kandidati[0].potez.rank == varijacije_kandidati[1].potez.rank {
-            println!("Prvi i drugi potez kandidata su isti \n\n");
-        } else {
-            println!("Prvi i drugi potez nisu isti. \n");
-            println!("Potez koji nije odigran {}\n", &varijacije_kandidati[0].potez);
-        } */
-//return (Some(varijacije_kandidati[1].potez.copy()), varijacije_kandidati[1].evaluacija);
 
+        let ja_sam_beli: bool = self.beli_je_na_potezu();
+        let mut najbolja_evaluacija = vrednost_mata(self.beli_je_na_potezu());
         for kandidat in &mut varijacije_kandidati{
             let kandidat_zavrsava_kad_je_beli_na_potezu: bool = kandidat.zavrsna_pozicija.beli_je_na_potezu();
             let najgora_vrednost_za_mene = vrednost_mata(kandidat.zavrsna_pozicija.beli_je_na_potezu());
             let najgora_vrednost_za_protivnika = vrednost_mata(!kandidat.zavrsna_pozicija.beli_je_na_potezu());
-            
-            let tabla_zavrsne_pozicije_kandidata = &kandidat.zavrsna_pozicija;
+            let tabla_nakon_prvog_poteza = self.tabla_nakon_poteza_bits(&kandidat.potez);
+            let zavrsna_tabla: Tabla = tabla_nakon_prvog_poteza.izracunaj_rekursivno_kandidate_drugi_talas(najbolja_evaluacija, kandidat_zavrsava_kad_je_beli_na_potezu, dubina+2, 1, najgora_vrednost_za_protivnika, najgora_vrednost_za_mene).pozicija.zavrsna_pozicija;
+
+
+         /*    let tabla_zavrsne_pozicije_kandidata = &kandidat.zavrsna_pozicija;
             let zavrsna_tabla:Tabla = tabla_zavrsne_pozicije_kandidata.izracunaj_rekursivno_kandidate_drugi_talas(najgora_vrednost_za_protivnika, kandidat_zavrsava_kad_je_beli_na_potezu, dubina, 0, najgora_vrednost_za_protivnika, najgora_vrednost_za_mene).pozicija.zavrsna_pozicija;
+            */
             kandidat.evaluacija = zavrsna_tabla.nerekursivno_evaluiraj_poziciju_sa_proverom_mata(&zavrsna_tabla.to_nekompresirana_tabla())  ;
             
+            if (ja_sam_beli && kandidat.evaluacija > najbolja_evaluacija) || (!ja_sam_beli && kandidat.evaluacija < najbolja_evaluacija){
+                najbolja_evaluacija = kandidat.evaluacija;
+            }
         }    
         
         let (najbolji_potez, evaluacija) = Varijacija::pronadji_najbolji_potez(&varijacije_kandidati, self.beli_je_na_potezu());

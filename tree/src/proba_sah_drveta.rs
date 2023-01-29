@@ -1,5 +1,6 @@
 use std::collections::{HashSet, HashMap};
 
+
 use crate::tabla::{Tabla, potez::{Potez_bits, Potez}};
 use crate::tabla::File_rank;
 static BELI_JE_MATIRAO_CRNOG: f32 = 100.0;
@@ -27,9 +28,9 @@ impl Evaluacija{
 }
 
 pub struct Evaluacija_poteza_jedenja{
-    evaluacija_po_materijalu: f32,
-    kompletna_evaluacija: f32,
-    ovo_je_najbolja_varijacija_do_sad: bool,
+    pub evaluacija_po_materijalu: f32,
+    pub kompletna_evaluacija: f32,
+    pub ovo_je_najbolja_varijacija_do_sad: bool,
 }
 impl Evaluacija_poteza_jedenja{
     pub fn new(evaluacija_po_materijalu: f32, kompletna_evaluacija: f32, ovo_je_najbolja_varijacija_do_sad:bool)-> Evaluacija_poteza_jedenja{
@@ -63,8 +64,8 @@ impl Tabla{
 
 fn evaluiraj_gledajuci_poteze_jedenja(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>,
 materijalno_stanje: f32, materijal_proslog_poteza:f32, materijal_pretproslog_poteza: f32, ja_volim_vise:bool) -> (f32, bool){
-        
-    let mali_broj: f32 = 0.125;
+    
+        let mali_broj: f32 = 0.125;
         if materijalno_stanje + mali_broj > materijal_pretproslog_poteza {
             return self.vrati_nerekursivnu_evaluaciju_koja_uzima_u_obzir_da_li_je_mat(vrednost_koju_protivnik_ima_u_dzepu, ja_volim_vise)
         }
@@ -108,7 +109,7 @@ mut broj_rekursija: u8, trenutna_rekursija: u8, materijal_proslog_poteza: f32, m
 
 }
 
-fn izracunaj_rekursivno_samo_jedenje_figura(&self, 
+pub fn izracunaj_rekursivno_samo_jedenje_figura(&self, 
     vrednost_koju_protivnik_ima_u_dzepu: &Evaluacija_poteza_jedenja, ja_sam_beli:  bool, 
     materijal_proslog_poteza: f32, materijal_pretproslog_poteza: f32) -> Evaluacija_poteza_jedenja {
 
@@ -164,7 +165,12 @@ pub fn vrati_nerekursivnu_evaluaciju_koja_uzima_u_obzir_da_li_je_mat(&self, vred
     vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, sopstvena_evaluacija, ja_sam_beli)
 }
 
-fn vrati_evaluaciju_ako_je_partija_gotova(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, legalni_potezi: &[Potez_bits], ja_sam_beli:  bool) -> Evaluacija{
+pub fn vrati_nerekursivnu_i_nezahtevnu_evaluaciju(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ja_sam_beli: bool) -> (f32,bool){
+    let sopstvena_evaluacija: f32 = self.nerekursivno_i_nezahtevno_evaluiraj_poziciju(&self.to_nekompresirana_tabla());
+    vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, sopstvena_evaluacija, ja_sam_beli)
+}
+
+pub fn vrati_evaluaciju_ako_je_partija_gotova(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, legalni_potezi: &[Potez_bits], ja_sam_beli:  bool) -> Evaluacija{
     let broj_legalnih_poteza: usize = legalni_potezi.len();
     if broj_legalnih_poteza == 0 {
         let partija_gotova: bool = true;
@@ -197,7 +203,7 @@ pub fn samo_potezi_koji_jedu_figure(&self, potezi: &[Potez_bits]) -> Vec<Potez_b
 
 }
 
-fn ovo_je_refutacija_protivnikovog_poteza(vrednost_koju_protivnik_ima_u_dzepu: &Evaluacija_poteza_jedenja, moj_potez: &Evaluacija_poteza_jedenja, ja_sam_beo: bool)->bool{
+pub fn ovo_je_refutacija_protivnikovog_poteza(vrednost_koju_protivnik_ima_u_dzepu: &Evaluacija_poteza_jedenja, moj_potez: &Evaluacija_poteza_jedenja, ja_sam_beo: bool)->bool{
     let mali_broj: f32 = 0.125;
 
     if ja_sam_beo{
@@ -217,7 +223,7 @@ fn ovo_je_refutacija_protivnikovog_poteza(vrednost_koju_protivnik_ima_u_dzepu: &
     }
 }
 
-fn vrati_evaluaciju_poteza_jedenja(vrednost_koju_protivnik_ima_u_dzepu: &Evaluacija_poteza_jedenja, beli_minus_crni_materijal: f32, evaluacija: f32, ja_sam_beli: bool) ->Evaluacija_poteza_jedenja{
+pub fn vrati_evaluaciju_poteza_jedenja(vrednost_koju_protivnik_ima_u_dzepu: &Evaluacija_poteza_jedenja, beli_minus_crni_materijal: f32, evaluacija: f32, ja_sam_beli: bool) ->Evaluacija_poteza_jedenja{
     let (kompletna_evaluacija, najbolja_varijacija) = vrati_evaluaciju_poteza(&Some(vrednost_koju_protivnik_ima_u_dzepu.kompletna_evaluacija), evaluacija, ja_sam_beli);
     return Evaluacija_poteza_jedenja::new(beli_minus_crni_materijal, kompletna_evaluacija, najbolja_varijacija);
 }
@@ -231,7 +237,7 @@ fn varijacija_nije_u_losijoj_materijalnoj_situaciji(varijacija: &Evaluacija_pote
     }
 }
 
-fn vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, evaluacija_posle_mog_poteza: f32, ja_sam_beli: bool) -> (f32, bool) {
+pub fn vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, evaluacija_posle_mog_poteza: f32, ja_sam_beli: bool) -> (f32, bool) {
     if protivnik_se_zajebo(vrednost_koju_protivnik_ima_u_dzepu, evaluacija_posle_mog_poteza, ja_sam_beli){
         (evaluacija_posle_mog_poteza, false)
     } else {
@@ -239,7 +245,7 @@ fn vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ev
     }
 }
 
-fn najgori_eval_poteza_jedenja(ja_sam_beli: bool) -> Evaluacija_poteza_jedenja{
+pub fn najgori_eval_poteza_jedenja(ja_sam_beli: bool) -> Evaluacija_poteza_jedenja{
     let vrednost_mata: f32 = vrednost_mata(ja_sam_beli);
     Evaluacija_poteza_jedenja::new(vrednost_mata, vrednost_mata, true)
 }
@@ -258,7 +264,7 @@ fn updejtuj_najbolji_potez(najbolji_potez_za_sad: & mut f32, novi_potez: f32, ja
 
 
 
-fn ovo_je_najbolji_potez(najbolji_potez_za_sad: f32, novi_potez: f32, ja_volim_vise: bool) -> bool {
+pub fn ovo_je_najbolji_potez(najbolji_potez_za_sad: f32, novi_potez: f32, ja_volim_vise: bool) -> bool {
             if ja_volim_vise && novi_potez > najbolji_potez_za_sad {
                 return true
             }
@@ -270,7 +276,7 @@ fn ovo_je_najbolji_potez(najbolji_potez_za_sad: f32, novi_potez: f32, ja_volim_v
 }
 
 
-fn protivnik_se_zajebo(potez_koji_je_protivnik_trebalo_da_odigra: &Option<f32>, evaluacija_posle_mog_poteza: f32, ja_volim_vise: bool) -> bool{
+pub fn protivnik_se_zajebo(potez_koji_je_protivnik_trebalo_da_odigra: &Option<f32>, evaluacija_posle_mog_poteza: f32, ja_volim_vise: bool) -> bool{
     if potez_koji_je_protivnik_trebalo_da_odigra.is_none() {
         return false;
     }
