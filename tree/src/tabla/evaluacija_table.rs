@@ -89,6 +89,9 @@ impl Tabla {
     }     
 
     pub fn nerekursivno_evaluiraj_poziciju(&self, nekompresirana_tabla: &Nekompresirana_tabla) -> f32 {
+        if self.pre_koliko_poteza_je_50_move_rule_pomeren() >= 50 {
+            return 0.0
+        } 
         let mut evaluacija: f32 = self.nerekursivno_i_nezahtevno_evaluiraj_poziciju(nekompresirana_tabla);
         let (beli_potezi, crni_potezi) = self.broj_poteza_kretanja_figura_belog_i_crnog(nekompresirana_tabla);
 
@@ -515,7 +518,7 @@ impl Tabla {
         let pijun_ispred_kralja: File_rank = File_rank::new_iz_broja(figure[A_PIJUN-1 + kralj.file as usize]);
         if !Tabla::pijun_postoji(figure, A_PIJUN-1 + kralj.file as usize){
             eval -= POJEDEN_PIJUN_ISPRED_SOPSTVENOG_KRALJA;
-        } else if pijun_ispred_kralja. rank == treci_rank {
+        } else if pijun_ispred_kralja.rank == treci_rank {
             if !self.lovac_boje_se_nalazi_na_polju(figure, &File_rank::new(kralj.file, drugi_rank)){
                 eval -= PIJUN_ISPRED_KRALJA_GURNUT_JEDNO_POLJE_NAKON_ROKADE;
             }
