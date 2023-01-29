@@ -67,6 +67,35 @@ impl Tabla {
         legalni_potezi
     }
 
+    pub fn sortiraj_poteze_po_jedenju_figura(&self, legalni_potezi: &mut Vec<Potez_bits>) -> usize{
+        let nekompresirana_tabla: Nekompresirana_tabla = self.to_nekompresirana_tabla();
+        let mut prvi_nesortiran_indeks: usize = 0;
+
+        for i in 0..legalni_potezi.len(){
+            let potez: &Potez_bits = &legalni_potezi[i];
+
+            if !nekompresirana_tabla.polje_je_prazno(potez.rank, potez.file) {
+                let temp = legalni_potezi[prvi_nesortiran_indeks].copy();
+                legalni_potezi[prvi_nesortiran_indeks] = legalni_potezi[i].copy();
+                legalni_potezi[i] = temp;
+
+                prvi_nesortiran_indeks += 1;
+            }
+        }
+
+        prvi_nesortiran_indeks
+    }
+
+    pub fn svi_legalni_potezi_sortirani_po_jedenju_figura(&self)
+ -> (Vec<Potez_bits>, usize){
+
+    let mut legalni_potezi: Vec<Potez_bits> = self.svi_legalni_potezi();
+    let prvi_nesortiran_indeks: usize = self.sortiraj_poteze_po_jedenju_figura(&mut legalni_potezi);    
+
+    (legalni_potezi, prvi_nesortiran_indeks)
+ }
+
+
     pub fn broj_poteza_kretanja_figura_belog_i_crnog(&self, nekompresirana_tabla: &Nekompresirana_tabla) -> (u8, u8){
         let rokada: Rokada = Rokada::new_sve_rokade_moguce();
         let mut broj_belih_poteza: u8 = 0;
@@ -162,7 +191,7 @@ impl Tabla {
 
 #[cfg(test)]
 mod test_legalni_potezi{
-    use crate::{tabla::{Tabla, potez::{Potez_bits, Potez, Potez_polje}, Promocija, G_FILE, F_FILE, E_FILE, D_FILE, C_FILE, B_FILE, H_FILE, A_FILE, DESNI_LOVAC, DESNI_TOP, KRALJ, LEVI_TOP, D_PIJUN, DESNI_KONJ, KRALJICA}, permanencija::Zapisivac_partije_u_fajl};
+    use crate::{tabla::{Tabla, potez::{Potez_bits, Potez, Potez_polje}, Promocija, G_FILE, F_FILE, E_FILE, D_FILE, C_FILE, B_FILE, H_FILE, A_FILE, DESNI_LOVAC, DESNI_TOP, KRALJ, LEVI_TOP, D_PIJUN, DESNI_KONJ, KRALJICA, E_PIJUN}, permanencija::Zapisivac_partije_u_fajl};
 
 
 
@@ -382,6 +411,26 @@ mod test_legalni_potezi{
         assert_eq!(41, legalni_potezi.len());
         assert_eq!(true, tabla.nerekursivno_evaluiraj_poziciju_sa_proverom_mata(&tabla.to_nekompresirana_tabla()) < 1.5);
 
+    }
+
+    #[test]
+    fn test_sortiraj_poteze_po_jedenju_figura(){
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 2, D_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 7, D_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(G_FILE, 1, F_FILE, 3)
+        .odigraj_validan_potez_bez_promocije(B_FILE, 8, C_FILE, 6);
+    
+        let mut legalni_potezi = tabla.svi_legalni_potezi();
+        let broj_poteza_jedenja: usize = tabla.sortiraj_poteze_po_jedenju_figura(&mut legalni_potezi);
+        assert_eq!(3, broj_poteza_jedenja);
+        assert_eq!(true, legalni_potezi[0..3].contains(&Potez_bits::new(DESNI_KONJ as u8, E_FILE, 5, Promocija::None)));
+        assert_eq!(true, legalni_potezi[0..3].contains(&Potez_bits::new(E_PIJUN as u8, D_FILE, 5, Promocija::None)));
+        assert_eq!(true, legalni_potezi[0..3].contains(&Potez_bits::new(D_PIJUN as u8, E_FILE, 5,Promocija::None)));
+
+        
     }
    
 }

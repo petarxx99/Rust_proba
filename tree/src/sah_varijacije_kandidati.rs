@@ -40,7 +40,7 @@ impl<T> Varijacija<T> where T:Ima_podatke_o_tabli{
         Varijacija{zavrsna_pozicija, potez, evaluacija}
     }
 
-    pub fn pronadji_najbolji_potez(lista_varijacija: &[Varijacija<T>], ja_sam_beli: bool) -> (Option<Potez_bits>, f32){
+    fn pronadji_najbolji_potez(lista_varijacija: &[Varijacija<T>], ja_sam_beli: bool) -> (Option<Potez_bits>, f32){
         let mut najbolji_potez: Option<Potez_bits> = None;
         let mut najbolja_evaluacija: f32 = vrednost_mata(ja_sam_beli);
 
@@ -117,7 +117,9 @@ impl Tabla{
             let najgora_vrednost_za_protivnika = vrednost_mata(!kandidat.zavrsna_pozicija.beli_je_na_potezu());
             
             let tabla_zavrsne_pozicije_kandidata = &kandidat.zavrsna_pozicija;
-            kandidat.evaluacija = tabla_zavrsne_pozicije_kandidata.izracunaj_rekursivno_kandidate_drugi_talas(najgora_vrednost_za_protivnika, kandidat_zavrsava_kad_je_beli_na_potezu, dubina, 0, najgora_vrednost_za_protivnika, najgora_vrednost_za_mene).pozicija.evaluacija;
+            let zavrsna_tabla:Tabla = tabla_zavrsne_pozicije_kandidata.izracunaj_rekursivno_kandidate_drugi_talas(najgora_vrednost_za_protivnika, kandidat_zavrsava_kad_je_beli_na_potezu, dubina, 0, najgora_vrednost_za_protivnika, najgora_vrednost_za_mene).pozicija.zavrsna_pozicija;
+            kandidat.evaluacija = zavrsna_tabla.nerekursivno_evaluiraj_poziciju_sa_proverom_mata(&zavrsna_tabla.to_nekompresirana_tabla())  ;
+            
         }    
         
         let (najbolji_potez, evaluacija) = Varijacija::pronadji_najbolji_potez(&varijacije_kandidati, self.beli_je_na_potezu());
@@ -191,7 +193,7 @@ Evaluacija_poteza<Tabla>{
         return self.evaluiraj_gledajuci_poteze_jedenja_prvi_talas(vrednost_koju_protivnik_ima_u_dzepu, materijalno_stanje, materijal_proslog_poteza, materijal_pretproslog_poteza, ja_volim_vise)
     }
 
-    let legalni_potezi: Vec<Potez_bits> = self.svi_legalni_potezi();
+    let (legalni_potezi, broj_poteza_jedenja) = self.svi_legalni_potezi_sortirani_po_jedenju_figura();
     let evaluacija_gotove_partije = self.vrati_evaluaciju_gotove_partije(vrednost_koju_protivnik_ima_u_dzepu, &legalni_potezi, ja_volim_vise);
     if evaluacija_gotove_partije.is_some(){
         return evaluacija_gotove_partije.unwrap();
@@ -228,7 +230,7 @@ fn izracunaj_rekursivno_jedenje_figura_za_kandidate(&self,
         return vrati_evaluaciju_poteza_jedenja_kandidati(vrednost_koju_protivnik_ima_u_dzepu, self.beli_minus_crni_materijal(), ja_sam_beli, self.copy());
     }
 
-    let legalni_potezi: Vec<Potez_bits> = self.svi_legalni_potezi();
+    let (legalni_potezi, broj_poteza_jedenja) = self.svi_legalni_potezi_sortirani_po_jedenju_figura();
     let evaluacija_gotove_partije = self.vrati_evaluaciju_gotove_partije(vrednost_koju_protivnik_ima_u_dzepu, &legalni_potezi, ja_sam_beli);
     if evaluacija_gotove_partije.is_some(){
         return evaluacija_gotove_partije.unwrap();
@@ -298,7 +300,7 @@ pub fn izracunaj_rekursivno_kandidate_drugi_talas(&self, vrednost_koju_protivnik
             return self.evaluiraj_gledajuci_poteze_jedenja_nezahtevan_racun(vrednost_koju_protivnik_ima_u_dzepu, materijalno_stanje, materijal_proslog_poteza, materijal_pretproslog_poteza, ja_volim_vise)
         }
     
-        let legalni_potezi: Vec<Potez_bits> = self.svi_legalni_potezi();
+        let (legalni_potezi, _) = self.svi_legalni_potezi_sortirani_po_jedenju_figura();
         let evaluacija_gotove_partije = self.vrati_evaluaciju_gotove_partije(vrednost_koju_protivnik_ima_u_dzepu, &legalni_potezi, ja_volim_vise);
         if evaluacija_gotove_partije.is_some(){
             return evaluacija_gotove_partije.unwrap();

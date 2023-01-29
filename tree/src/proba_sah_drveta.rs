@@ -81,7 +81,7 @@ mut broj_rekursija: u8, trenutna_rekursija: u8, materijal_proslog_poteza: f32, m
         return self.evaluiraj_gledajuci_poteze_jedenja(vrednost_koju_protivnik_ima_u_dzepu, materijalno_stanje, materijal_proslog_poteza, materijal_pretproslog_poteza, ja_volim_vise)
     }
 
-    let legalni_potezi: Vec<Potez_bits> = self.svi_legalni_potezi();
+    let (legalni_potezi, _) = self.svi_legalni_potezi_sortirani_po_jedenju_figura();
     let evaluacija_gotove_partije = self.vrati_evaluaciju_ako_je_partija_gotova(vrednost_koju_protivnik_ima_u_dzepu, &legalni_potezi, ja_volim_vise);
     if evaluacija_gotove_partije.partija_zavrsena {
         return evaluacija_gotove_partije.evaluacija
@@ -121,7 +121,7 @@ fn izracunaj_rekursivno_samo_jedenje_figura(&self,
         return vrati_evaluaciju_poteza_jedenja(vrednost_koju_protivnik_ima_u_dzepu, beli_minus_crni_materijal, self.nerekursivno_evaluiraj_poziciju(&self.to_nekompresirana_tabla()), ja_sam_beli);
     }
 
-    let legalni_potezi: Vec<Potez_bits> = self.svi_legalni_potezi();
+    let (legalni_potezi, broj_poteza_jedenja) = self.svi_legalni_potezi_sortirani_po_jedenju_figura();
     let evaluacija_gotove_partije: Evaluacija = self.vrati_evaluaciju_ako_je_partija_gotova(&Some(vrednost_koju_protivnik_ima_u_dzepu.kompletna_evaluacija), &legalni_potezi, ja_sam_beli);
     if evaluacija_gotove_partije.partija_zavrsena {
         let (evaluacija, protivnik_se_nije_zajebo):(f32, bool) = evaluacija_gotove_partije.evaluacija;
@@ -129,14 +129,14 @@ fn izracunaj_rekursivno_samo_jedenje_figura(&self,
     }
 
     let nerekursivna_evaluacija: f32 = self.nerekursivno_evaluiraj_poziciju(&self.to_nekompresirana_tabla());
-    let potezi_jedenja: Vec<Potez_bits> = self.samo_potezi_koji_jedu_figure(&legalni_potezi);
-    if potezi_jedenja.len() == 0 {
+    let potezi_jedenja = &legalni_potezi[0..broj_poteza_jedenja];
+    if broj_poteza_jedenja == 0 {
         return vrati_evaluaciju_poteza_jedenja(vrednost_koju_protivnik_ima_u_dzepu, beli_minus_crni_materijal, nerekursivna_evaluacija, ja_sam_beli);
     }
     
     let evaluacija_koju_imam_u_dzepu_ako_ne_odigram_nista = vrati_evaluaciju_poteza_jedenja(vrednost_koju_protivnik_ima_u_dzepu, beli_minus_crni_materijal, nerekursivna_evaluacija, ja_sam_beli);
     let mut najbolji_potez_do_sad: Evaluacija_poteza_jedenja = evaluacija_koju_imam_u_dzepu_ako_ne_odigram_nista;
-    for potez in &potezi_jedenja {
+    for potez in potezi_jedenja {
         let tabla_nakon_poteza: Tabla = self.tabla_nakon_poteza_bits(potez);
 
         let eval_poteza: Evaluacija_poteza_jedenja = tabla_nakon_poteza.izracunaj_rekursivno_samo_jedenje_figura(&najbolji_potez_do_sad, !ja_sam_beli, materijal, materijal_proslog_poteza);

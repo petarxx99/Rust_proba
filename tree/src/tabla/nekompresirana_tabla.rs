@@ -15,6 +15,13 @@ pub struct Nekompresirana_tabla{
 }
 
 
+impl Nekompresirana_tabla{
+    pub fn polje_je_prazno(&self, rank: u8, file: u8) -> bool {
+        self.polja_table[rank as usize][file as usize] == PRAZNO_POLJE
+    }
+}
+
+
 
 impl Ima_podatke_o_tabli for Nekompresirana_tabla{
 
