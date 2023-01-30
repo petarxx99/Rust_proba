@@ -155,7 +155,7 @@ pub fn izracunaj_rekursivno_samo_jedenje_figura(&self,
 }
 
 
-fn vrati_nerekursivnu_evaluaciju(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ja_sam_beli: bool) -> (f32, bool){
+pub fn vrati_nerekursivnu_evaluaciju(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ja_sam_beli: bool) -> (f32, bool){
     let sopstvena_evaluacija: f32 = self.nerekursivno_evaluiraj_poziciju(&self.to_nekompresirana_tabla());
     vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, sopstvena_evaluacija, ja_sam_beli)
 }
