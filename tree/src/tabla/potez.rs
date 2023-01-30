@@ -53,7 +53,8 @@ impl Potez_info {
     }
 
 
-    fn updejtuj_figure_nakon_odigranog_poteza(&mut self, mut bele_figure: &mut [u8; 16], mut crne_figure: &mut [u8;16], potez: &Potez_bits, beli_je_odigrao_potez: bool, fajl_en_passant_pijuna: Option<u8>){
+    fn updejtuj_figure_nakon_odigranog_poteza(&mut self, mut bele_figure: &mut [u8; 16], mut crne_figure: &mut [u8;16], potez: &Potez_bits, beli_je_odigrao_potez: bool, 
+        fajl_en_passant_pijuna: Option<u8>, tabla: &Tabla){
         let figure_koje_su_odigrale_potez: &mut [u8;16];
         let figure_protiv_kojih_je_odigran_potez: &mut [u8;16];
 
@@ -66,7 +67,7 @@ impl Potez_info {
         }
         /* Ova linija mora da ide pre updejta, jer zelim poziciju figure pre nego sto se pomerila. */
         let (start_rank, start_file) = crate::broj_to_rank_file(figure_koje_su_odigrale_potez[potez.broj_figure as usize]);
-        self.updejtuj_figure_koje_su_odigrale_potez(figure_koje_su_odigrale_potez, potez);
+        self.updejtuj_figure_koje_su_odigrale_potez(figure_koje_su_odigrale_potez, potez, tabla);
         let figura_pojedena: bool = self.updejtuj_figure_protiv_kojih_je_odigran_potez(figure_protiv_kojih_je_odigran_potez, potez);
 
         /* Ako se pijun pomerio ukoso, a nije stao na polje na kom se nalazi neka protivnicka figura,
@@ -87,7 +88,7 @@ impl Potez_info {
 
 /* Posebno obradjujem slucaj kad se pomera kralj, jer kralj ima istu lokaciju kao figure koje
 su sklonjene sa table. */
-    fn updejtuj_figure_koje_su_odigrale_potez(&mut self, figure: & mut[u8; 16], potez: &Potez_bits){
+    fn updejtuj_figure_koje_su_odigrale_potez(&mut self, figure: & mut[u8; 16], potez: &Potez_bits, tabla: &Tabla){
         if potez.broj_figure == KRALJ as u8{
             self.rokada_onemogucena.pomeren_kralj(self.beli_je_odigrao_potez);
             Tabla::pomeri_kralja(figure, potez.file, potez.rank);
@@ -95,7 +96,7 @@ su sklonjene sa table. */
         }
 
         self.zapisi_info_ako_je_pomeren_pijun(figure, potez);
-        self.zapisi_info_za_rokadu(potez);
+        self.zapisi_info_za_rokadu(potez, tabla);
 
         Tabla::updejtuj_polozaj_figure_unsafe(figure, potez.broj_figure as usize,
              &File_rank::new(potez.file, potez.rank));
@@ -125,17 +126,26 @@ su sklonjene sa table. */
         false
     }
 
-    fn zapisi_info_za_rokadu(&mut self, potez: &Potez_bits){
-         if self.beli_je_odigrao_potez && potez.broj_figure == LEVI_TOP as u8{
+    fn zapisi_info_za_rokadu(&mut self, potez: &Potez_bits, tabla: &Tabla){
+        let zavrsno_polje: u8 = crate::file_rank_to_broj(potez.file, potez.rank);
+
+         if (self.beli_je_odigrao_potez && potez.broj_figure == LEVI_TOP as u8) ||
+         (!self.beli_je_odigrao_potez && Tabla::polja_se_slazu(tabla.bele_figure[LEVI_TOP], zavrsno_polje))
+         {
             self.rokada_onemogucena.bela_kraljicina_rokada_vise_nije_moguca = true;
          }
-         if self.beli_je_odigrao_potez && potez.broj_figure == DESNI_TOP as u8{
+
+         if (self.beli_je_odigrao_potez && potez.broj_figure == DESNI_TOP as u8) || 
+         (!self.beli_je_odigrao_potez && Tabla::polja_se_slazu(tabla.bele_figure[DESNI_TOP], zavrsno_polje)){
             self.rokada_onemogucena.bela_kraljeva_rokada_vise_nije_moguca = true;
          }
-         if !self.beli_je_odigrao_potez && potez.broj_figure == LEVI_TOP as u8{
+         if !self.beli_je_odigrao_potez && potez.broj_figure == LEVI_TOP as u8 || 
+         (self.beli_je_odigrao_potez && Tabla::polja_se_slazu(tabla.crne_figure[LEVI_TOP], zavrsno_polje)){
             self.rokada_onemogucena.crna_kraljicina_rokada_vise_nije_moguca = true;
          }
-         if !self.beli_je_odigrao_potez && potez.broj_figure == DESNI_TOP as u8{
+         if !self.beli_je_odigrao_potez && potez.broj_figure == DESNI_TOP as u8 || 
+         (self.beli_je_odigrao_potez && Tabla::polja_se_slazu(tabla.crne_figure[DESNI_TOP], zavrsno_polje))
+         {
             self.rokada_onemogucena.crna_kraljeva_rokada_vise_nije_moguca = true;
          }
        
@@ -305,7 +315,7 @@ impl Tabla {
         let mut potez_info: Potez_info = Potez_info::new();
         potez_info.beli_je_odigrao_potez = self.beli_je_na_potezu();
 
-        potez_info.updejtuj_figure_nakon_odigranog_poteza(& mut bele_figure, &mut crne_figure, potez, potez_info.beli_je_odigrao_potez, self.fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu());
+        potez_info.updejtuj_figure_nakon_odigranog_poteza(& mut bele_figure, &mut crne_figure, potez, potez_info.beli_je_odigrao_potez, self.fajl_pijuna_koji_se_pomerio_2_polja_u_proslom_potezu(), self);
         bitfield = potez_info.updejtuj_bitfield_nakon_odigranog_poteza(bitfield);
     
         Tabla {
@@ -650,7 +660,7 @@ mod potez_tests{
             rank: 3,
             promocija: Promocija::None,
         };
-        potez_info.zapisi_info_za_rokadu(&potez);
+        potez_info.zapisi_info_za_rokadu(&potez, &Tabla::pocetna_pozicija());
         assert_eq!(true, potez_info.rokada_onemogucena.bela_kraljeva_rokada_vise_nije_moguca);
         
     }
