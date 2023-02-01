@@ -1,10 +1,12 @@
 use std::collections::{HashSet, HashMap};
 
 
-use crate::tabla::{Tabla, potez::{Potez_bits, Potez}, G_FILE, F_FILE, Promocija};
+use crate::tabla::{Tabla, potez::{Potez_bits, Potez}, G_FILE, F_FILE, Promocija, E_FILE, C_FILE, B_FILE};
 use crate::tabla::File_rank;
 static BELI_JE_MATIRAO_CRNOG: f32 = 100.0;
 static CRNI_JE_MATIRAO_BELOG: f32 = -100.0;
+static MATERIJAL_BEZ_PIJUNA_KAD_JE_PARTIJA_PRI_KRAJU: f32 = 17.75;
+
 
 pub struct Eval_deteta{
     pub eval: f32,
@@ -39,12 +41,26 @@ impl Evaluacija_poteza_jedenja{
 }
 
 impl Tabla{
+    fn je_pozicija_e4_e5(&self) -> bool {
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5);
+
+        tabla.eq(self)
+    }
 
 
-    pub fn najbolji_potez_i_njegova_evaluacija(&self, dubina: u8) -> (Option<Potez_bits>, f32) {
+    pub fn najbolji_potez_i_njegova_evaluacija(&self, mut dubina: u8) -> (Option<Potez_bits>, f32) {
         if self.je_pozicija_e4_e5_nf3_d6_bc4_bg4_d3(){
-            return (Some(Potez::new(G_FILE, 8, F_FILE, 6, Promocija::None).to_Potez_bits(self).expect("Potez iz funkcije najbolji_potez_i_njegova_evaluacija_putem_iteracija ne postoji.")), 0.8);
+            return (Some(Potez::new(G_FILE, 8, F_FILE, 6, Promocija::None).to_Potez_bits(self).expect("Potez iz funkcije najbolji_potez_i_njegova_evaluacija ne postoji.")), 0.8);
         }
+        if self.je_pozicija_e4_e5(){
+            return (Some(Potez::new(B_FILE, 1, C_FILE, 3, Promocija::None).to_Potez_bits(self).expect("Potez iz funkcije najbolji_potez_i_njegova_evaluacija ne postoji.")), 0.25);
+        }
+        if self.partija_je_pri_kraju_bez_kraljice(MATERIJAL_BEZ_PIJUNA_KAD_JE_PARTIJA_PRI_KRAJU){
+            dubina += 2;
+        }
+
         let protivnik_je_beli: bool = !self.beli_je_na_potezu();
         let ja_sam_beli: bool = self.beli_je_na_potezu();
 
