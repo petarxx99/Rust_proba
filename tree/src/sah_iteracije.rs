@@ -1,6 +1,6 @@
 use crate::proba_sah_drveta::{vrednost_mata, protivnik_se_zajebo, ovo_je_najbolji_potez};
-use crate::tabla::potez::Potez_bits;
-use crate::tabla::{Tabla};
+use crate::tabla::potez::{Potez_bits, Potez};
+use crate::tabla::{Tabla, DESNI_KONJ, F_FILE, Promocija, D_FILE, C_FILE, G_FILE, E_FILE};
 static MAX_BROJ_POTEZA_KANDIDATA: usize = 3;
 
 fn nabavi_najlosiji_potez_koji_prolazi(lista: &Vec<(Potez_bits,f32)>, broj_poteza_koji_prolaze:usize, ja_sam_beli:bool) -> f32{
@@ -80,6 +80,9 @@ fn prvi_potez_je_bolji(prvi_potez: f32, drugi_potez: f32, ja_sam_beli: bool) -> 
 impl Tabla {
 
     pub fn najbolji_potez_i_njegova_evaluacija_putem_iteracija(&self, dubina: u8) -> (Option<Potez_bits>, f32) {
+        if self.je_pozicija_e4_e5_nf3_d6_bc4_bg4_d3(){
+            return (Some(Potez::new(G_FILE, 8, F_FILE, 6, Promocija::None).to_Potez_bits(self).expect("Potez iz funkcije najbolji_potez_i_njegova_evaluacija_putem_iteracija ne postoji.")), 0.8);
+        }
         let ja_sam_beli: bool = self.beli_je_na_potezu();
         let protivnik_je_beli: bool = !ja_sam_beli;
 
@@ -279,6 +282,18 @@ impl Tabla {
         
     }
 
+    fn je_pozicija_e4_e5_nf3_d6_bc4_bg4_d3(&self) -> bool {
+        let tabla: Tabla = Tabla::pocetna_pozicija()
+        .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)
+        .odigraj_validan_potez_bez_promocije(G_FILE, 1, F_FILE, 3)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 7, D_FILE, 6)
+        .odigraj_validan_potez_bez_promocije(F_FILE, 1, C_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(C_FILE, 8, G_FILE, 4)
+        .odigraj_validan_potez_bez_promocije(D_FILE, 2, D_FILE, 3);
+
+        self.eq(&tabla)
+    }
 
 }
 
