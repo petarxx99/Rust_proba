@@ -35,18 +35,13 @@ static GURANJE_B_PIJUNA_1_POLJE_AKO_JE_KRALJ_NA_KRALJICINOJ_STRANI: f32 = 0.5;
 static POJEDEN_PIJUN_ISPRED_KRALJA: f32 = 0.75;
 static POJEDEN_PIJUN_ISPRED_SOPSTVENOG_KRALJA: f32 = 0.75;
 static PIJUN_ISPRED_KRALJA_GURNUT_VISE_OD_JEDNOG_POLJA_NAKON_ROKADE: f32 = 0.75;
-static PIJUN_ISPRED_KRALJA_GURNUT_JEDNO_POLJE_NAKON_ROKADE: f32 = 0.25;
+static PIJUN_ISPRED_KRALJA_GURNUT_JEDNO_POLJE_NAKON_ROKADE: f32 = 0.5;
+static PIJUN_ISPRED_KRALJA_GURNUT_JEDNO_POLJE_A_LOVAC_JE_IZA_NJEGA: f32 = 0.5;
+static G_PIJUN_GURNUT_A_LOVAC_NIJE_IZA_NJEGA: f32 = 0.0;
+static G_PIJUN_GURNUT_A_LOVAC_JESTE_IZA_NJEGA: f32 = 0.325;
 
 impl Tabla {
-    /* Ovo je preciznija funkcija, jer gleda i stalemate, ali je zato i sporija.
-    if self.nema_legalnih_poteza(nekompresirana_tabla) {
-            if self.igrac_je_u_sahu(nekompresirana_tabla) {
-                return vrednost_mata(beli_je_na_potezu)
-            } else {
-                return 0.0
-            }
-    } 
-         */
+    
     pub fn nerekursivno_i_nezahtevno_evaluiraj_poziciju_sa_proverom_mata(&self, nekompresirana_tabla: &Nekompresirana_tabla)->f32{
         let beli_je_na_potezu: bool = self.beli_je_na_potezu(); 
         if self.igrac_je_u_sahu(nekompresirana_tabla){
@@ -509,18 +504,32 @@ impl Tabla {
         }
     }
 
+    fn eval_g_pijun_i_lovac(&self, figure: &[u8;16], drugi_rank: u8) -> f32 {
+            let (rank, file) = crate::broj_to_rank_file(figure[G_PIJUN]);
+            if !Tabla::pijun_postoji(figure, G_PIJUN) || (rank != drugi_rank || file != G_FILE) {
+                if !self.lovac_boje_se_nalazi_na_polju(figure, &File_rank::new(G_FILE, drugi_rank)){
+                    return -G_PIJUN_GURNUT_A_LOVAC_NIJE_IZA_NJEGA
+                } else {
+                    return G_PIJUN_GURNUT_A_LOVAC_JESTE_IZA_NJEGA
+                }
+            }
+            return 0.0;
+    }
+
     fn eval_kralja_posle_rokade_na_osnovu_pijuna_ispred_sebe(&self, figure: &[u8;16], kralj: &File_rank, drugi_rank: u8, treci_rank: u8, kralj_je_beo: bool) -> f32{
         if kralj.file < G_FILE && kralj.file > C_FILE {
-            return 0.0
+            return self.eval_g_pijun_i_lovac(figure, drugi_rank);
         }
 
-        let mut eval: f32 = 0.0;
+        let mut eval: f32 = 0.0; 
         let pijun_ispred_kralja: File_rank = File_rank::new_iz_broja(figure[A_PIJUN-1 + kralj.file as usize]);
         if !Tabla::pijun_postoji(figure, A_PIJUN-1 + kralj.file as usize){
             eval -= POJEDEN_PIJUN_ISPRED_SOPSTVENOG_KRALJA;
         } else if pijun_ispred_kralja.rank == treci_rank {
             if !self.lovac_boje_se_nalazi_na_polju(figure, &File_rank::new(kralj.file, drugi_rank)){
                 eval -= PIJUN_ISPRED_KRALJA_GURNUT_JEDNO_POLJE_NAKON_ROKADE;
+            } else {
+                eval += PIJUN_ISPRED_KRALJA_GURNUT_JEDNO_POLJE_A_LOVAC_JE_IZA_NJEGA;
             }
         } else {
             eval -= PIJUN_ISPRED_KRALJA_GURNUT_VISE_OD_JEDNOG_POLJA_NAKON_ROKADE;
