@@ -126,7 +126,7 @@ impl Tabla {
 
             for (potez, evaluacija) in &potezi_evaluacije{
                 let tabla: Tabla = self.tabla_nakon_poteza_bits(potez);
-                let (vrednost_poteza, _) = tabla.izracunaj_rekursivno(&Some(najlosiji_potez_koji_prolazi), !ja_volim_vise, broj_rekursija, 1, 0.0, 0.0, false);
+                let (vrednost_poteza, _) = tabla.izracunaj_rekursivno_bez_gledanja_saha(&Some(najlosiji_potez_koji_prolazi), !ja_volim_vise, broj_rekursija, 1, 0.0, 0.0, false);
                 u_sortiranu_listu(&mut potezi_koji_prolaze, potez.copy(), vrednost_poteza, ja_volim_vise, broj_poteza_koji_prolaze);
                 najlosiji_potez_koji_prolazi = nabavi_najlosiji_potez_koji_prolazi(&potezi_koji_prolaze, broj_poteza_koji_prolaze, ja_volim_vise);
             }
