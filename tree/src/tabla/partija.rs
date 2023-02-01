@@ -21,7 +21,7 @@ impl Tabla{
 
         loop {
             let poslednji_indeks = table.len() -1;
-            let (potez, eval) = table[poslednji_indeks].najbolji_potez_i_njegova_evaluacija(dubina_pretrage);
+            let (potez, eval) = table[poslednji_indeks].najbolji_potez_i_njegova_evaluacija_putem_iteracija(dubina_pretrage);
             
             println!("Evaluacija: {}", eval);
             match potez {
