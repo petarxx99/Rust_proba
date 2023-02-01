@@ -97,7 +97,7 @@ impl Tabla {
 
         for (potez, evaluacija) in potezi_kandidati {
             let tabla: Tabla = self.tabla_nakon_poteza_bits(&potez);
-            let (vrednost_poteza, _) = tabla.izracunaj_rekursivno_zove_nezahtevne_funkcije(&Some(najbolja_evaluacija), protivnik_je_beli, nova_dubina, 1,  self.materijalna_prednost_onog_ko_je_na_potezu(), vrednost_mata(!self.beli_je_na_potezu()), false);
+            let (vrednost_poteza, _) = tabla.izracunaj_rekursivno_zove_nezahtevne_funkcije_gleda_dublje_ako_naidje_na_sah(&Some(najbolja_evaluacija), protivnik_je_beli, nova_dubina, 1,  self.materijalna_prednost_onog_ko_je_na_potezu(), vrednost_mata(!self.beli_je_na_potezu()), false);
             *evaluacija = vrednost_poteza;
             if ovo_je_najbolji_potez(najbolja_evaluacija, vrednost_poteza, ja_sam_beli){
                 najbolja_evaluacija = vrednost_poteza;
@@ -164,6 +164,41 @@ impl Tabla {
                 let tabla_nakon_poteza: Tabla = self.tabla_nakon_poteza_bits(&legalan_potez);
                 
                 let (vrednost_poteza, najbolji_potez) = tabla_nakon_poteza.izracunaj_rekursivno(&Some(najbolja_opcija_za_sad), !ja_volim_vise, broj_rekursija, trenutna_rekursija+1, materijalno_stanje, materijal_proslog_poteza, dodao_sam_dubinu_zbog_saha);
+                if najbolji_potez {
+                         najbolja_opcija_za_sad = vrednost_poteza;
+                }
+                if protivnik_se_zajebo(vrednost_koju_protivnik_ima_u_dzepu, najbolja_opcija_za_sad, ja_volim_vise){
+                        return (najbolja_opcija_za_sad, false)
+                }   
+            }
+            
+            (najbolja_opcija_za_sad, true)
+        
+    }
+
+    pub fn izracunaj_rekursivno_zove_nezahtevne_funkcije_gleda_dublje_ako_naidje_na_sah(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ja_volim_vise:  bool,
+        mut broj_rekursija: u8, trenutna_rekursija: u8, materijal_proslog_poteza: f32, materijal_pretproslog_poteza: f32, mut dodao_sam_dubinu_zbog_saha: bool) -> (f32, bool){
+            
+            let materijalno_stanje: f32 = self.materijalna_prednost_onog_ko_je_na_potezu();
+            if trenutna_rekursija >= broj_rekursija{
+                return self.evaluiraj_gledajuci_poteze_jedenja_nezahtevno(vrednost_koju_protivnik_ima_u_dzepu, materijalno_stanje, materijal_proslog_poteza, materijal_pretproslog_poteza, ja_volim_vise)
+            }
+        
+            let (legalni_potezi, _) = self.svi_legalni_potezi_sortirani_po_jedenju_figura();
+            let evaluacija_gotove_partije = self.vrati_evaluaciju_ako_je_partija_gotova(vrednost_koju_protivnik_ima_u_dzepu, &legalni_potezi, ja_volim_vise);
+            if evaluacija_gotove_partije.partija_zavrsena {
+                return evaluacija_gotove_partije.evaluacija
+            }
+            if self.igrac_je_u_sahu(&self.to_nekompresirana_tabla()){
+                broj_rekursija += 2;
+                dodao_sam_dubinu_zbog_saha = true;
+            }
+        
+            let mut najbolja_opcija_za_sad: f32 = vrednost_mata(ja_volim_vise);
+            for legalan_potez in legalni_potezi {
+                let tabla_nakon_poteza: Tabla = self.tabla_nakon_poteza_bits(&legalan_potez);
+                
+                let (vrednost_poteza, najbolji_potez) = tabla_nakon_poteza.izracunaj_rekursivno_zove_nezahtevne_funkcije(&Some(najbolja_opcija_za_sad), !ja_volim_vise, broj_rekursija, trenutna_rekursija+1, materijalno_stanje, materijal_proslog_poteza, dodao_sam_dubinu_zbog_saha);
                 if najbolji_potez {
                          najbolja_opcija_za_sad = vrednost_poteza;
                 }
