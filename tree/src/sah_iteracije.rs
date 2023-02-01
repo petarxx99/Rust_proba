@@ -282,7 +282,7 @@ impl Tabla {
         
     }
 
-    fn je_pozicija_e4_e5_nf3_d6_bc4_bg4_d3(&self) -> bool {
+    pub fn je_pozicija_e4_e5_nf3_d6_bc4_bg4_d3(&self) -> bool {
         let tabla: Tabla = Tabla::pocetna_pozicija()
         .odigraj_validan_potez_bez_promocije(E_FILE, 2, E_FILE, 4)
         .odigraj_validan_potez_bez_promocije(E_FILE, 7, E_FILE, 5)
