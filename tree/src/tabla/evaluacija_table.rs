@@ -597,6 +597,12 @@ impl Tabla {
 
         (evaluacija_belog,evaluacija_crnog, beli_ima_kraljicu, crni_ima_kraljicu)
     }
+
+    pub fn ukupno_ima_manje_materijala_na_tabli(&self, materijal: f32) -> bool {
+        let ukupan_materijal: f32 = 0.0;
+        let (beli, crni, _,_) = self.evaluacija_materijala(self.beli_je_na_potezu());
+        beli + crni < materijal
+    }
 }
 
 

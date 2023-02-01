@@ -6,6 +6,7 @@ use crate::tabla::File_rank;
 static BELI_JE_MATIRAO_CRNOG: f32 = 100.0;
 static CRNI_JE_MATIRAO_BELOG: f32 = -100.0;
 static MATERIJAL_BEZ_PIJUNA_KAD_JE_PARTIJA_PRI_KRAJU: f32 = 17.75;
+static UKUPAN_MATERIJAL_KAD_JE_ZAVRSNICA: f32 = 33.75;
 
 
 pub struct Eval_deteta{
@@ -57,10 +58,7 @@ impl Tabla{
         if self.je_pozicija_e4_e5(){
             return (Some(Potez::new(B_FILE, 1, C_FILE, 3, Promocija::None).to_Potez_bits(self).expect("Potez iz funkcije najbolji_potez_i_njegova_evaluacija ne postoji.")), 0.25);
         }
-        if self.partija_je_pri_kraju_bez_kraljice(MATERIJAL_BEZ_PIJUNA_KAD_JE_PARTIJA_PRI_KRAJU){
-            dubina += 2;
-        }
-
+       
         let protivnik_je_beli: bool = !self.beli_je_na_potezu();
         let ja_sam_beli: bool = self.beli_je_na_potezu();
 
@@ -68,18 +66,30 @@ impl Tabla{
         let mut najbolja_evaluacija: f32 = vrednost_mata(ja_sam_beli);
 
         let legalni_potezi: Vec<Potez_bits> = self.svi_legalni_potezi();
-        for potez in legalni_potezi {
-            let tabla: Tabla = self.tabla_nakon_poteza_bits(&potez);
-            let (vrednost_poteza, _) = tabla.izracunaj_rekursivno(&Some(najbolja_evaluacija), protivnik_je_beli, dubina, 1, self.materijalna_prednost_onog_ko_je_na_potezu(), vrednost_mata(!self.beli_je_na_potezu()), false) ;
-            if ovo_je_najbolji_potez(najbolja_evaluacija, vrednost_poteza, ja_sam_beli){
-                najbolji_potez = Some(potez);
-                najbolja_evaluacija = vrednost_poteza;
+        if self.ukupno_ima_manje_materijala_na_tabli(UKUPAN_MATERIJAL_KAD_JE_ZAVRSNICA){
+            dubina += 2;
+            for potez in legalni_potezi {
+                let tabla: Tabla = self.tabla_nakon_poteza_bits(&potez);
+                let (vrednost_poteza, _) = tabla.izracunaj_rekursivno_zove_nezahtevne_funkcije(&Some(najbolja_evaluacija), protivnik_je_beli, dubina, 1, self.materijalna_prednost_onog_ko_je_na_potezu(), vrednost_mata(!self.beli_je_na_potezu()), false) ;
+                if ovo_je_najbolji_potez(najbolja_evaluacija, vrednost_poteza, ja_sam_beli){
+                    najbolji_potez = Some(potez);
+                    najbolja_evaluacija = vrednost_poteza;
+                }
             }
+            return (najbolji_potez, najbolja_evaluacija);
+        } 
+
+        for potez in legalni_potezi {
+                let tabla: Tabla = self.tabla_nakon_poteza_bits(&potez);
+                let (vrednost_poteza, _) = tabla.izracunaj_rekursivno(&Some(najbolja_evaluacija), protivnik_je_beli, dubina, 1, self.materijalna_prednost_onog_ko_je_na_potezu(), vrednost_mata(!self.beli_je_na_potezu()), false) ;
+                if ovo_je_najbolji_potez(najbolja_evaluacija, vrednost_poteza, ja_sam_beli){
+                    najbolji_potez = Some(potez);
+                    najbolja_evaluacija = vrednost_poteza;
+                }
         }
-
-
         (najbolji_potez, najbolja_evaluacija)
     }
+
 
 pub fn evaluiraj_gledajuci_poteze_jedenja(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>,
 materijalno_stanje: f32, materijal_proslog_poteza:f32, materijal_pretproslog_poteza: f32, ja_volim_vise:bool) -> (f32, bool){
