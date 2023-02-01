@@ -2,6 +2,7 @@ use crate::proba_sah_drveta::{vrednost_mata, protivnik_se_zajebo, ovo_je_najbolj
 use crate::tabla::potez::{Potez_bits, Potez};
 use crate::tabla::{Tabla, DESNI_KONJ, F_FILE, Promocija, D_FILE, C_FILE, G_FILE, E_FILE};
 static MAX_BROJ_POTEZA_KANDIDATA: usize = 3;
+static MAKSIMALAN_MATERIJAL_BEZ_PIJUNA_KAD_JE_PARTIJA_U_ZAVRSNICI: f32 = 8.25;
 
 fn nabavi_najlosiji_potez_koji_prolazi(lista: &Vec<(Potez_bits,f32)>, broj_poteza_koji_prolaze:usize, ja_sam_beli:bool) -> f32{
     if lista.len() < broj_poteza_koji_prolaze {
@@ -79,10 +80,14 @@ fn prvi_potez_je_bolji(prvi_potez: f32, drugi_potez: f32, ja_sam_beli: bool) -> 
 
 impl Tabla {
 
-    pub fn najbolji_potez_i_njegova_evaluacija_putem_iteracija(&self, dubina: u8) -> (Option<Potez_bits>, f32) {
+    pub fn najbolji_potez_i_njegova_evaluacija_putem_iteracija(&self, mut dubina: u8) -> (Option<Potez_bits>, f32) {
         if self.je_pozicija_e4_e5_nf3_d6_bc4_bg4_d3(){
             return (Some(Potez::new(G_FILE, 8, F_FILE, 6, Promocija::None).to_Potez_bits(self).expect("Potez iz funkcije najbolji_potez_i_njegova_evaluacija_putem_iteracija ne postoji.")), 0.8);
         }
+        if self.partija_je_u_zavrsnici(MAKSIMALAN_MATERIJAL_BEZ_PIJUNA_KAD_JE_PARTIJA_U_ZAVRSNICI){
+            dubina += 2;
+        }
+
         let ja_sam_beli: bool = self.beli_je_na_potezu();
         let protivnik_je_beli: bool = !ja_sam_beli;
 

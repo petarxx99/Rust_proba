@@ -747,6 +747,28 @@ impl Tabla {
         self.figura_se_nalazi_na_polju(figure, DESNI_LOVAC, polje)
     }
 
+    pub fn partija_je_u_zavrsnici(&self, maksimalan_materijal_bez_pijuna: f32) -> bool {
+        let beli_materijal: f32 = Tabla::materijal_bez_pijuna(&self.bele_figure);
+        let crni_materijal: f32 = Tabla::materijal_bez_pijuna(&self.crne_figure);
+
+        beli_materijal < maksimalan_materijal_bez_pijuna &&
+        crni_materijal < maksimalan_materijal_bez_pijuna
+    }
+
+    pub fn materijal_bez_pijuna(figure: &[u8;16]) -> f32 {
+        let mut materijal: f32 = 0.0;
+        for i in 0..figure.len(){
+            match Tabla::koja_figura_se_nalazi_u_bitu(figure, i){
+                None => {},
+                Some(_figura) => {
+                    if !Tabla::figura_je_pijun(figure, i) {
+                        materijal += _figura.vrednost();
+                    }
+                }
+            }
+        }
+        materijal
+    }
 }
 
 
