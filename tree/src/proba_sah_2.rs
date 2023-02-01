@@ -76,9 +76,12 @@ impl Tabla{
                     return self.vrati_nerekursivnu_i_nezahtevnu_evaluaciju_koja_uzima_u_obzir_da_li_je_mat(vrednost_koju_protivnik_ima_u_dzepu, ja_volim_vise)
                 }
                 let najgora_evaluacija_za_protivnika: Evaluacija_poteza_jedenja = najgori_eval_poteza_jedenja(!ja_volim_vise);
-                let eval = self.izracunaj_rekursivno_samo_jedenje_figura_nezahtevno(&najgora_evaluacija_za_protivnika, ja_volim_vise, materijal_proslog_poteza, materijal_pretproslog_poteza);
+                let protivnik_matiran: f32 = vrednost_mata(!self.beli_je_na_potezu());
+                let potez_koji_protivnik_ima_u_dzepu: Evaluacija_poteza_jedenja = napravi_evaluaciju_poteza_jedenja(protivnik_matiran, vrednost_koju_protivnik_ima_u_dzepu);
+
+                let eval = self.izracunaj_rekursivno_samo_jedenje_figura_nezahtevno(&potez_koji_protivnik_ima_u_dzepu, ja_volim_vise, materijal_proslog_poteza, materijal_pretproslog_poteza);
                 return vrati_evaluaciju_poteza(vrednost_koju_protivnik_ima_u_dzepu, eval.kompletna_evaluacija, ja_volim_vise)
-        }
+    }
         
         pub fn izracunaj_rekursivno_zove_nezahtevne_funkcije(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ja_volim_vise:  bool,
         mut broj_rekursija: u8, trenutna_rekursija: u8, materijal_proslog_poteza: f32, materijal_pretproslog_poteza: f32, mut dodao_sam_dubinu_zbog_saha: bool) -> (f32, bool){
@@ -157,4 +160,14 @@ impl Tabla{
         }
         
         
+}
+
+
+pub fn napravi_evaluaciju_poteza_jedenja(evaluacija_po_materijalu: f32,
+evaluacija: &Option<f32>) -> Evaluacija_poteza_jedenja{
+    if evaluacija.is_some(){
+        Evaluacija_poteza_jedenja::new(evaluacija_po_materijalu, evaluacija.unwrap(), true)
+    } else {
+        Evaluacija_poteza_jedenja::new(evaluacija_po_materijalu, evaluacija_po_materijalu, true)
+    }
 }
