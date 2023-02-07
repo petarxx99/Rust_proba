@@ -39,6 +39,8 @@ static PIJUN_ISPRED_KRALJA_GURNUT_JEDNO_POLJE_NAKON_ROKADE: f32 = 0.5;
 static PIJUN_ISPRED_KRALJA_GURNUT_JEDNO_POLJE_A_LOVAC_JE_IZA_NJEGA: f32 = 0.5;
 static G_PIJUN_GURNUT_A_LOVAC_NIJE_IZA_NJEGA: f32 = 0.0;
 static G_PIJUN_GURNUT_A_LOVAC_JESTE_IZA_NJEGA: f32 = 0.325;
+static A_PIJUN_GURNUT_2_POLJA_POSLE_KRALJICINE_ROKADE: f32 = 0.25;
+static A_PIJUN_NE_POSTOJI_POSLE_KRALJICINE_ROKADE: f32 = 0.25;
 
 impl Tabla {
     
@@ -410,6 +412,7 @@ impl Tabla {
         eval += self.guranje_pijuna_ako_kralj_nije_na_drugoj_strani(figure, kralj, prvi_rank, drugi_rank, treci_rank);
         eval += self.eval_kralja_suprotna_rokada(tabla_pijuna, kralj, kralj_je_beo);
         eval += self.eval_kralja_posle_rokade_na_osnovu_pijuna_ispred_sebe(figure, kralj, drugi_rank, treci_rank, kralj_je_beo);
+        eval += self.eval_kralja_posle_kraljicine_rokade_ako_se_izgubi_a_pijun(figure, kralj, drugi_rank, treci_rank);
         eval
     }
 
@@ -548,6 +551,25 @@ impl Tabla {
 
         return self.eval_kralja_suprotna_rokada_na_osnovu_protivnickih_pijuna(tabla_pijuna, pozicija_kralja.file, kralj_je_beo)
     }
+
+    pub fn eval_kralja_posle_kraljicine_rokade_ako_se_izgubi_a_pijun(&self, figure: &[u8;16],
+    kralj: &File_rank, drugi_rank: u8, treci_rank: u8) -> f32 {
+        if kralj.file > C_FILE {
+            return 0.0;
+        } 
+
+        if !Tabla::pijun_postoji(figure, A_PIJUN){
+            return -A_PIJUN_NE_POSTOJI_POSLE_KRALJICINE_ROKADE;
+        }
+
+        let (rank, file) = crate::broj_to_rank_file(figure[A_PIJUN]);
+        if rank != drugi_rank && rank != treci_rank {
+            return -A_PIJUN_GURNUT_2_POLJA_POSLE_KRALJICINE_ROKADE;
+        }
+
+        0.0
+    }
+
 
     pub fn materijalna_prednost_onog_ko_je_na_potezu(&self) -> f32 {
         let beli_je_na_potezu: bool = self.beli_je_na_potezu();
