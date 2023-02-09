@@ -1,6 +1,8 @@
 use crate::proba_sah_drveta::{vrednost_mata, protivnik_se_zajebo, ovo_je_najbolji_potez};
 use crate::tabla::potez::{Potez_bits, Potez};
 use crate::tabla::{Tabla, DESNI_KONJ, F_FILE, Promocija, D_FILE, C_FILE, G_FILE, E_FILE};
+use std::{thread};
+
 static MAX_BROJ_POTEZA_KANDIDATA: usize = 3;
 static MAKSIMALAN_MATERIJAL_BEZ_PIJUNA_KAD_JE_PARTIJA_U_ZAVRSNICI: f32 = 8.25;
 
@@ -102,16 +104,34 @@ impl Tabla {
 
 
     pub fn najbolji_potez_iz_kandidata_nezahtevno_i_tredovima(&self,
-        potezi_kandidati: &mut[(Potez_bits, f32)], dubina: u8, ja_sam_beli: bool)
+        potezi_kandidati: &mut[(Potez_bits, f32)],  dubina: u8, ja_sam_beli: bool)
      -> (Option<Potez_bits>, f32){
-    
         let protivnik_je_beli: bool = !ja_sam_beli;
+    
+        let mut potezi_za_thread: Vec<(Potez_bits, f32)> = svaki_n_potez(potezi_kandidati, 2, 1);
+        let mut potezi = svaki_n_potez(potezi_kandidati, 2, 0);
+        let tabla = self.copy();
+
+        let thread_handle = thread::spawn(move || {
+            let mut najbolja_evaluacija: f32 = vrednost_mata(ja_sam_beli);
+            let mut najbolji_potez: Option<Potez_bits> = None;
+
+            for (potez, evaluacija) in &mut potezi_za_thread {
+                let tabla: Tabla = tabla.tabla_nakon_poteza_bits(&potez);
+                let (vrednost_poteza, _) = tabla.izracunaj_rekursivno_zove_nezahtevne_funkcije_gleda_dublje_ako_naidje_na_sah(&Some(najbolja_evaluacija), protivnik_je_beli, dubina, 1,  tabla.materijalna_prednost_onog_ko_je_na_potezu(), vrednost_mata(protivnik_je_beli), false);
+                *evaluacija = vrednost_poteza;
+                if ovo_je_najbolji_potez(najbolja_evaluacija, vrednost_poteza, ja_sam_beli){
+                    najbolja_evaluacija = vrednost_poteza;
+                    najbolji_potez = Some(potez.copy());
+                }
+            }
+        
+            (najbolji_potez, najbolja_evaluacija)
+        });
+
         let mut najbolja_evaluacija: f32 = vrednost_mata(ja_sam_beli);
         let mut najbolji_potez: Option<Potez_bits> = None;
-    
-        let potezi_za_thread: Vec<(Potez_bits, f32)> = Vec::new();
-
-        for (potez, evaluacija) in potezi_kandidati {
+        for (potez, evaluacija) in &mut potezi {
             let tabla: Tabla = self.tabla_nakon_poteza_bits(&potez);
             let (vrednost_poteza, _) = tabla.izracunaj_rekursivno_zove_nezahtevne_funkcije_gleda_dublje_ako_naidje_na_sah(&Some(najbolja_evaluacija), protivnik_je_beli, dubina, 1,  self.materijalna_prednost_onog_ko_je_na_potezu(), vrednost_mata(protivnik_je_beli), false);
             *evaluacija = vrednost_poteza;
@@ -120,7 +140,11 @@ impl Tabla {
                 najbolji_potez = Some(potez.copy());
             }
         }
-    
+
+        let (najbolji_potez_thread, najbolja_evaluacija_threada) = thread_handle.join().expect("Greska prilikom otpakivanja podataka iz threada koji obradjuje kandidate.");
+        if prvi_potez_je_bolji_od_drugog(najbolja_evaluacija_threada, najbolja_evaluacija, ja_sam_beli){
+            return (najbolji_potez_thread, najbolja_evaluacija_threada)
+        } 
         (najbolji_potez, najbolja_evaluacija)
      }
    
@@ -339,6 +363,14 @@ pub fn svaki_n_potez(potezi: &[(Potez_bits, f32)], n: usize, pocetni_indeks: usi
     svaki_n_potez
 }
 
+
+pub fn prvi_potez_je_bolji_od_drugog(prvi_potez: f32, drugi_potez: f32, ja_sam_beli: bool) -> bool{
+    if ja_sam_beli {
+        prvi_potez > drugi_potez
+    } else {
+        prvi_potez < drugi_potez
+    }
+}
 
 #[cfg(test)]
 mod sah_iteracije_test{
