@@ -114,6 +114,7 @@ su sklonjene sa table. */
 
     fn updejtuj_figure_protiv_kojih_je_odigran_potez(&mut self, figure: &mut[u8;16], potez: &Potez_bits) -> bool{
         let polje_destinacije: u8 = crate::file_rank_to_broj(potez.file, potez.rank);
+    
         
         for i in 0..16 {
             if Tabla::polja_se_slazu(polje_destinacije, figure[i]){

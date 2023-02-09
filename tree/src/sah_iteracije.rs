@@ -80,14 +80,13 @@ fn prvi_potez_je_bolji(prvi_potez: f32, drugi_potez: f32, ja_sam_beli: bool) -> 
 
 impl Tabla {
 
+
     pub fn najbolji_potez_i_njegova_evaluacija_putem_iteracija(&self, mut dubina: u8) -> (Option<Potez_bits>, f32) {
         if self.je_pozicija_e4_e5_nf3_d6_bc4_bg4_d3(){
             return (Some(Potez::new(G_FILE, 8, F_FILE, 6, Promocija::None).to_Potez_bits(self).expect("Potez iz funkcije najbolji_potez_i_njegova_evaluacija_putem_iteracija ne postoji.")), 0.8);
         }
  
-
         let ja_sam_beli: bool = self.beli_je_na_potezu();
-        let protivnik_je_beli: bool = !ja_sam_beli;
 
         let mut potezi_kandidati = self.pronadji_kandidate_preko_iteracija(dubina);
         self.sortiraj_poteze(&mut potezi_kandidati);
@@ -98,22 +97,33 @@ impl Tabla {
         let potezi_kandidati = &mut potezi_kandidati[0..maksimum_poteza];
         
         let nova_dubina = dubina + 2;
+        self.najbolji_potez_iz_kandidata_nezahtevno_i_tredovima(potezi_kandidati, nova_dubina, ja_sam_beli)
+    }
+
+
+    pub fn najbolji_potez_iz_kandidata_nezahtevno_i_tredovima(&self,
+        potezi_kandidati: &mut[(Potez_bits, f32)], dubina: u8, ja_sam_beli: bool)
+     -> (Option<Potez_bits>, f32){
+    
+        let protivnik_je_beli: bool = !ja_sam_beli;
         let mut najbolja_evaluacija: f32 = vrednost_mata(ja_sam_beli);
         let mut najbolji_potez: Option<Potez_bits> = None;
+    
+        let potezi_za_thread: Vec<(Potez_bits, f32)> = Vec::new();
 
         for (potez, evaluacija) in potezi_kandidati {
             let tabla: Tabla = self.tabla_nakon_poteza_bits(&potez);
-            let (vrednost_poteza, _) = tabla.izracunaj_rekursivno_zove_nezahtevne_funkcije_gleda_dublje_ako_naidje_na_sah(&Some(najbolja_evaluacija), protivnik_je_beli, nova_dubina, 1,  self.materijalna_prednost_onog_ko_je_na_potezu(), vrednost_mata(!self.beli_je_na_potezu()), false);
+            let (vrednost_poteza, _) = tabla.izracunaj_rekursivno_zove_nezahtevne_funkcije_gleda_dublje_ako_naidje_na_sah(&Some(najbolja_evaluacija), protivnik_je_beli, dubina, 1,  self.materijalna_prednost_onog_ko_je_na_potezu(), vrednost_mata(protivnik_je_beli), false);
             *evaluacija = vrednost_poteza;
             if ovo_je_najbolji_potez(najbolja_evaluacija, vrednost_poteza, ja_sam_beli){
                 najbolja_evaluacija = vrednost_poteza;
                 najbolji_potez = Some(potez.copy());
             }
         }
-
+    
         (najbolji_potez, najbolja_evaluacija)
-    }
-
+     }
+   
 
     pub fn pronadji_kandidate_preko_iteracija(&self, dubina: u8) -> Vec<(Potez_bits, f32)>{
         let ja_volim_vise: bool = self.beli_je_na_potezu();
@@ -317,10 +327,24 @@ fn skrati_vektor<T>(vektor: &mut Vec<T>, broj_elemenata_koji_ostaje: usize){
 }
 
 
+pub fn svaki_n_potez(potezi: &[(Potez_bits, f32)], n: usize, pocetni_indeks: usize) -> Vec<(Potez_bits, f32)>{
+    let mut i: usize = pocetni_indeks;
+    let broj_poteza: usize = potezi.len();
+    let mut svaki_n_potez: Vec<(Potez_bits, f32)> = Vec::new();
+
+    while i<broj_poteza {
+        svaki_n_potez.push((potezi[i].0.copy(), potezi[i].1));
+        i += n;
+    }
+    svaki_n_potez
+}
+
 
 #[cfg(test)]
 mod sah_iteracije_test{
-    use crate::tabla::{Tabla, E_PIJUN, E_FILE, potez::Potez_bits, Promocija, C_FILE, A_FILE, B_FILE, LEVI_KONJ, A_PIJUN, B_PIJUN, D_PIJUN, F_PIJUN, F_FILE, G_PIJUN, G_FILE, D_FILE};
+    use crate::tabla::{Tabla, E_PIJUN, E_FILE, potez::Potez_bits, Promocija, C_FILE, A_FILE, B_FILE, LEVI_KONJ, A_PIJUN, B_PIJUN, D_PIJUN, F_PIJUN, F_FILE, G_PIJUN, G_FILE, D_FILE, DESNI_KONJ, C_PIJUN};
+
+    use super::svaki_n_potez;
 
 
     #[test]
@@ -357,5 +381,31 @@ mod sah_iteracije_test{
         assert_eq!(F_PIJUN as u8, potezi[1].0.broj_figure);
         assert_eq!(E_PIJUN as u8, potezi[2].0.broj_figure);
         assert_eq!(D_PIJUN as u8, potezi[3].0.broj_figure);
+    }
+
+
+    #[test]
+    fn test_svaki_n_potez(){
+        let potezi = vec![
+            (Potez_bits::new(E_PIJUN as u8, E_FILE, 4, Promocija::None), 0.5),
+            (Potez_bits::new(LEVI_KONJ as u8, C_FILE, 3, Promocija::None), 1.0),
+            (Potez_bits::new(DESNI_KONJ as u8, F_FILE, 3, Promocija::None), 0.25),
+            (Potez_bits::new(D_PIJUN as u8, D_FILE, 4, Promocija::None), 0.75),
+            (Potez_bits::new(C_PIJUN as u8, C_FILE, 4, Promocija::None), 0.25),
+        ];
+
+        let prvi_potezi = svaki_n_potez(&potezi, 2, 0);
+        let drugi_potezi = svaki_n_potez(&potezi, 2, 1);
+
+        assert_eq!(3, prvi_potezi.len());
+        assert_eq!(2, drugi_potezi.len());
+
+        assert_eq!(true, drugi_potezi.contains(&(Potez_bits::new(LEVI_KONJ as u8, C_FILE, 3, Promocija::None), 1.0)));
+        assert_eq!(true, drugi_potezi.contains(&(Potez_bits::new(D_PIJUN as u8, D_FILE, 4, Promocija::None), 0.75)));
+
+        assert_eq!(true, prvi_potezi.contains(&(Potez_bits::new(DESNI_KONJ as u8, F_FILE, 3, Promocija::None), 0.25)));
+        assert_eq!(true, prvi_potezi.contains(&(Potez_bits::new(C_PIJUN as u8, C_FILE, 4, Promocija::None), 0.25)));
+        assert_eq!(true, prvi_potezi.contains(&(Potez_bits::new(E_PIJUN as u8, E_FILE, 4, Promocija::None), 0.5)));
+        
     }
 }
