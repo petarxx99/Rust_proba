@@ -146,7 +146,7 @@ impl Tabla {
                 Err(_) => {},
             }
             let tabla: Tabla = self.tabla_nakon_poteza_bits(&potez);
-            let (vrednost_poteza, _) = tabla.izracunaj_rekursivno_zove_nezahtevne_funkcije_gleda_dublje_ako_naidje_na_sah(&Some(vrednost_koju_imam_u_dzepu), protivnik_je_beli, dubina, 1,  self.materijalna_prednost_onog_ko_je_na_potezu(), vrednost_mata(protivnik_je_beli), false);
+            let (vrednost_poteza, _) = tabla.izracunaj_rekursivno_zove_nezahtevne_funkcije(&Some(vrednost_koju_imam_u_dzepu), protivnik_je_beli, dubina, 1,  self.materijalna_prednost_onog_ko_je_na_potezu(), vrednost_mata(protivnik_je_beli), false);
             *evaluacija = vrednost_poteza;
             if ovo_je_najbolji_potez(najbolja_evaluacija_ovog_threada, vrednost_poteza, ja_sam_beli){
                 najbolja_evaluacija_ovog_threada = vrednost_poteza;
