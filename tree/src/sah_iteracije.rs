@@ -91,7 +91,7 @@ impl Tabla {
  
         let ja_sam_beli: bool = self.beli_je_na_potezu();
 
-        let mut potezi_kandidati = self.pronadji_kandidate_preko_iteracija(dubina);
+        let mut potezi_kandidati = self.pronadji_kandidate_preko_tredova(dubina, MAX_BROJ_POTEZA_KANDIDATA);
         self.sortiraj_poteze(&mut potezi_kandidati);
         println!("broj poteza kandidata: {}", potezi_kandidati.len());
         for potez in &potezi_kandidati {println!("\npotez kandidata: {}\n", &potez.0);}
@@ -151,9 +151,9 @@ impl Tabla {
             if ovo_je_najbolji_potez(najbolja_evaluacija_ovog_threada, vrednost_poteza, ja_sam_beli){
                 najbolja_evaluacija_ovog_threada = vrednost_poteza;
                 najbolji_potez = Some(potez.copy());
-                if prvi_potez_je_bolji_od_drugog(najbolja_evaluacija_ovog_threada, vrednost_koju_imam_u_dzepu, ja_sam_beli){
-                    vrednost_koju_imam_u_dzepu = najbolja_evaluacija_ovog_threada;
-                    let r = sender.send(najbolja_evaluacija_ovog_threada);
+                if prvi_potez_je_bolji_od_drugog(vrednost_poteza, vrednost_koju_imam_u_dzepu, ja_sam_beli){
+                    vrednost_koju_imam_u_dzepu = vrednost_poteza;
+                    let r = sender.send(vrednost_poteza);
                 }
             }
         }
@@ -213,6 +213,49 @@ broj_poteza_koji_prolaze: usize) -> Vec<(Potez_bits, f32)> {
             potezi_koji_prolaze
     }
 
+    
+    fn pronadji_poteze_koji_prolaze_tredovi_razmenjuju_poruke(&self, dubina: u8, potezi_evaluacije: Vec<(Potez_bits, f32)>,
+broj_poteza_koji_prolaze: usize,
+sender: Sender<f32>, receiver: Receiver<f32>) -> Vec<(Potez_bits, f32)> {
+            let ja_sam_beli: bool = self.beli_je_na_potezu();
+            let mut potezi_koji_prolaze: Vec<(Potez_bits, f32)> = Vec::new();
+            let mut najlosiji_potez_koji_prolazi: f32 = vrednost_mata(ja_sam_beli);
+
+            for (potez, _) in potezi_evaluacije{
+                let tabla: Tabla = self.tabla_nakon_poteza_bits(&potez);
+                najlosiji_potez_koji_prolazi = vrati_bolji_potez(&receiver, najlosiji_potez_koji_prolazi, ja_sam_beli);
+
+                let (vrednost_poteza, _) = tabla.izracunaj_rekursivno_bez_gledanja_saha(&Some(najlosiji_potez_koji_prolazi), !ja_sam_beli, dubina, 1, 0.0, 0.0, false);
+                u_sortiranu_listu(&mut potezi_koji_prolaze, potez, vrednost_poteza, ja_sam_beli, broj_poteza_koji_prolaze);
+                najlosiji_potez_koji_prolazi = nabavi_najlosiji_potez_koji_prolazi(&potezi_koji_prolaze, broj_poteza_koji_prolaze, ja_sam_beli);
+                let s = sender.send(najlosiji_potez_koji_prolazi);
+            }
+            self.sortiraj_poteze(&mut potezi_koji_prolaze);
+
+            potezi_koji_prolaze
+    }
+
+
+  
+
+    pub fn pronadji_kandidate_preko_tredova(&self, dubina: u8, broj_poteza_koji_prolaze: usize)
+     -> Vec<(Potez_bits, f32)>{
+            let ja_volim_vise: bool = self.beli_je_na_potezu();
+            let potezi_evaluacije: Vec<(Potez_bits, f32)> = self.init_potezi_evaluacije();
+       
+            let potezi_evaluacije_prvi_thread = svaki_n_potez(&potezi_evaluacije, 2, 0);
+            let potezi_evaluacije_drugi_thread = svaki_n_potez(&potezi_evaluacije, 2, 1);
+            let (sender_prvi_thread, receiver_drugi_thread): (Sender<f32>, Receiver<f32>) = std::sync::mpsc::channel();
+            let (sender_drugi_thread, receiver_prvi_thread): (Sender<f32>, Receiver<f32>) = std::sync::mpsc::channel();
+
+            let tabla = self.copy();
+            let thread_handle = thread::spawn(move || {
+                tabla.pronadji_poteze_koji_prolaze_tredovi_razmenjuju_poruke(dubina, potezi_evaluacije_drugi_thread, broj_poteza_koji_prolaze, sender_drugi_thread, receiver_drugi_thread)
+            });
+            let potezi_koji_prolaze: Vec<(Potez_bits, f32)> = self.pronadji_poteze_koji_prolaze_tredovi_razmenjuju_poruke(dubina, potezi_evaluacije_prvi_thread, broj_poteza_koji_prolaze, sender_prvi_thread, receiver_prvi_thread);
+            let potezi_koji_prolaze_iz_drugog_threada: Vec<(Potez_bits, f32)> = thread_handle.join().expect("Greska prilikom pronalazenja poteza kandidata iz drugog threada.");
+            spoji_2_niza_sortiranih_poteza(potezi_koji_prolaze, potezi_koji_prolaze_iz_drugog_threada, broj_poteza_koji_prolaze, ja_volim_vise)   
+    }
 
     pub fn izracunaj_rekursivno_bez_gledanja_saha(&self, vrednost_koju_protivnik_ima_u_dzepu: &Option<f32>, ja_volim_vise:  bool,
         mut broj_rekursija: u8, trenutna_rekursija: u8, materijal_proslog_poteza: f32, materijal_pretproslog_poteza: f32, mut dodao_sam_dubinu_zbog_saha: bool) -> (f32, bool){
@@ -408,6 +451,20 @@ pub fn prvi_potez_je_bolji_od_drugog(prvi_potez: f32, drugi_potez: f32, ja_sam_b
         prvi_potez > drugi_potez
     } else {
         prvi_potez < drugi_potez
+    }
+}
+
+
+pub fn vrati_bolji_potez(receiver: &Receiver<f32>, najbolji_potez_ovog_treda: f32, ja_sam_beli: bool) -> f32{
+    match receiver.try_recv(){
+        Ok(najbolji_potez_drugog_treda) => {
+            if prvi_potez_je_bolji_od_drugog(najbolji_potez_drugog_treda, najbolji_potez_ovog_treda, ja_sam_beli){
+                return najbolji_potez_drugog_treda;
+            } else {
+                return najbolji_potez_ovog_treda
+            }
+        },
+        Err(_)=> najbolji_potez_ovog_treda,
     }
 }
 
