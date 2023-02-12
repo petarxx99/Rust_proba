@@ -1,0 +1,17 @@
+Za razliku od ostalih varijanata, ova varijanta ne deli poteze kandidate odmah na 2 dela i daje polovinu poteza svakom tredu.
+Ova varijacije prvo evaluira prvi potez kandidata, tek nakon evaluacije prvog kandidata se prelazi na deljenje preostalih kandidata u 2 
+treda. Prvi potez kandidata se evaluira tako sto se odgovori protivnika podele na 2 dela i po jedan tred obradjuje jednu polovinu poteza.
+Na ovaj nacin brze izracunavam prvog kandidata. 
+To mi je bitno zato sto onda prilikom izracunavanja ostalih kandidata odmah mogu da im prosledim najbolju evaluaciju koju imam u dzepu.
+Na prvi pogled deluje da bi ova varijanta trebalo da bude brza od prethodnih, ali nije uvek tako. Zasto?
+Zato sto ako se 2 od 3 poteza duze obradjuju, ova varijanta ce potrositi dosta vremena na obradu oba poteza kandidata koja trose vise vremena.
+U prethodnoj varijanti mog programa, ako 2 zahtevna poteza kandidata pripadnu razlicitim tredovima, onda se oni izracunavaju paralelno.
+U ovoj varijanti, ako je prvi potez kandidat zahtevan i jedan od preostala dva poteza je zahtevan, onda ce ova varijanta potrositi vise
+vremena da odigra potez, zato sto nece paralelno obradjivati 2 zahtevna poteza kandidata.
+Na primer, ukoliko su kandidati broj 1 i 2 zahtevni, starija verzija ce ih paralelno obradjivati, dok ih ova verzija nece paralelno
+obradjivati, te ce zbog toga ova verzija biti sporija. 
+Npr. potezi 1 i 2 traze 3 minuta da se izracunaju, potez 2 se izracunava relativno brzo.
+Starija verzija ce da potrosit malo vise od 3 minuta kako bi odigrala potez.
+Ova verzija ce potrositi malo vise od 3/2 + 3 minuta da odigra potez. Zasto 3/2?
+Zato sto je potrebno 3 minuta da se obradi prvi potez kandidata, medjutim, kako 2 treda obradjuju prvi potez kandidata,
+vreme potrebno da se taj potez obradi je 3/2 minuta.
