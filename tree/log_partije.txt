@@ -68,22 +68,8 @@ end_file:2
 promocija:None
 
 KRAJ_POTEZA
-start_rank:2
+start_rank:1
 start_file:3
-end_rank:3
-end_file:3
-promocija:None
-
-KRAJ_POTEZA
-start_rank:4
-start_file:4
-end_rank:3
-end_file:3
-promocija:None
-
-KRAJ_POTEZA
-start_rank:3
-start_file:6
-end_rank:4
-end_file:8
+end_rank:2
+end_file:4
 promocija:None
