@@ -113,7 +113,8 @@ impl Tabla {
         }
         let prvi_kandidat: &Potez_bits = &potezi_kandidati[0].0;
         let vrednost_prvog_kandidata: f32 = self.evaluiraj_prvog_kandidata(prvi_kandidat, dubina);
-       
+        println!("Evaluacija prvog kandidata: {}", vrednost_prvog_kandidata);
+        
         let potezi_za_thread: Vec<(Potez_bits, f32)> = svaki_n_potez(potezi_kandidati, 2, 2);
         let potezi = svaki_n_potez(potezi_kandidati, 2, 1);
         let (sender_iz_threada, receiver_iz_main) = std::sync::mpsc::channel();
